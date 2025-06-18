@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://www.reddit.com/
+HostUrl=https://objects.githubusercontent.com/github-production-release-asset-2e65be/719401366/56924f51-ce30-49fa-96e2-47ce2f3a1c79?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20250402%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250402T230813Z&X-Amz-Expires=300&X-Amz-Signature=98e1d9e54f665fbb4908d3377a2edfa0066022c22470bf052fb7b3e97f56e657&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Drendered-rust-book.pdf&response-content-type=application%2Foctet-stream

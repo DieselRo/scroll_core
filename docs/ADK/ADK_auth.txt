@@ -1,0 +1,688 @@
+# MODULE: adk.auth.__init__.py
+# PATH: adk/auth/__init__.py
+
+from .auth_credential import AuthCredential
+from .auth_credential import AuthCredentialTypes
+from .auth_credential import OAuth2Auth
+from .auth_handler import AuthHandler
+from .auth_schemes import AuthScheme
+from .auth_schemes import AuthSchemeType
+from .auth_schemes import OpenIdConnectWithConfig
+from .auth_tool import AuthConfig
+
+
+# MODULE: adk.auth.auth_credential.py
+# PATH: adk/auth/auth_credential.py
+
+
+from enum import Enum
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+
+from pydantic import BaseModel
+from pydantic import Field
+
+
+class BaseModelWithConfig(BaseModel):
+  model_config = {"extra": "allow"}
+
+
+class HttpCredentials(BaseModelWithConfig):
+  """Represents the secret token value for HTTP authentication, like user name, password, oauth token, etc."""
+
+  username: Optional[str] = None
+  password: Optional[str] = None
+  token: Optional[str] = None
+
+  @classmethod
+  def model_validate(cls, data: Dict[str, Any]) -> "HttpCredentials":
+    return cls(
+        username=data.get("username"),
+        password=data.get("password"),
+        token=data.get("token"),
+    )
+
+
+class HttpAuth(BaseModelWithConfig):
+  """The credentials and metadata for HTTP authentication."""
+
+  # The name of the HTTP Authorization scheme to be used in the Authorization
+  # header as defined in RFC7235. The values used SHOULD be registered in the
+  # IANA Authentication Scheme registry.
+  # Examples: 'basic', 'bearer'
+  scheme: str
+  credentials: HttpCredentials
+
+
+class OAuth2Auth(BaseModelWithConfig):
+  """Represents credential value and its metadata for a OAuth2 credential."""
+
+  client_id: Optional[str] = None
+  client_secret: Optional[str] = None
+  # tool or adk can generate the auth_uri with the state info thus client
+  # can verify the state
+  auth_uri: Optional[str] = None
+  state: Optional[str] = None
+  # tool or adk can decide the redirect_uri if they don't want client to decide
+  redirect_uri: Optional[str] = None
+  auth_response_uri: Optional[str] = None
+  auth_code: Optional[str] = None
+  token: Optional[Dict[str, Any]] = None
+
+
+class ServiceAccountCredential(BaseModelWithConfig):
+  """Represents Google Service Account configuration.
+
+  Attributes:
+    type: The type should be "service_account".
+    project_id: The project ID.
+    private_key_id: The ID of the private key.
+    private_key: The private key.
+    client_email: The client email.
+    client_id: The client ID.
+    auth_uri: The authorization URI.
+    token_uri: The token URI.
+    auth_provider_x509_cert_url: URL for auth provider's X.509 cert.
+    client_x509_cert_url: URL for the client's X.509 cert.
+    universe_domain: The universe domain.
+
+  Example:
+
+      config = ServiceAccountCredential(
+          type_="service_account",
+          project_id="your_project_id",
+          private_key_id="your_private_key_id",
+          private_key="-----BEGIN PRIVATE KEY-----...",
+          client_email="...@....iam.gserviceaccount.com",
+          client_id="your_client_id",
+          auth_uri="https://accounts.google.com/o/oauth2/auth",
+          token_uri="https://oauth2.googleapis.com/token",
+          auth_provider_x509_cert_url="https://www.googleapis.com/oauth2/v1/certs",
+          client_x509_cert_url="https://www.googleapis.com/robot/v1/metadata/x509/...",
+          universe_domain="googleapis.com"
+      )
+
+
+      config = ServiceAccountConfig.model_construct(**{
+          ...service account config dict
+      })
+  """
+
+  type_: str = Field("", alias="type")
+  project_id: str
+  private_key_id: str
+  private_key: str
+  client_email: str
+  client_id: str
+  auth_uri: str
+  token_uri: str
+  auth_provider_x509_cert_url: str
+  client_x509_cert_url: str
+  universe_domain: str
+
+
+class ServiceAccount(BaseModelWithConfig):
+  """Represents Google Service Account configuration."""
+
+  service_account_credential: Optional[ServiceAccountCredential] = None
+  scopes: List[str]
+  use_default_credential: Optional[bool] = False
+
+
+class AuthCredentialTypes(str, Enum):
+  """Represents the type of authentication credential."""
+
+  # API Key credential:
+  # https://swagger.io/docs/specification/v3_0/authentication/api-keys/
+  API_KEY = "apiKey"
+
+  # Credentials for HTTP Auth schemes:
+  # https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml
+  HTTP = "http"
+
+  # OAuth2 credentials:
+  # https://swagger.io/docs/specification/v3_0/authentication/oauth2/
+  OAUTH2 = "oauth2"
+
+  # OpenID Connect credentials:
+  # https://swagger.io/docs/specification/v3_0/authentication/openid-connect-discovery/
+  OPEN_ID_CONNECT = "openIdConnect"
+
+  # Service Account credentials:
+  # https://cloud.google.com/iam/docs/service-account-creds
+  SERVICE_ACCOUNT = "serviceAccount"
+
+
+class AuthCredential(BaseModelWithConfig):
+  """Data class representing an authentication credential.
+
+  To exchange for the actual credential, please use
+  CredentialExchanger.exchange_credential().
+
+  Examples: API Key Auth
+  AuthCredential(
+      auth_type=AuthCredentialTypes.API_KEY,
+      api_key="1234",
+  )
+
+  Example: HTTP Auth
+  AuthCredential(
+      auth_type=AuthCredentialTypes.HTTP,
+      http=HttpAuth(
+          scheme="basic",
+          credentials=HttpCredentials(username="user", password="password"),
+      ),
+  )
+
+  Example: OAuth2 Bearer Token in HTTP Header
+  AuthCredential(
+      auth_type=AuthCredentialTypes.HTTP,
+      http=HttpAuth(
+          scheme="bearer",
+          credentials=HttpCredentials(token="eyAkaknabna...."),
+      ),
+  )
+
+  Example: OAuth2 Auth with Authorization Code Flow
+  AuthCredential(
+      auth_type=AuthCredentialTypes.OAUTH2,
+      oauth2=OAuth2Auth(
+          client_id="1234",
+          client_secret="secret",
+      ),
+  )
+
+  Example: OpenID Connect Auth
+  AuthCredential(
+      auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
+      oauth2=OAuth2Auth(
+          client_id="1234",
+          client_secret="secret",
+          redirect_uri="https://example.com",
+          scopes=["scope1", "scope2"],
+      ),
+  )
+
+  Example: Auth with resource reference
+  AuthCredential(
+      auth_type=AuthCredentialTypes.API_KEY,
+      resource_ref="projects/1234/locations/us-central1/resources/resource1",
+  )
+  """
+
+  auth_type: AuthCredentialTypes
+  # Resource reference for the credential.
+  # This will be supported in the future.
+  resource_ref: Optional[str] = None
+
+  api_key: Optional[str] = None
+  http: Optional[HttpAuth] = None
+  service_account: Optional[ServiceAccount] = None
+  oauth2: Optional[OAuth2Auth] = None
+
+
+
+# MODULE: adk.auth.auth_handler.py
+# PATH: adk/auth/auth_handler.py
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from fastapi.openapi.models import OAuth2
+from fastapi.openapi.models import SecurityBase
+
+from .auth_credential import AuthCredential
+from .auth_credential import AuthCredentialTypes
+from .auth_credential import OAuth2Auth
+from .auth_schemes import AuthSchemeType
+from .auth_schemes import OAuthGrantType
+from .auth_schemes import OpenIdConnectWithConfig
+from .auth_tool import AuthConfig
+
+if TYPE_CHECKING:
+  from ..sessions.state import State
+
+try:
+  from authlib.integrations.requests_client import OAuth2Session
+
+  SUPPORT_TOKEN_EXCHANGE = True
+except ImportError:
+  SUPPORT_TOKEN_EXCHANGE = False
+
+
+class AuthHandler:
+
+  def __init__(self, auth_config: AuthConfig):
+    self.auth_config = auth_config
+
+  def exchange_auth_token(
+      self,
+  ) -> AuthCredential:
+    """Generates an auth token from the authorization response.
+
+    Returns:
+        An AuthCredential object containing the access token.
+
+    Raises:
+        ValueError: If the token endpoint is not configured in the auth
+            scheme.
+        AuthCredentialMissingError: If the access token cannot be retrieved
+            from the token endpoint.
+    """
+    auth_scheme = self.auth_config.auth_scheme
+    auth_credential = self.auth_config.exchanged_auth_credential
+    if not SUPPORT_TOKEN_EXCHANGE:
+      return auth_credential
+    if isinstance(auth_scheme, OpenIdConnectWithConfig):
+      if not hasattr(auth_scheme, "token_endpoint"):
+        return self.auth_config.exchanged_auth_credential
+      token_endpoint = auth_scheme.token_endpoint
+      scopes = auth_scheme.scopes
+    elif isinstance(auth_scheme, OAuth2):
+      if (
+          not auth_scheme.flows.authorizationCode
+          or not auth_scheme.flows.authorizationCode.tokenUrl
+      ):
+        return self.auth_config.exchanged_auth_credential
+      token_endpoint = auth_scheme.flows.authorizationCode.tokenUrl
+      scopes = list(auth_scheme.flows.authorizationCode.scopes.keys())
+    else:
+      return self.auth_config.exchanged_auth_credential
+
+    if (
+        not auth_credential
+        or not auth_credential.oauth2
+        or not auth_credential.oauth2.client_id
+        or not auth_credential.oauth2.client_secret
+        or auth_credential.oauth2.token
+    ):
+      return self.auth_config.exchanged_auth_credential
+
+    client = OAuth2Session(
+        auth_credential.oauth2.client_id,
+        auth_credential.oauth2.client_secret,
+        scope=" ".join(scopes),
+        redirect_uri=auth_credential.oauth2.redirect_uri,
+        state=auth_credential.oauth2.state,
+    )
+    token = client.fetch_token(
+        token_endpoint,
+        authorization_response=auth_credential.oauth2.auth_response_uri,
+        code=auth_credential.oauth2.auth_code,
+        grant_type=OAuthGrantType.AUTHORIZATION_CODE,
+    )
+
+    updated_credential = AuthCredential(
+        auth_type=AuthCredentialTypes.OAUTH2,
+        oauth2=OAuth2Auth(token=dict(token)),
+    )
+    return updated_credential
+
+  def parse_and_store_auth_response(self, state: State) -> None:
+
+    credential_key = self.get_credential_key()
+
+    state[credential_key] = self.auth_config.exchanged_auth_credential
+    if not isinstance(
+        self.auth_config.auth_scheme, SecurityBase
+    ) or self.auth_config.auth_scheme.type_ not in (
+        AuthSchemeType.oauth2,
+        AuthSchemeType.openIdConnect,
+    ):
+      return
+
+    state[credential_key] = self.exchange_auth_token()
+
+  def _validate(self) -> None:
+    if not self.auth_scheme:
+      raise ValueError("auth_scheme is empty.")
+
+  def get_auth_response(self, state: State) -> AuthCredential:
+    credential_key = self.get_credential_key()
+    return state.get(credential_key, None)
+
+  def generate_auth_request(self) -> AuthConfig:
+    if not isinstance(
+        self.auth_config.auth_scheme, SecurityBase
+    ) or self.auth_config.auth_scheme.type_ not in (
+        AuthSchemeType.oauth2,
+        AuthSchemeType.openIdConnect,
+    ):
+      return self.auth_config.model_copy(deep=True)
+
+    # auth_uri already in exchanged credential
+    if (
+        self.auth_config.exchanged_auth_credential
+        and self.auth_config.exchanged_auth_credential.oauth2
+        and self.auth_config.exchanged_auth_credential.oauth2.auth_uri
+    ):
+      return self.auth_config.model_copy(deep=True)
+
+    # Check if raw_auth_credential exists
+    if not self.auth_config.raw_auth_credential:
+      raise ValueError(
+          f"Auth Scheme {self.auth_config.auth_scheme.type_} requires"
+          " auth_credential."
+      )
+
+    # Check if oauth2 exists in raw_auth_credential
+    if not self.auth_config.raw_auth_credential.oauth2:
+      raise ValueError(
+          f"Auth Scheme {self.auth_config.auth_scheme.type_} requires oauth2 in"
+          " auth_credential."
+      )
+
+    # auth_uri in raw credential
+    if self.auth_config.raw_auth_credential.oauth2.auth_uri:
+      return AuthConfig(
+          auth_scheme=self.auth_config.auth_scheme,
+          raw_auth_credential=self.auth_config.raw_auth_credential,
+          exchanged_auth_credential=self.auth_config.raw_auth_credential.model_copy(
+              deep=True
+          ),
+      )
+
+    # Check for client_id and client_secret
+    if (
+        not self.auth_config.raw_auth_credential.oauth2.client_id
+        or not self.auth_config.raw_auth_credential.oauth2.client_secret
+    ):
+      raise ValueError(
+          f"Auth Scheme {self.auth_config.auth_scheme.type_} requires both"
+          " client_id and client_secret in auth_credential.oauth2."
+      )
+
+    # Generate new auth URI
+    exchanged_credential = self.generate_auth_uri()
+    return AuthConfig(
+        auth_scheme=self.auth_config.auth_scheme,
+        raw_auth_credential=self.auth_config.raw_auth_credential,
+        exchanged_auth_credential=exchanged_credential,
+    )
+
+  def get_credential_key(self) -> str:
+    """Generates a unique key for the given auth scheme and credential."""
+    auth_scheme = self.auth_config.auth_scheme
+    auth_credential = self.auth_config.raw_auth_credential
+    if auth_scheme.model_extra:
+      auth_scheme = auth_scheme.model_copy(deep=True)
+      auth_scheme.model_extra.clear()
+    scheme_name = (
+        f"{auth_scheme.type_.name}_{hash(auth_scheme.model_dump_json())}"
+        if auth_scheme
+        else ""
+    )
+    if auth_credential.model_extra:
+      auth_credential = auth_credential.model_copy(deep=True)
+      auth_credential.model_extra.clear()
+    credential_name = (
+        f"{auth_credential.auth_type.value}_{hash(auth_credential.model_dump_json())}"
+        if auth_credential
+        else ""
+    )
+
+    return f"temp:adk_{scheme_name}_{credential_name}"
+
+  def generate_auth_uri(
+      self,
+  ) -> AuthCredential:
+    """Generates an response containing the auth uri for user to sign in.
+
+    Returns:
+        An AuthCredential object containing the auth URI and state.
+
+    Raises:
+        ValueError: If the authorization endpoint is not configured in the auth
+            scheme.
+    """
+    auth_scheme = self.auth_config.auth_scheme
+    auth_credential = self.auth_config.raw_auth_credential
+
+    if isinstance(auth_scheme, OpenIdConnectWithConfig):
+      authorization_endpoint = auth_scheme.authorization_endpoint
+      scopes = auth_scheme.scopes
+    else:
+      authorization_endpoint = (
+          auth_scheme.flows.implicit
+          and auth_scheme.flows.implicit.authorizationUrl
+          or auth_scheme.flows.authorizationCode
+          and auth_scheme.flows.authorizationCode.authorizationUrl
+          or auth_scheme.flows.clientCredentials
+          and auth_scheme.flows.clientCredentials.tokenUrl
+          or auth_scheme.flows.password
+          and auth_scheme.flows.password.tokenUrl
+      )
+      scopes = (
+          auth_scheme.flows.implicit
+          and auth_scheme.flows.implicit.scopes
+          or auth_scheme.flows.authorizationCode
+          and auth_scheme.flows.authorizationCode.scopes
+          or auth_scheme.flows.clientCredentials
+          and auth_scheme.flows.clientCredentials.scopes
+          or auth_scheme.flows.password
+          and auth_scheme.flows.password.scopes
+      )
+      scopes = list(scopes.keys())
+
+    client = OAuth2Session(
+        auth_credential.oauth2.client_id,
+        auth_credential.oauth2.client_secret,
+        scope=" ".join(scopes),
+        redirect_uri=auth_credential.oauth2.redirect_uri,
+    )
+    uri, state = client.create_authorization_url(
+        url=authorization_endpoint, access_type="offline", prompt="consent"
+    )
+    exchanged_auth_credential = auth_credential.model_copy(deep=True)
+    exchanged_auth_credential.oauth2.auth_uri = uri
+    exchanged_auth_credential.oauth2.state = state
+
+    return exchanged_auth_credential
+
+
+# MODULE: adk.auth.auth_preprocessor.py
+# PATH: adk/auth/auth_preprocessor.py
+
+
+from __future__ import annotations
+
+from typing import AsyncGenerator
+from typing import TYPE_CHECKING
+
+from typing_extensions import override
+
+from ..agents.invocation_context import InvocationContext
+from ..events.event import Event
+from ..flows.llm_flows import functions
+from ..flows.llm_flows._base_llm_processor import BaseLlmRequestProcessor
+from ..flows.llm_flows.functions import REQUEST_EUC_FUNCTION_CALL_NAME
+from ..models.llm_request import LlmRequest
+from .auth_handler import AuthHandler
+from .auth_tool import AuthConfig
+from .auth_tool import AuthToolArguments
+
+if TYPE_CHECKING:
+  from ..agents.llm_agent import LlmAgent
+
+
+class _AuthLlmRequestProcessor(BaseLlmRequestProcessor):
+  """Handles auth information to build the LLM request."""
+
+  @override
+  async def run_async(
+      self, invocation_context: InvocationContext, llm_request: LlmRequest
+  ) -> AsyncGenerator[Event, None]:
+    from ..agents.llm_agent import LlmAgent
+
+    agent = invocation_context.agent
+    if not isinstance(agent, LlmAgent):
+      return
+    events = invocation_context.session.events
+    if not events:
+      return
+
+    request_euc_function_call_ids = set()
+    for k in range(len(events) - 1, -1, -1):
+      event = events[k]
+      # look for first event authored by user
+      if not event.author or event.author != 'user':
+        continue
+      responses = event.get_function_responses()
+      if not responses:
+        return
+
+      for function_call_response in responses:
+        if function_call_response.name != REQUEST_EUC_FUNCTION_CALL_NAME:
+          continue
+        # found the function call response for the system long running request euc
+        # function call
+        request_euc_function_call_ids.add(function_call_response.id)
+        auth_config = AuthConfig.model_validate(function_call_response.response)
+        AuthHandler(auth_config=auth_config).parse_and_store_auth_response(
+            state=invocation_context.session.state
+        )
+      break
+
+    if not request_euc_function_call_ids:
+      return
+
+    for i in range(len(events) - 2, -1, -1):
+      event = events[i]
+      # looking for the system long running request euc function call
+      function_calls = event.get_function_calls()
+      if not function_calls:
+        continue
+
+      tools_to_resume = set()
+
+      for function_call in function_calls:
+        if function_call.id not in request_euc_function_call_ids:
+          continue
+        args = AuthToolArguments.model_validate(function_call.args)
+
+        tools_to_resume.add(args.function_call_id)
+      if not tools_to_resume:
+        continue
+
+      # found the the system long running request euc function call
+      # looking for original function call that requests euc
+      for j in range(i - 1, -1, -1):
+        event = events[j]
+        function_calls = event.get_function_calls()
+        if not function_calls:
+          continue
+        for function_call in function_calls:
+          function_response_event = None
+          if function_call.id in tools_to_resume:
+            function_response_event = await functions.handle_function_calls_async(
+                invocation_context,
+                event,
+                {tool.name: tool for tool in agent.canonical_tools},
+                # there could be parallel function calls that require auth
+                # auth response would be a dict keyed by function call id
+                tools_to_resume,
+            )
+          if function_response_event:
+            yield function_response_event
+          return
+      return
+
+
+request_processor = _AuthLlmRequestProcessor()
+
+
+# MODULE: adk.auth.auth_schemes.py
+# PATH: adk/auth/auth_schemes.py
+
+
+class OpenIdConnectWithConfig(SecurityBase):
+  type_: SecuritySchemeType = Field(
+      default=SecuritySchemeType.openIdConnect, alias="type"
+  )
+  authorization_endpoint: str
+  token_endpoint: str
+  userinfo_endpoint: Optional[str] = None
+  revocation_endpoint: Optional[str] = None
+  token_endpoint_auth_methods_supported: Optional[List[str]] = None
+  grant_types_supported: Optional[List[str]] = None
+  scopes: Optional[List[str]] = None
+
+
+# AuthSchemes contains SecuritySchemes from OpenAPI 3.0 and an extra flattened OpenIdConnectWithConfig.
+AuthScheme = Union[SecurityScheme, OpenIdConnectWithConfig]
+
+
+class OAuthGrantType(str, Enum):
+  """Represents the OAuth2 flow (or grant type)."""
+
+  CLIENT_CREDENTIALS = "client_credentials"
+  AUTHORIZATION_CODE = "authorization_code"
+  IMPLICIT = "implicit"
+  PASSWORD = "password"
+
+  @staticmethod
+  def from_flow(flow: OAuthFlows) -> "OAuthGrantType":
+    """Converts an OAuthFlows object to a OAuthGrantType."""
+    if flow.clientCredentials:
+      return OAuthGrantType.CLIENT_CREDENTIALS
+    if flow.authorizationCode:
+      return OAuthGrantType.AUTHORIZATION_CODE
+    if flow.implicit:
+      return OAuthGrantType.IMPLICIT
+    if flow.password:
+      return OAuthGrantType.PASSWORD
+    return None
+
+
+# AuthSchemeType re-exports SecuritySchemeType from OpenAPI 3.0.
+AuthSchemeType = SecuritySchemeType
+
+
+# MODULE: adk.auth.auth_tool.py
+# PATH: adk/auth/auth_tool.py
+
+
+from pydantic import BaseModel
+
+from .auth_credential import AuthCredential
+from .auth_schemes import AuthScheme
+
+
+class AuthConfig(BaseModel):
+  """The auth config sent by tool asking client to collect auth credentials and
+
+  adk and client will help to fill in the response
+  """
+
+  auth_scheme: AuthScheme
+  """The auth scheme used to collect credentials"""
+  raw_auth_credential: AuthCredential = None
+  """The raw auth credential used to collect credentials. The raw auth
+  credentials are used in some auth scheme that needs to exchange auth
+  credentials. e.g. OAuth2 and OIDC. For other auth scheme, it could be None.
+  """
+  exchanged_auth_credential: AuthCredential = None
+  """The exchanged auth credential used to collect credentials. adk and client
+  will work together to fill it. For those auth scheme that doesn't need to
+  exchange auth credentials, e.g. API key, service account etc. It's filled by
+  client directly. For those auth scheme that need to exchange auth credentials,
+  e.g. OAuth2 and OIDC, it's first filled by adk. If the raw credentials
+  passed by tool only has client id and client credential, adk will help to
+  generate the corresponding authorization uri and state and store the processed
+  credential in this field. If the raw credentials passed by tool already has
+  authorization uri, state, etc. then it's copied to this field. Client will use
+  this field to guide the user through the OAuth2 flow and fill auth response in
+  this field"""
+
+
+class AuthToolArguments(BaseModel):
+  """the arguments for the special long running function tool that is used to
+
+  request end user credentials.
+  """
+
+  function_call_id: str
+  auth_config: AuthConfig

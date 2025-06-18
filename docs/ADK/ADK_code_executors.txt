@@ -1,0 +1,1054 @@
+# MODULE: adk.code_executors.__init__.py
+# PATH: adk/code_executors/__init__.py
+
+import logging
+
+from .base_code_executor import BaseCodeExecutor
+from .code_executor_context import CodeExecutorContext
+from .unsafe_local_code_executor import UnsafeLocalCodeExecutor
+
+logger = logging.getLogger(__name__)
+
+__all__ = [
+    'BaseCodeExecutor',
+    'CodeExecutorContext',
+    'UnsafeLocalCodeExecutor',
+]
+
+try:
+  from .vertex_ai_code_executor import VertexAiCodeExecutor
+
+  __all__.append('VertexAiCodeExecutor')
+except ImportError:
+  logger.debug(
+      'The Vertex sdk is not installed. If you want to use the Vertex Code'
+      ' Interpreter with agents, please install it. If not, you can ignore this'
+      ' warning.'
+  )
+
+try:
+  from .container_code_executor import ContainerCodeExecutor
+
+  __all__.append('ContainerCodeExecutor')
+except ImportError:
+  logger.debug(
+      'The docker sdk is not installed. If you want to use the Container Code'
+      ' Executor with agents, please install it. If not, you can ignore this'
+      ' warning.'
+  )
+
+
+
+# MODULE: adk.code_executors.base_code_executor.py
+# PATH: adk/code_executors/base_code_executor.py
+
+
+import abc
+from typing import List
+
+from pydantic import BaseModel
+
+from ..agents.invocation_context import InvocationContext
+from .code_execution_utils import CodeExecutionInput
+from .code_execution_utils import CodeExecutionResult
+
+
+class BaseCodeExecutor(BaseModel):
+  """Abstract base class for all code executors.
+
+  The code executor allows the agent to execute code blocks from model responses
+  and incorporate the execution results into the final response.
+
+  Attributes:
+    optimize_data_file: If true, extract and process data files from the model
+      request and attach them to the code executor. Supported data file
+      MimeTypes are [text/csv]. Default to False.
+    stateful: Whether the code executor is stateful. Default to False.
+    error_retry_attempts: The number of attempts to retry on consecutive code
+      execution errors. Default to 2.
+    code_block_delimiters: The list of the enclosing delimiters to identify the
+      code blocks.
+    execution_result_delimiters: The delimiters to format the code execution
+      result.
+  """
+
+  optimize_data_file: bool = False
+  """
+  If true, extract and process data files from the model request
+  and attach them to the code executor.
+  Supported data file MimeTypes are [text/csv].
+
+  Default to False.
+  """
+
+  stateful: bool = False
+  """
+  Whether the code executor is stateful. Default to False.
+  """
+
+  error_retry_attempts: int = 2
+  """
+  The number of attempts to retry on consecutive code execution errors. Default to 2.
+  """
+
+  code_block_delimiters: List[tuple[str, str]] = [
+      ('```tool_code\n', '\n```'),
+      ('```python\n', '\n```'),
+  ]
+  """
+  The list of the enclosing delimiters to identify the code blocks.
+  For example, the delimiter ('```python\n', '\n```') can be
+  used to identify code blocks with the following format:
+
+  ```python
+  print("hello")
+  ```
+  """
+
+  execution_result_delimiters: tuple[str, str] = ('```tool_output\n', '\n```')
+  """
+  The delimiters to format the code execution result.
+  """
+
+  @abc.abstractmethod
+  def execute_code(
+      self,
+      invocation_context: InvocationContext,
+      code_execution_input: CodeExecutionInput,
+  ) -> CodeExecutionResult:
+    """Executes code and return the code execution result.
+
+    Args:
+      invocation_context: The invocation context of the code execution.
+      code_execution_input: The code execution input.
+
+    Returns:
+      The code execution result.
+    """
+    pass
+
+
+
+# MODULE: adk.code_executors.code_execution_utils.py
+# PATH: adk/code_executors/code_execution_utils.py
+
+"""Utility functions for code execution."""
+
+import base64
+import binascii
+import copy
+import dataclasses
+import re
+from typing import List, Optional
+
+from google.genai import types
+
+
+@dataclasses.dataclass(frozen=True)
+class File:
+  """A structure that contains a file name and its content."""
+
+  name: str
+  """
+  The name of the file with file extension (e.g., "file.csv").
+  """
+
+  content: str
+  """
+  The base64-encoded bytes of the file content.
+  """
+
+  mime_type: str = 'text/plain'
+  """
+  The mime type of the file (e.g., "image/png").
+  """
+
+
+@dataclasses.dataclass
+class CodeExecutionInput:
+  """A structure that contains the input of code execution."""
+
+  code: str
+  """
+  The code to execute.
+  """
+
+  input_files: list[File] = dataclasses.field(default_factory=list)
+  """
+  The input files available to the code.
+  """
+
+  execution_id: Optional[str] = None
+  """
+  The execution ID for the stateful code execution.
+  """
+
+
+@dataclasses.dataclass
+class CodeExecutionResult:
+  """A structure that contains the result of code execution."""
+
+  stdout: str = ''
+  """
+  The standard output of the code execution.
+  """
+
+  stderr: str = ''
+  """
+  The standard error of the code execution.
+  """
+
+  output_files: list[File] = dataclasses.field(default_factory=list)
+  """
+  The output files from the code execution.
+  """
+
+
+class CodeExecutionUtils:
+  """Utility functions for code execution."""
+
+  @staticmethod
+  def get_encoded_file_content(data: bytes) -> bytes:
+    """Gets the file content as a base64-encoded bytes.
+
+    Args:
+      data: The file content bytes.
+
+    Returns:
+      The file content as a base64-encoded bytes.
+    """
+
+    def _is_base64_encoded(data: bytes) -> bool:
+      try:
+        return base64.b64encode(base64.b64decode(data)) == data
+      except binascii.Error:
+        return False
+
+    return data if _is_base64_encoded(data) else base64.b64encode(data)
+
+  @staticmethod
+  def extract_code_and_truncate_content(
+      content: types.Content,
+      code_block_delimiters: List[tuple[str, str]],
+  ) -> Optional[str]:
+    """Extracts the first code block from the content and truncate everything after it.
+
+    Args:
+      content: The mutable content to extract the code from.
+      code_block_delimiters: The list of the enclosing delimiters to identify
+        the code blocks.
+
+    Returns:
+      The first code block if found, otherwise None.
+    """
+    if not content or not content.parts:
+      return
+
+    # Extract the code from the executable code parts if there're no associated
+    # code execution result parts.
+    for idx, part in enumerate(content.parts):
+      if part.executable_code and (
+          idx == len(content.parts) - 1
+          or not content.parts[idx + 1].code_execution_result
+      ):
+        content.parts = content.parts[: idx + 1]
+        return part.executable_code.code
+
+    # Extract the code from the text parts.
+    text_parts = [p for p in content.parts if p.text]
+    if not text_parts:
+      return
+
+    first_text_part = copy.deepcopy(text_parts[0])
+    response_text = '\n'.join([p.text for p in text_parts])
+
+    # Find the first code block.
+    leading_delimiter_pattern = '|'.join(d[0] for d in code_block_delimiters)
+    trailing_delimiter_pattern = '|'.join(d[1] for d in code_block_delimiters)
+    pattern = re.compile(
+        (
+            rf'(?P<prefix>.*?)({leading_delimiter_pattern})(?P<code>.*?)({trailing_delimiter_pattern})(?P<suffix>.*?)$'
+        ).encode(),
+        re.DOTALL,
+    )
+    pattern_match = pattern.search(response_text.encode())
+    if pattern_match is None:
+      return
+
+    code_str = pattern_match.group('code').decode()
+    if not code_str:
+      return
+
+    content.parts = []
+    if pattern_match.group('prefix'):
+      first_text_part.text = pattern_match.group('prefix').decode()
+      content.parts.append(first_text_part)
+    content.parts.append(
+        CodeExecutionUtils.build_executable_code_part(code_str)
+    )
+    return pattern_match.group('code').decode()
+
+  @staticmethod
+  def build_executable_code_part(code: str) -> types.Part:
+    """Builds an executable code part with code string.
+
+    Args:
+      code: The code string.
+
+    Returns:
+      The constructed executable code part.
+    """
+    return types.Part.from_executable_code(
+        code=code,
+        language='PYTHON',
+    )
+
+  @staticmethod
+  def build_code_execution_result_part(
+      code_execution_result: CodeExecutionResult,
+  ) -> types.Part:
+    """Builds the code execution result part from the code execution result.
+
+    Args:
+      code_execution_result: The code execution result.
+
+    Returns:
+      The constructed code execution result part.
+    """
+    if code_execution_result.stderr:
+      return types.Part.from_code_execution_result(
+          outcome='OUTCOME_FAILED',
+          output=code_execution_result.stderr,
+      )
+    final_result = []
+    if code_execution_result.stdout or not code_execution_result.output_files:
+      final_result.append(
+          'Code execution result:\n' + '%s\n' % code_execution_result.stdout
+      )
+    if code_execution_result.output_files:
+      final_result.append(
+          'Saved artifacts:\n'
+          + ','.join(
+              ['`%s`' % f.name for f in code_execution_result.output_files]
+          )
+      )
+    return types.Part.from_code_execution_result(
+        outcome='OUTCOME_OK',
+        output='\n\n'.join(final_result),
+    )
+
+  @staticmethod
+  def convert_code_execution_parts(
+      content: types.Content,
+      code_block_delimiter: tuple[str, str],
+      execution_result_delimiters: tuple[str, str],
+  ):
+    """Converts the code execution parts to text parts in a Content.
+
+    Args:
+      content: The mutable content to convert the code execution parts to text
+        parts.
+      code_block_delimiter: The delimiter to format the code block.
+      execution_result_delimiters: The delimiter to format the code execution
+        result.
+    """
+    if not content.parts:
+      return
+
+    # Handle the conversion of trailing executable code parts.
+    if content.parts[-1].executable_code:
+      content.parts[-1] = types.Part(
+          text=(
+              code_block_delimiter[0]
+              + content.parts[-1].executable_code.code
+              + code_block_delimiter[1]
+          )
+      )
+    # Handle the conversion of trailing code execution result parts.
+    # Skip if the Content has multiple parts, which means the Content is
+    # likely generated by the model.
+    elif len(content.parts) == 1 and content.parts[-1].code_execution_result:
+      content.parts[-1] = types.Part(
+          text=execution_result_delimiters[0]
+          + content.parts[-1].code_execution_result.output
+          + execution_result_delimiters[1]
+      )
+      content.role = 'user'
+
+
+
+# MODULE: adk.code_executors.code_executor_context.py
+# PATH: adk/code_executors/code_executor_context.py
+
+
+import copy
+import dataclasses
+import datetime
+from typing import Any
+from typing import Optional
+
+from ..sessions.state import State
+from .code_execution_utils import File
+
+_CONTEXT_KEY = '_code_execution_context'
+_SESSION_ID_KEY = 'execution_session_id'
+_PROCESSED_FILE_NAMES_KEY = 'processed_input_files'
+_INPUT_FILE_KEY = '_code_executor_input_files'
+_ERROR_COUNT_KEY = '_code_executor_error_counts'
+
+_CODE_EXECUTION_RESULTS_KEY = '_code_execution_results'
+
+
+class CodeExecutorContext:
+  """The persistent context used to configure the code executor."""
+
+  _context: dict[str, Any]
+
+  def __init__(self, session_state: State):
+    """Initializes the code executor context.
+
+    Args:
+      session_state: The session state to get the code executor context from.
+    """
+    self._context = self._get_code_executor_context(session_state)
+    self._session_state = session_state
+
+  def get_state_delta(self) -> dict[str, Any]:
+    """Gets the state delta to update in the persistent session state.
+
+    Returns:
+      The state delta to update in the persistent session state.
+    """
+    context_to_update = copy.deepcopy(self._context)
+    return {_CONTEXT_KEY: context_to_update}
+
+  def get_execution_id(self) -> Optional[str]:
+    """Gets the session ID for the code executor.
+
+    Returns:
+      The session ID for the code executor context.
+    """
+    if _SESSION_ID_KEY not in self._context:
+      return None
+    return self._context[_SESSION_ID_KEY]
+
+  def set_execution_id(self, session_id: str):
+    """Sets the session ID for the code executor.
+
+    Args:
+      session_id: The session ID for the code executor.
+    """
+    self._context[_SESSION_ID_KEY] = session_id
+
+  def get_processed_file_names(self) -> list[str]:
+    """Gets the processed file names from the session state.
+
+    Returns:
+      A list of processed file names in the code executor context.
+    """
+    if _PROCESSED_FILE_NAMES_KEY not in self._context:
+      return []
+    return self._context[_PROCESSED_FILE_NAMES_KEY]
+
+  def add_processed_file_names(self, file_names: [str]):
+    """Adds the processed file name to the session state.
+
+    Args:
+      file_names: The processed file names to add to the session state.
+    """
+    if _PROCESSED_FILE_NAMES_KEY not in self._context:
+      self._context[_PROCESSED_FILE_NAMES_KEY] = []
+    self._context[_PROCESSED_FILE_NAMES_KEY].extend(file_names)
+
+  def get_input_files(self) -> list[File]:
+    """Gets the code executor input file names from the session state.
+
+    Returns:
+      A list of input files in the code executor context.
+    """
+    if _INPUT_FILE_KEY not in self._session_state:
+      return []
+    return [File(**file) for file in self._session_state[_INPUT_FILE_KEY]]
+
+  def add_input_files(
+      self,
+      input_files: list[File],
+  ):
+    """Adds the input files to the code executor context.
+
+    Args:
+      input_files: The input files to add to the code executor context.
+    """
+    if _INPUT_FILE_KEY not in self._session_state:
+      self._session_state[_INPUT_FILE_KEY] = []
+    for input_file in input_files:
+      self._session_state[_INPUT_FILE_KEY].append(
+          dataclasses.asdict(input_file)
+      )
+
+  def clear_input_files(self):
+    """Removes the input files and processed file names to the code executor context."""
+    if _INPUT_FILE_KEY in self._session_state:
+      self._session_state[_INPUT_FILE_KEY] = []
+    if _PROCESSED_FILE_NAMES_KEY in self._context:
+      self._context[_PROCESSED_FILE_NAMES_KEY] = []
+
+  def get_error_count(self, invocation_id: str) -> int:
+    """Gets the error count from the session state.
+
+    Args:
+      invocation_id: The invocation ID to get the error count for.
+
+    Returns:
+      The error count for the given invocation ID.
+    """
+    if _ERROR_COUNT_KEY not in self._session_state:
+      return 0
+    return self._session_state[_ERROR_COUNT_KEY].get(invocation_id, 0)
+
+  def increment_error_count(self, invocation_id: str):
+    """Increments the error count from the session state.
+
+    Args:
+      invocation_id: The invocation ID to increment the error count for.
+    """
+    if _ERROR_COUNT_KEY not in self._session_state:
+      self._session_state[_ERROR_COUNT_KEY] = {}
+    self._session_state[_ERROR_COUNT_KEY][invocation_id] = (
+        self.get_error_count(invocation_id) + 1
+    )
+
+  def reset_error_count(self, invocation_id: str):
+    """Resets the error count from the session state.
+
+    Args:
+      invocation_id: The invocation ID to reset the error count for.
+    """
+    if _ERROR_COUNT_KEY not in self._session_state:
+      return
+    if invocation_id in self._session_state[_ERROR_COUNT_KEY]:
+      del self._session_state[_ERROR_COUNT_KEY][invocation_id]
+
+  def update_code_execution_result(
+      self,
+      invocation_id: str,
+      code: str,
+      result_stdout: str,
+      result_stderr: str,
+  ):
+    """Updates the code execution result.
+
+    Args:
+      invocation_id: The invocation ID to update the code execution result for.
+      code: The code to execute.
+      result_stdout: The standard output of the code execution.
+      result_stderr: The standard error of the code execution.
+    """
+    if _CODE_EXECUTION_RESULTS_KEY not in self._session_state:
+      self._session_state[_CODE_EXECUTION_RESULTS_KEY] = {}
+    if invocation_id not in self._session_state[_CODE_EXECUTION_RESULTS_KEY]:
+      self._session_state[_CODE_EXECUTION_RESULTS_KEY][invocation_id] = []
+    self._session_state[_CODE_EXECUTION_RESULTS_KEY][invocation_id].append({
+        'code': code,
+        'result_stdout': result_stdout,
+        'result_stderr': result_stderr,
+        'timestamp': int(datetime.datetime.now().timestamp()),
+    })
+
+  def _get_code_executor_context(self, session_state: State) -> dict[str, Any]:
+    """Gets the code executor context from the session state.
+
+    Args:
+      session_state: The session state to get the code executor context from.
+
+    Returns:
+      A dict of code executor context.
+    """
+    if _CONTEXT_KEY not in session_state:
+      session_state[_CONTEXT_KEY] = {}
+    return session_state[_CONTEXT_KEY]
+
+
+
+# MODULE: adk.code_executors.container_code_executor.py
+# PATH: adk/code_executors/container_code_executor.py
+
+import atexit
+import os
+from typing import Optional
+
+import docker
+from docker.client import DockerClient
+from docker.models.containers import Container
+from pydantic import Field
+from typing_extensions import override
+
+from ..agents.invocation_context import InvocationContext
+from .base_code_executor import BaseCodeExecutor
+from .code_execution_utils import CodeExecutionInput
+from .code_execution_utils import CodeExecutionResult
+
+
+DEFAULT_IMAGE_TAG = 'adk-code-executor:latest'
+
+
+class ContainerCodeExecutor(BaseCodeExecutor):
+  """A code executor that uses a custom container to execute code.
+
+  Attributes:
+    base_url: Optional. The base url of the user hosted Docker client.
+    image: The tag of the predefined image or custom image to run on the
+      container. Either docker_path or image must be set.
+    docker_path: The path to the directory containing the Dockerfile. If set,
+      build the image from the dockerfile path instead of using the predefined
+      image. Either docker_path or image must be set.
+  """
+
+  base_url: Optional[str] = None
+  """
+  Optional. The base url of the user hosted Docker client.
+  """
+
+  image: str = None
+  """
+  The tag of the predefined image or custom image to run on the container.
+  Either docker_path or image must be set.
+  """
+
+  docker_path: str = None
+  """
+  The path to the directory containing the Dockerfile.
+  If set, build the image from the dockerfile path instead of using the
+  predefined image. Either docker_path or image must be set.
+  """
+
+  # Overrides the BaseCodeExecutor attribute: this executor cannot be stateful.
+  stateful: bool = Field(default=False, frozen=True, exclude=True)
+
+  # Overrides the BaseCodeExecutor attribute: this executor cannot
+  # optimize_data_file.
+  optimize_data_file: bool = Field(default=False, frozen=True, exclude=True)
+
+  _client: DockerClient = None
+  _container: Container = None
+
+  def __init__(
+      self,
+      base_url: Optional[str] = None,
+      image: Optional[str] = None,
+      docker_path: Optional[str] = None,
+      **data,
+  ):
+    """Initializes the ContainerCodeExecutor.
+
+    Args:
+      base_url: Optional. The base url of the user hosted Docker client.
+      image: The tag of the predefined image or custom image to run on the
+        container. Either docker_path or image must be set.
+      docker_path: The path to the directory containing the Dockerfile. If set,
+        build the image from the dockerfile path instead of using the predefined
+        image. Either docker_path or image must be set.
+      **data: The data to initialize the ContainerCodeExecutor.
+    """
+    if not image and not docker_path:
+      raise ValueError(
+          'Either image or docker_path must be set for ContainerCodeExecutor.'
+      )
+    if 'stateful' in data and data['stateful']:
+      raise ValueError('Cannot set `stateful=True` in ContainerCodeExecutor.')
+    if 'optimize_data_file' in data and data['optimize_data_file']:
+      raise ValueError(
+          'Cannot set `optimize_data_file=True` in ContainerCodeExecutor.'
+      )
+
+    super().__init__(**data)
+    self.base_url = base_url
+    self.image = image if image else DEFAULT_IMAGE_TAG
+    self.docker_path = os.path.abspath(docker_path) if docker_path else None
+
+    self._client = (
+        docker.from_env()
+        if not self.base_url
+        else docker.DockerClient(base_url=self.base_url)
+    )
+    # Initialize the container.
+    self.__init_container()
+
+    # Close the container when the on exit.
+    atexit.register(self.__cleanup_container)
+
+  @override
+  def execute_code(
+      self,
+      invocation_context: InvocationContext,
+      code_execution_input: CodeExecutionInput,
+  ) -> CodeExecutionResult:
+    output = ''
+    error = ''
+    exec_result = self._container.exec_run(
+        ['python3', '-c', code_execution_input.code],
+        demux=True,
+    )
+
+    if exec_result.output and exec_result.output[0]:
+      output = exec_result.output[0].decode('utf-8')
+    if (
+        exec_result.output
+        and len(exec_result.output) > 1
+        and exec_result.output[1]
+    ):
+      error = exec_result.output[1].decode('utf-8')
+
+    # Collect the final result.
+    return CodeExecutionResult(
+        stdout=output,
+        stderr=error,
+        output_files=[],
+    )
+
+  def _build_docker_image(self):
+    """Builds the Docker image."""
+    if not self.docker_path:
+      raise ValueError('Docker path is not set.')
+    if not os.path.exists(self.docker_path):
+      raise FileNotFoundError(f'Invalid Docker path: {self.docker_path}')
+
+    print('Building Docker image...')
+    self._client.images.build(
+        path=self.docker_path,
+        tag=self.image,
+        rm=True,
+    )
+    print(f'Docker image: {self.image} built.')
+
+  def _verify_python_installation(self):
+    """Verifies the container has python3 installed."""
+    exec_result = self._container.exec_run(['which', 'python3'])
+    if exec_result.exit_code != 0:
+      raise ValueError('python3 is not installed in the container.')
+
+  def __init_container(self):
+    """Initializes the container."""
+    if not self._client:
+      raise RuntimeError('Docker client is not initialized.')
+
+    if self.docker_path:
+      self._build_docker_image()
+
+    print('Starting container for ContainerCodeExecutor...')
+    self._container = self._client.containers.run(
+        image=self.image,
+        detach=True,
+        tty=True,
+    )
+    print(f'Container {self._container.id} started.')
+
+    # Verify the container is able to run python3.
+    self._verify_python_installation()
+
+  def __cleanup_container(self):
+    """Closes the container on exit."""
+    if not self._container:
+      return
+
+    print('[Cleanup] Stopping the container...')
+    self._container.stop()
+    self._container.remove()
+    print(f'Container {self._container.id} stopped and removed.')
+
+
+
+
+# MODULE: adk.code_executors.unsafe_local_code_executor.py
+# PATH: adk/code_executors/unsafe_local_code_executor.py
+
+
+
+from contextlib import redirect_stdout
+import io
+
+from pydantic import Field
+from typing_extensions import override
+
+from ..agents.invocation_context import InvocationContext
+from .base_code_executor import BaseCodeExecutor
+from .code_execution_utils import CodeExecutionInput
+from .code_execution_utils import CodeExecutionResult
+
+
+class UnsafeLocalCodeExecutor(BaseCodeExecutor):
+  """A code executor that unsafely execute code in the current local context."""
+
+  # Overrides the BaseCodeExecutor attribute: this executor cannot be stateful.
+  stateful: bool = Field(default=False, frozen=True, exclude=True)
+
+  # Overrides the BaseCodeExecutor attribute: this executor cannot
+  # optimize_data_file.
+  optimize_data_file: bool = Field(default=False, frozen=True, exclude=True)
+
+  def __init__(self, **data):
+    """Initializes the UnsafeLocalCodeExecutor."""
+    if 'stateful' in data and data['stateful']:
+      raise ValueError('Cannot set `stateful=True` in UnsafeLocalCodeExecutor.')
+    if 'optimize_data_file' in data and data['optimize_data_file']:
+      raise ValueError(
+          'Cannot set `optimize_data_file=True` in UnsafeLocalCodeExecutor.'
+      )
+    super().__init__(**data)
+
+  @override
+  def execute_code(
+      self,
+      invocation_context: InvocationContext,
+      code_execution_input: CodeExecutionInput,
+  ) -> CodeExecutionResult:
+    # Execute the code.
+    output = ''
+    error = ''
+    try:
+      globals_ = {}
+      locals_ = {}
+      stdout = io.StringIO()
+      with redirect_stdout(stdout):
+        exec(code_execution_input.code, globals_, locals_)
+      output = stdout.getvalue()
+    except Exception as e:
+      error = str(e)
+
+    # Collect the final result.
+    return CodeExecutionResult(
+        stdout=output,
+        stderr=error,
+        output_files=[],
+    )
+
+
+
+
+
+# MODULE: adk.code_executors.vertex_ai_code_executor.py
+# PATH: adk/code_executors/vertex_ai_code_executor.py
+
+
+
+import datetime
+import mimetypes
+import os
+from typing import Any, Optional
+
+from typing_extensions import override
+from vertexai.preview.extensions import Extension
+
+from ..agents.invocation_context import InvocationContext
+from .base_code_executor import BaseCodeExecutor
+from .code_execution_utils import CodeExecutionInput
+from .code_execution_utils import CodeExecutionResult
+from .code_execution_utils import File
+
+_SUPPORTED_IMAGE_TYPES = ['png', 'jpg', 'jpeg']
+_SUPPORTED_DATA_FILE_TYPES = ['csv']
+
+_IMPORTED_LIBRARIES = '''
+import io
+import math
+import re
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import scipy
+
+def crop(s: str, max_chars: int = 64) -> str:
+  """Crops a string to max_chars characters."""
+  return s[: max_chars - 3] + '...' if len(s) > max_chars else s
+
+
+def explore_df(df: pd.DataFrame) -> None:
+  """Prints some information about a pandas DataFrame."""
+
+  with pd.option_context(
+      'display.max_columns', None, 'display.expand_frame_repr', False
+  ):
+    # Print the column names to never encounter KeyError when selecting one.
+    df_dtypes = df.dtypes
+
+    # Obtain information about data types and missing values.
+    df_nulls = (len(df) - df.isnull().sum()).apply(
+        lambda x: f'{x} / {df.shape[0]} non-null'
+    )
+
+    # Explore unique total values in columns using `.unique()`.
+    df_unique_count = df.apply(lambda x: len(x.unique()))
+
+    # Explore unique values in columns using `.unique()`.
+    df_unique = df.apply(lambda x: crop(str(list(x.unique()))))
+
+    df_info = pd.concat(
+        (
+            df_dtypes.rename('Dtype'),
+            df_nulls.rename('Non-Null Count'),
+            df_unique_count.rename('Unique Values Count'),
+            df_unique.rename('Unique Values'),
+        ),
+        axis=1,
+    )
+    df_info.index.name = 'Columns'
+    print(f"""Total rows: {df.shape[0]}
+Total columns: {df.shape[1]}
+
+{df_info}""")
+'''
+
+
+def _get_code_interpreter_extension(resource_name: str = None):
+  """Returns: Load or create the code interpreter extension."""
+  if not resource_name:
+    resource_name = os.environ.get('CODE_INTERPRETER_EXTENSION_NAME')
+  if resource_name:
+    new_code_interpreter = Extension(resource_name)
+  else:
+    print('No CODE_INTERPRETER_ID found in the environment. Create a new one.')
+    new_code_interpreter = Extension.from_hub('code_interpreter')
+    os.environ['CODE_INTERPRETER_EXTENSION_NAME'] = (
+        new_code_interpreter.gca_resource.name
+    )
+  return new_code_interpreter
+
+
+class VertexAiCodeExecutor(BaseCodeExecutor):
+  """A code executor that uses Vertex Code Interpreter Extension to execute code.
+
+  Attributes:
+    resource_name: If set, load the existing resource name of the code
+      interpreter extension instead of creating a new one. Format:
+      projects/123/locations/us-central1/extensions/456
+  """
+
+  resource_name: str = None
+  """
+  If set, load the existing resource name of the code interpreter extension
+  instead of creating a new one.
+  Format: projects/123/locations/us-central1/extensions/456
+  """
+
+  _code_interpreter_extension: Extension
+
+  def __init__(
+      self,
+      resource_name: str = None,
+      **data,
+  ):
+    """Initializes the VertexAiCodeExecutor.
+
+    Args:
+      resource_name: If set, load the existing resource name of the code
+        interpreter extension instead of creating a new one. Format:
+        projects/123/locations/us-central1/extensions/456
+      **data: Additional keyword arguments to be passed to the base class.
+    """
+    super().__init__(**data)
+    self.resource_name = resource_name
+    self._code_interpreter_extension = _get_code_interpreter_extension(
+        self.resource_name
+    )
+
+  @override
+  def execute_code(
+      self,
+      invocation_context: InvocationContext,
+      code_execution_input: CodeExecutionInput,
+  ) -> CodeExecutionResult:
+    # Execute the code.
+    code_execution_result = self._execute_code_interpreter(
+        self._get_code_with_imports(code_execution_input.code),
+        code_execution_input.input_files,
+        code_execution_input.execution_id,
+    )
+
+    # Save output file as artifacts.
+    current_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    file_name_prefix = '%s_' % str(current_timestamp)
+    saved_files = []
+    file_count = 0
+    for output_file in code_execution_result['output_files']:
+      file_type = output_file['name'].split('.')[-1]
+      file_name = file_name_prefix + '%d.%s' % (file_count, file_type)
+      if file_type in _SUPPORTED_IMAGE_TYPES:
+        file_count += 1
+        saved_files.append(
+            File(
+                name='plot_' + file_name,
+                content=output_file['contents'],
+                mime_type=f'image/{file_type}',
+            )
+        )
+      elif file_type in _SUPPORTED_DATA_FILE_TYPES:
+        file_count += 1
+        saved_files.append(
+            File(
+                name='data_' + file_name,
+                content=output_file['contents'],
+                mime_type=f'text/{file_type}',
+            )
+        )
+      else:
+        mime_type, _ = mimetypes.guess_type(file_name)
+        saved_files.append(
+            File(
+                name=file_name,
+                content=output_file['contents'],
+                mime_type=mime_type,
+            )
+        )
+
+    # Collect the final result.
+    return CodeExecutionResult(
+        stdout=code_execution_result.get('execution_result', ''),
+        stderr=code_execution_result.get('execution_error', ''),
+        output_files=saved_files,
+    )
+
+  def _execute_code_interpreter(
+      self,
+      code: str,
+      input_files: Optional[list[File]] = None,
+      session_id: Optional[str] = None,
+  ) -> dict[str, Any]:
+    """Executes the code interpreter extension.
+
+    Args:
+      code: The code to execute.
+      input_files: The input files to execute the code with.
+      session_id: The session ID to execute the code with.
+
+    Returns:
+      The response from the code interpreter extension.
+    """
+    operation_params = {'code': code}
+    if input_files:
+      operation_params['files'] = [
+          {'name': f.name, 'contents': f.content} for f in input_files
+      ]
+    if session_id:
+      operation_params['session_id'] = session_id
+    response = self._code_interpreter_extension.execute(
+        operation_id='execute',
+        operation_params=operation_params,
+    )
+    return response
+
+  def _get_code_with_imports(self, code: str) -> str:
+    """Builds the code string with built-in imports.
+
+    Args:
+      code: The code to execute.
+
+    Returns:
+      The code string with built-in imports.
+    """
+    return f"""
+{_IMPORTED_LIBRARIES}
+
+{code}
+"""
+

@@ -1,0 +1,189 @@
+# MODULE: adk.event.__init__.py
+# PATH: adk/event/__init__.py
+
+from .event import Event
+from .event_actions import EventActions
+
+__all__ = [
+    'Event',
+    'EventActions',
+]
+
+
+
+
+# MODULE: adk.event.event.py
+# PATH: adk/event/event.py
+
+from __future__ import annotations
+
+from datetime import datetime
+import random
+import string
+from typing import Optional
+
+from google.genai import types
+from pydantic import ConfigDict
+from pydantic import Field
+
+from ..models.llm_response import LlmResponse
+from .event_actions import EventActions
+
+
+class Event(LlmResponse):
+  """Represents an event in a conversation between agents and users.
+
+  It is used to store the content of the conversation, as well as the actions
+  taken by the agents like function calls, etc.
+
+  Attributes:
+    invocation_id: The invocation ID of the event.
+    author: "user" or the name of the agent, indicating who appended the event
+      to the session.
+    actions: The actions taken by the agent.
+    long_running_tool_ids: The ids of the long running function calls.
+    branch: The branch of the event.
+    id: The unique identifier of the event.
+    timestamp: The timestamp of the event.
+    is_final_response: Whether the event is the final response of the agent.
+    get_function_calls: Returns the function calls in the event.
+  """
+
+  model_config = ConfigDict(
+      extra='forbid', ser_json_bytes='base64', val_json_bytes='base64'
+  )
+
+  # TODO: revert to be required after spark migration
+  invocation_id: str = ''
+  """The invocation ID of the event."""
+  author: str
+  """'user' or the name of the agent, indicating who appended the event to the
+  session."""
+  actions: EventActions = Field(default_factory=EventActions)
+  """The actions taken by the agent."""
+
+  long_running_tool_ids: Optional[set[str]] = None
+  """Set of ids of the long running function calls.
+  Agent client will know from this field about which function call is long running.
+  only valid for function call event
+  """
+  branch: Optional[str] = None
+  """The branch of the event.
+
+  The format is like agent_1.agent_2.agent_3, where agent_1 is the parent of
+  agent_2, and agent_2 is the parent of agent_3.
+
+  Branch is used when multiple sub-agent shouldn't see their peer agents'
+  conversation history.
+  """
+
+  # The following are computed fields.
+  # Do not assign the ID. It will be assigned by the session.
+  id: str = ''
+  """The unique identifier of the event."""
+  timestamp: float = Field(default_factory=lambda: datetime.now().timestamp())
+  """The timestamp of the event."""
+
+  def model_post_init(self, __context):
+    """Post initialization logic for the event."""
+    # Generates a random ID for the event.
+    if not self.id:
+      self.id = Event.new_id()
+
+  def is_final_response(self) -> bool:
+    """Returns whether the event is the final response of the agent."""
+    if self.actions.skip_summarization or self.long_running_tool_ids:
+      return True
+    return (
+        not self.get_function_calls()
+        and not self.get_function_responses()
+        and not self.partial
+        and not self.has_trailing_code_execution_result()
+    )
+
+  def get_function_calls(self) -> list[types.FunctionCall]:
+    """Returns the function calls in the event."""
+    func_calls = []
+    if self.content and self.content.parts:
+      for part in self.content.parts:
+        if part.function_call:
+          func_calls.append(part.function_call)
+    return func_calls
+
+  def get_function_responses(self) -> list[types.FunctionResponse]:
+    """Returns the function responses in the event."""
+    func_response = []
+    if self.content and self.content.parts:
+      for part in self.content.parts:
+        if part.function_response:
+          func_response.append(part.function_response)
+    return func_response
+
+  def has_trailing_code_execution_result(
+      self,
+  ) -> bool:
+    """Returns whether the event has a trailing code execution result."""
+    if self.content:
+      if self.content.parts:
+        return self.content.parts[-1].code_execution_result is not None
+    return False
+
+  @staticmethod
+  def new_id():
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(8))
+
+
+
+
+
+# MODULE: adk.event.event_actions.py
+# PATH: adk/event/event_actions.py
+
+
+from __future__ import annotations
+
+from typing import Optional
+
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+
+from ..auth.auth_tool import AuthConfig
+
+
+class EventActions(BaseModel):
+  """Represents the actions attached to an event."""
+
+  model_config = ConfigDict(extra='forbid')
+
+  skip_summarization: Optional[bool] = None
+  """If true, it won't call model to summarize function response.
+
+  Only used for function_response event.
+  """
+
+  state_delta: dict[str, object] = Field(default_factory=dict)
+  """Indicates that the event is updating the state with the given delta."""
+
+  artifact_delta: dict[str, int] = Field(default_factory=dict)
+  """Indicates that the event is updating an artifact. key is the filename,
+  value is the version."""
+
+  transfer_to_agent: Optional[str] = None
+  """If set, the event transfers to the specified agent."""
+
+  escalate: Optional[bool] = None
+  """The agent is escalating to a higher level agent."""
+
+  requested_auth_configs: dict[str, AuthConfig] = Field(default_factory=dict)
+  """Will only be set by a tool response indicating tool request euc.
+  dict key is the function call id since one function call response (from model)
+  could correspond to multiple function calls.
+  dict value is the required auth config.
+  """
+
+
+
+
+

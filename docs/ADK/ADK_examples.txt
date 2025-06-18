@@ -1,0 +1,288 @@
+# MODULE: adk.examples.__init__.py
+# PATH: adk/examples/__init__.py
+
+
+from .base_example_provider import BaseExampleProvider
+from .example import Example
+
+__all__ = [
+    'BaseExampleProvider',
+    'Example',
+]
+
+try:
+  from .vertex_ai_example_store import VertexAiExampleStore
+
+  __all__.append('VertexAiExampleStore')
+except ImportError:
+  pass
+
+
+
+# MODULE: adk.examples.base_example_provider.py
+# PATH: adk/examples/base_example_provider.py
+
+import abc
+from .example import Example
+
+
+# A class that provides examples for a given query.
+class BaseExampleProvider(abc.ABC):
+  """Base class for example providers.
+
+  This class defines the interface for providing examples for a given query.
+  """
+
+  @abc.abstractmethod
+  def get_examples(self, query: str) -> list[Example]:
+    """Returns a list of examples for a given query.
+
+    Args:
+        query: The query to get examples for.
+
+    Returns:
+        A list of Example objects.
+    """
+
+
+
+
+# MODULE: adk.examples.example.py
+# PATH: adk/examples/example.py
+
+
+from google.genai import types
+from pydantic import BaseModel
+
+
+class Example(BaseModel):
+  """A few-shot example.
+
+  Attributes:
+    input: The input content for the example.
+    output: The expected output content for the example.
+  """
+  input: types.Content
+  output: list[types.Content]
+
+
+
+
+
+# MODULE: adk.examples.example_util.py
+# PATH: adk/examples/example_util.py
+
+
+import logging
+from typing import Optional, Union
+from typing import TYPE_CHECKING
+
+from .base_example_provider import BaseExampleProvider
+from .example import Example
+
+if TYPE_CHECKING:
+  from ..sessions.session import Session
+
+logger = logging.getLogger(__name__)
+
+# Constant parts of the example string
+_EXAMPLES_INTRO = (
+    "<EXAMPLES>\nBegin few-shot\nThe following are examples of user queries and"
+    " model responses using the available tools.\n\n"
+)
+_EXAMPLES_END = "End few-shot\n<EXAMPLES>"
+_EXAMPLE_START = "EXAMPLE {}:\nBegin example\n"
+_EXAMPLE_END = "End example\n\n"
+_USER_PREFIX = "[user]\n"
+_MODEL_PREFIX = "[model]\n"
+_FUNCTION_PREFIX = "```\n"
+_FUNCTION_CALL_PREFIX = "```tool_code\n"
+_FUNCTION_CALL_SUFFIX = "\n```\n"
+_FUNCTION_RESPONSE_PREFIX = "```tool_outputs\n"
+_FUNCTION_RESPONSE_SUFFIX = "\n```\n"
+
+
+# TODO(yaojie): Add unit tests for this function.
+def convert_examples_to_text(
+    examples: list[Example], model: Optional[str]
+) -> str:
+  """Converts a list of examples to a string that can be used in a system instruction."""
+  examples_str = ""
+  for example_num, example in enumerate(examples):
+    output = f"{_EXAMPLE_START.format(example_num + 1)}{_USER_PREFIX}"
+    if example.input and example.input.parts:
+      output += (
+          "\n".join(part.text for part in example.input.parts if part.text)
+          + "\n"
+      )
+
+    gemini2 = model is None or "gemini-2" in model
+    previous_role = None
+    for content in example.output:
+      role = _MODEL_PREFIX if content.role == "model" else _USER_PREFIX
+      if role != previous_role:
+        output += role
+      previous_role = role
+      for part in content.parts:
+        if part.function_call:
+          args = []
+          # Convert function call part to python-like function call
+          for k, v in part.function_call.args.items():
+            if isinstance(v, str):
+              args.append(f"{k}='{v}'")
+            else:
+              args.append(f"{k}={v}")
+          prefix = _FUNCTION_PREFIX if gemini2 else _FUNCTION_CALL_PREFIX
+          output += (
+              f"{prefix}{part.function_call.name}({', '.join(args)}){_FUNCTION_CALL_SUFFIX}"
+          )
+        # Convert function response part to json string
+        elif part.function_response:
+          prefix = _FUNCTION_PREFIX if gemini2 else _FUNCTION_RESPONSE_PREFIX
+          output += f"{prefix}{part.function_response.__dict__}{_FUNCTION_RESPONSE_SUFFIX}"
+        elif part.text:
+          output += f"{part.text}\n"
+
+    output += _EXAMPLE_END
+    examples_str += output
+
+  return f"{_EXAMPLES_INTRO}{examples_str}{_EXAMPLES_END}"
+
+
+def _get_latest_message_from_user(session: "Session") -> str:
+  """Gets the latest message from the user.
+
+  Returns:
+    The latest message from the user. If not found, returns an empty string.
+  """
+  events = session.events
+  if not events:
+    return ""
+
+  event = events[-1]
+  if event.author == "user" and not event.get_function_responses():
+    if event.content.parts and event.content.parts[0].text:
+      return event.content.parts[0].text
+    else:
+      logger.warning("No message from user for fetching example.")
+
+  return ""
+
+
+def build_example_si(
+    examples: Union[list[Example], BaseExampleProvider],
+    query: str,
+    model: Optional[str],
+) -> str:
+  if isinstance(examples, list):
+    return convert_examples_to_text(examples, model)
+  if isinstance(examples, BaseExampleProvider):
+    return convert_examples_to_text(examples.get_examples(query), model)
+
+  raise ValueError("Invalid example configuration")
+
+
+
+
+
+
+# MODULE: adk.examples.vertex_ai_example_store.py
+# PATH: adk/examples/vertex_ai_example_store.py
+
+
+from google.genai import types
+from typing_extensions import override
+from vertexai.preview import example_stores
+
+from .base_example_provider import BaseExampleProvider
+from .example import Example
+
+
+class VertexAiExampleStore(BaseExampleProvider):
+  """Provides examples from Vertex example store."""
+
+  def __init__(self, examples_store_name: str):
+    """Initializes the VertexAiExampleStore.
+
+    Args:
+        examples_store_name: The resource name of the vertex example store, in
+          the format of
+          ``projects/{project}/locations/{location}/exampleStores/{example_store}``.
+    """
+    self.examples_store_name = examples_store_name
+
+  @override
+  def get_examples(self, query: str) -> list[Example]:
+    example_store = example_stores.ExampleStore(self.examples_store_name)
+    # Retrieve relevant examples.
+    request = {
+        "stored_contents_example_parameters": {
+            "content_search_key": {
+                "contents": [{"role": "user", "parts": [{"text": query}]}],
+                "search_key_generation_method": {"last_entry": {}},
+            }
+        },
+        "top_k": 10,
+        "example_store": self.examples_store_name,
+    }
+    response = example_store.api_client.search_examples(request)
+
+    returned_examples = []
+    # Convert results to genai formats
+    for result in response.results:
+      if result.similarity_score < 0.5:
+        continue
+      expected_contents = [
+          content.content
+          for content in result.example.stored_contents_example.contents_example.expected_contents
+      ]
+      expected_output = []
+      for content in expected_contents:
+        expected_parts = []
+        for part in content.parts:
+          if part.text:
+            expected_parts.append(types.Part.from_text(text=part.text))
+          elif part.function_call:
+            expected_parts.append(
+                types.Part.from_function_call(
+                    name=part.function_call.name,
+                    args={
+                        key: value
+                        for key, value in part.function_call.args.items()
+                    },
+                )
+            )
+          elif part.function_response:
+            expected_parts.append(
+                types.Part.from_function_response(
+                    name=part.function_response.name,
+                    response={
+                        key: value
+                        for key, value in part.function_response.response.items()
+                    },
+                )
+            )
+        expected_output.append(
+            types.Content(role=content.role, parts=expected_parts)
+        )
+
+      returned_examples.append(
+          Example(
+              input=types.Content(
+                  role="user",
+                  parts=[
+                      types.Part.from_text(
+                          text=result.example.stored_contents_example.search_key
+                      )
+                  ],
+              ),
+              output=expected_output,
+          )
+      )
+    return returned_examples
+
+
+
+
+
+

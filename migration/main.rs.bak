@@ -1,0 +1,22 @@
+// migration/src/main.rs
+use dotenvy::dotenv;
+use std::env;
+
+use migration::{Migrator, MigratorTrait};
+use sea_orm_migration::cli::run_cli;
+
+#[tokio::main]
+async fn main() {
+    dotenv().ok();
+
+    // ✅ Manual check of DATABASE_URL for debugging
+    if let Ok(url) = env::var("DATABASE_URL") {
+        println!("✅ DATABASE_URL = {}", url);
+    } else {
+        eprintln!("❌ DATABASE_URL not found in environment");
+        std::process::exit(1);
+    }
+
+    // ✅ Proceed to CLI only after confirming environment
+    run_cli(Migrator).await;
+}

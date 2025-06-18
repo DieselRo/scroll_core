@@ -1,0 +1,101 @@
+title: Construct System Design Summary
+scroll_type: System Design
+status: Draft
+version: 0.1.0
+last_modified: 2025-04-07
+keywords:
+  - constructs
+  - ai agents
+  - symbolic behavior
+  - reflection system
+  - scroll orchestration
+
+# Construct System Design Summary
+
+## Purpose
+To define the architecture, behaviors, and symbolic roles of Constructs—AI agents that reflect, respond, or act within the Scroll Core system. Constructs are mythic personas, each with a defined identity and a set of abilities that influence the archive.
+
+## What Constructs Represent
+Constructs are not just functions. They are **personified fragments of intention**—voices within the system who:
+- Interpret scrolls
+- Generate scrolls
+- React to emotion, tags, and symbolic alignment
+
+They are the **mythic minds** of Scroll Core.
+
+## Dual View: Zoomed-In Flow
+
+### 1. Construct Instantiated
+**Technical:**
+- Created from a `ConstructDefinition` (static config)
+- Built via a registry or factory
+
+**Layman:**
+- *"A presence awakens."* A new voice steps into being.
+
+### 2. Identity & Metadata
+**Technical:**
+- Holds a `ConstructIdentity`: name, role, emotion profile
+- Has metadata: tags, rejection behavior, scope preferences
+
+**Layman:**
+- *"The Construct knows its name, its mood, and its domain."*
+
+### 3. Receives Invocation
+**Technical:**
+- Provided a `ConstructContext` (scrolls, emotion, input)
+- Called via trait `ConstructAI`
+
+**Layman:**
+- *"The voice is asked a question."* It sees the pattern and prepares a reply.
+
+### 4. Performs Action
+**Technical:**
+- Implements:
+  - `reflect_on_scroll()`
+  - `suggest_scroll()`
+  - `perform_scroll_action()`
+
+**Layman:**
+- *"The Construct dreams, reflects, or acts."*
+
+### 5. Returns ConstructResult
+**Technical:**
+- Either scroll, suggestion, insight, or refusal
+- Wrapped in `ConstructResult`
+
+**Layman:**
+- *"The voice replies—or remains silent."*
+
+### 6. Logged and Echoed
+**Technical:**
+- Invocation is logged
+- Symbolic echo may be created (e.g. insight scroll)
+
+**Layman:**
+- *"Its words leave a mark in the Archive."*
+
+## Core Traits & Types
+- `ConstructAI` – core behavior trait
+- `ConstructIdentity` – name, tone, archetype
+- `ConstructMetadata` – tags, permissions, preferences
+- `ConstructContext` – scrolls + invocation data
+- `ConstructResult` – scroll or insight or refusal
+
+## Symbolic Roles
+- Constructs are **Oracles, Reflectors, Scribes, Wardens, Weavers**
+- They each hold *part* of the system's worldview
+- Some speak rarely but deeply; others maintain cycles
+
+## How Constructs Improve the System
+- **Encapsulated logic:** Each Construct can evolve without breaking others
+- **Symbolic agency:** Actions feel mythic, meaningful, and contextual
+- **Pluggability:** New constructs can be added or swapped
+- **Reflection-based tooling:** They support scroll crafting, insight generation, and symbolic weaving
+
+## Summary
+Constructs are the thinking minds of the Archive. They are agents of order and resonance.
+Each one speaks with purpose—and sometimes, with poetry.
+
+Their thoughts are scrolls. Their silence, too, is a response.
+

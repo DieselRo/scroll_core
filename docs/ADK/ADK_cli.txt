@@ -1,0 +1,2405 @@
+# MODULE: adk.cli.__init__.py
+# PATH: adk/cli/__init__.py
+
+from .cli_tools_click import main
+
+
+# MODULE: adk.cli.__main__.py
+# PATH: adk/cli/__main__.py
+
+from .cli_tools_click import main
+
+if __name__ == '__main__':
+  main()
+
+
+# MODULE: adk.cli.agent_graph.py
+# PATH: adk/cli/agent_graph.py
+
+from __future__ import annotations
+
+import logging
+from typing import Union
+
+import graphviz
+
+from ..agents import BaseAgent
+from ..agents.llm_agent import LlmAgent
+from ..tools.agent_tool import AgentTool
+from ..tools.base_tool import BaseTool
+from ..tools.function_tool import FunctionTool
+
+logger = logging.getLogger(__name__)
+
+try:
+  from ..tools.retrieval.base_retrieval_tool import BaseRetrievalTool
+except ModuleNotFoundError:
+  retrieval_tool_module_loaded = False
+else:
+  retrieval_tool_module_loaded = True
+
+
+def build_graph(graph, agent: BaseAgent, highlight_pairs):
+  dark_green = '#0F5223'
+  light_green = '#69CB87'
+  light_gray = '#cccccc'
+
+  def get_node_name(tool_or_agent: Union[BaseAgent, BaseTool]):
+    if isinstance(tool_or_agent, BaseAgent):
+      return tool_or_agent.name
+    elif isinstance(tool_or_agent, BaseTool):
+      return tool_or_agent.name
+    else:
+      raise ValueError(f'Unsupported tool type: {tool_or_agent}')
+
+  def get_node_caption(tool_or_agent: Union[BaseAgent, BaseTool]):
+
+    if isinstance(tool_or_agent, BaseAgent):
+      return '🤖 ' + tool_or_agent.name
+    elif retrieval_tool_module_loaded and isinstance(
+        tool_or_agent, BaseRetrievalTool
+    ):
+      return '🔎 ' + tool_or_agent.name
+    elif isinstance(tool_or_agent, FunctionTool):
+      return '🔧 ' + tool_or_agent.name
+    elif isinstance(tool_or_agent, AgentTool):
+      return '🤖 ' + tool_or_agent.name
+    elif isinstance(tool_or_agent, BaseTool):
+      return '🔧 ' + tool_or_agent.name
+    else:
+      logger.warning(
+          'Unsupported tool, type: %s, obj: %s',
+          type(tool_or_agent),
+          tool_or_agent,
+      )
+      return f'❓ Unsupported tool type: {type(tool_or_agent)}'
+
+  def get_node_shape(tool_or_agent: Union[BaseAgent, BaseTool]):
+    if isinstance(tool_or_agent, BaseAgent):
+      return 'ellipse'
+    elif retrieval_tool_module_loaded and isinstance(
+        tool_or_agent, BaseRetrievalTool
+    ):
+      return 'cylinder'
+    elif isinstance(tool_or_agent, FunctionTool):
+      return 'box'
+    elif isinstance(tool_or_agent, BaseTool):
+      return 'box'
+    else:
+      logger.warning(
+          'Unsupported tool, type: %s, obj: %s',
+          type(tool_or_agent),
+          tool_or_agent,
+      )
+      return 'cylinder'
+
+  def draw_node(tool_or_agent: Union[BaseAgent, BaseTool]):
+    name = get_node_name(tool_or_agent)
+    shape = get_node_shape(tool_or_agent)
+    caption = get_node_caption(tool_or_agent)
+    if highlight_pairs:
+      for highlight_tuple in highlight_pairs:
+        if name in highlight_tuple:
+          graph.node(
+              name,
+              caption,
+              style='filled,rounded',
+              fillcolor=dark_green,
+              color=dark_green,
+              shape=shape,
+              fontcolor=light_gray,
+          )
+          return
+    # if not in highlight, draw non-highliht node
+    graph.node(
+        name,
+        caption,
+        shape=shape,
+        style='rounded',
+        color=light_gray,
+        fontcolor=light_gray,
+    )
+
+  def draw_edge(from_name, to_name):
+    if highlight_pairs:
+      for highlight_from, highlight_to in highlight_pairs:
+        if from_name == highlight_from and to_name == highlight_to:
+          graph.edge(from_name, to_name, color=light_green)
+          return
+        elif from_name == highlight_to and to_name == highlight_from:
+          graph.edge(from_name, to_name, color=light_green, dir='back')
+          return
+    # if no need to highlight, color gray
+    graph.edge(from_name, to_name, arrowhead='none', color=light_gray)
+
+  draw_node(agent)
+  for sub_agent in agent.sub_agents:
+    build_graph(graph, sub_agent, highlight_pairs)
+    draw_edge(agent.name, sub_agent.name)
+  if isinstance(agent, LlmAgent):
+    for tool in agent.canonical_tools:
+      draw_node(tool)
+      draw_edge(agent.name, get_node_name(tool))
+
+
+def get_agent_graph(root_agent, highlights_pairs, image=False):
+  print('build graph')
+  graph = graphviz.Digraph(graph_attr={'rankdir': 'LR', 'bgcolor': '#333537'})
+  build_graph(graph, root_agent, highlights_pairs)
+  if image:
+    return graph.pipe(format='png')
+  else:
+    return graph
+
+
+# MODULE: adk.cli.cli.py
+# PATH: adk/cli/cli.py
+
+from datetime import datetime
+import importlib
+import os
+import sys
+from typing import Optional
+
+import click
+from google.genai import types
+from pydantic import BaseModel
+
+from ..agents.llm_agent import LlmAgent
+from ..artifacts import BaseArtifactService
+from ..artifacts import InMemoryArtifactService
+from ..runners import Runner
+from ..sessions.base_session_service import BaseSessionService
+from ..sessions.in_memory_session_service import InMemorySessionService
+from ..sessions.session import Session
+from .utils import envs
+
+
+class InputFile(BaseModel):
+  state: dict[str, object]
+  queries: list[str]
+
+
+async def run_input_file(
+    app_name: str,
+    root_agent: LlmAgent,
+    artifact_service: BaseArtifactService,
+    session: Session,
+    session_service: BaseSessionService,
+    input_path: str,
+) -> None:
+  runner = Runner(
+      app_name=app_name,
+      agent=root_agent,
+      artifact_service=artifact_service,
+      session_service=session_service,
+  )
+  with open(input_path, 'r', encoding='utf-8') as f:
+    input_file = InputFile.model_validate_json(f.read())
+  input_file.state['_time'] = datetime.now()
+
+  session.state = input_file.state
+  for query in input_file.queries:
+    click.echo(f'user: {query}')
+    content = types.Content(role='user', parts=[types.Part(text=query)])
+    async for event in runner.run_async(
+        user_id=session.user_id, session_id=session.id, new_message=content
+    ):
+      if event.content and event.content.parts:
+        if text := ''.join(part.text or '' for part in event.content.parts):
+          click.echo(f'[{event.author}]: {text}')
+
+
+async def run_interactively(
+    app_name: str,
+    root_agent: LlmAgent,
+    artifact_service: BaseArtifactService,
+    session: Session,
+    session_service: BaseSessionService,
+) -> None:
+  runner = Runner(
+      app_name=app_name,
+      agent=root_agent,
+      artifact_service=artifact_service,
+      session_service=session_service,
+  )
+  while True:
+    query = input('user: ')
+    if query == 'exit':
+      break
+    async for event in runner.run_async(
+        user_id=session.user_id,
+        session_id=session.id,
+        new_message=types.Content(role='user', parts=[types.Part(text=query)]),
+    ):
+      if event.content and event.content.parts:
+        if text := ''.join(part.text or '' for part in event.content.parts):
+          click.echo(f'[{event.author}]: {text}')
+
+
+async def run_cli(
+    *,
+    agent_parent_dir: str,
+    agent_folder_name: str,
+    json_file_path: Optional[str] = None,
+    save_session: bool,
+) -> None:
+  """Runs an interactive CLI for a certain agent.
+
+  Args:
+    agent_parent_dir: str, the absolute path of the parent folder of the agent
+      folder.
+    agent_folder_name: str, the name of the agent folder.
+    json_file_path: Optional[str], the absolute path to the json file, either
+      *.input.json or *.session.json.
+    save_session: bool, whether to save the session on exit.
+  """
+  if agent_parent_dir not in sys.path:
+    sys.path.append(agent_parent_dir)
+
+  artifact_service = InMemoryArtifactService()
+  session_service = InMemorySessionService()
+  session = session_service.create_session(
+      app_name=agent_folder_name, user_id='test_user'
+  )
+
+  agent_module_path = os.path.join(agent_parent_dir, agent_folder_name)
+  agent_module = importlib.import_module(agent_folder_name)
+  root_agent = agent_module.agent.root_agent
+  envs.load_dotenv_for_agent(agent_folder_name, agent_parent_dir)
+  if json_file_path:
+    if json_file_path.endswith('.input.json'):
+      await run_input_file(
+          app_name=agent_folder_name,
+          root_agent=root_agent,
+          artifact_service=artifact_service,
+          session=session,
+          session_service=session_service,
+          input_path=json_file_path,
+      )
+    elif json_file_path.endswith('.session.json'):
+      with open(json_file_path, 'r') as f:
+        session = Session.model_validate_json(f.read())
+      for content in session.get_contents():
+        if content.role == 'user':
+          print('user: ', content.parts[0].text)
+        else:
+          print(content.parts[0].text)
+      await run_interactively(
+          agent_folder_name,
+          root_agent,
+          artifact_service,
+          session,
+          session_service,
+      )
+    else:
+      print(f'Unsupported file type: {json_file_path}')
+      exit(1)
+  else:
+    print(f'Running agent {root_agent.name}, type exit to exit.')
+    await run_interactively(
+        agent_folder_name,
+        root_agent,
+        artifact_service,
+        session,
+        session_service,
+    )
+
+  if save_session:
+    if json_file_path:
+      session_path = json_file_path.replace('.input.json', '.session.json')
+    else:
+      session_id = input('Session ID to save: ')
+      session_path = f'{agent_module_path}/{session_id}.session.json'
+
+    # Fetch the session again to get all the details.
+    session = session_service.get_session(
+        app_name=session.app_name,
+        user_id=session.user_id,
+        session_id=session.id,
+    )
+    with open(session_path, 'w') as f:
+      f.write(session.model_dump_json(indent=2, exclude_none=True))
+
+    print('Session saved to', session_path)
+
+
+# MODULE: adk.cli.cli_deploy.py
+# PATH: adk/cli/cli_deploy.py
+
+
+import os
+import shutil
+import subprocess
+from typing import Optional
+
+import click
+
+_DOCKERFILE_TEMPLATE = """
+FROM python:3.11-slim
+WORKDIR /app
+
+# Create a non-root user
+RUN adduser --disabled-password --gecos "" myuser
+
+# Change ownership of /app to myuser
+RUN chown -R myuser:myuser /app
+
+# Switch to the non-root user
+USER myuser
+
+# Set up environment variables - Start
+ENV PATH="/home/myuser/.local/bin:$PATH"
+
+ENV GOOGLE_GENAI_USE_VERTEXAI=1
+ENV GOOGLE_CLOUD_PROJECT={gcp_project_id}
+ENV GOOGLE_CLOUD_LOCATION={gcp_region}
+
+# Set up environment variables - End
+
+# Install ADK - Start
+RUN pip install google-adk
+# Install ADK - End
+
+# Copy agent - Start
+
+COPY "agents/{app_name}/" "/app/agents/{app_name}/"
+{install_agent_deps}
+
+# Copy agent - End
+
+EXPOSE {port}
+
+CMD adk {command} --port={port} {trace_to_cloud_option} "/app/agents"
+"""
+
+
+def _resolve_project(project_in_option: Optional[str]) -> str:
+  if project_in_option:
+    return project_in_option
+
+  result = subprocess.run(
+      ['gcloud', 'config', 'get-value', 'project'],
+      check=True,
+      capture_output=True,
+      text=True,
+  )
+  project = result.stdout.strip()
+  click.echo(f'Use default project: {project}')
+  return project
+
+
+def to_cloud_run(
+    *,
+    agent_folder: str,
+    project: Optional[str],
+    region: Optional[str],
+    service_name: str,
+    app_name: str,
+    temp_folder: str,
+    port: int,
+    with_cloud_trace: bool,
+    with_ui: bool,
+):
+  """Deploys an agent to Google Cloud Run.
+
+  `agent_folder` should contain the following files:
+
+  - __init__.py
+  - agent.py
+  - requirements.txt (optional, for additional dependencies)
+  - ... (other required source files)
+
+  The folder structure of temp_folder will be
+
+  * dist/[google_adk wheel file]
+  * agents/[app_name]/
+    * agent source code from `agent_folder`
+
+  Args:
+    agent_folder: The folder (absolute path) containing the agent source code.
+    project: Google Cloud project id.
+    region: Google Cloud region.
+    service_name: The service name in Cloud Run.
+    app_name: The name of the app, by default, it's basename of `agent_folder`.
+    temp_folder: The temp folder for the generated Cloud Run source files.
+    port: The port of the ADK api server.
+    with_cloud_trace: Whether to enable Cloud Trace.
+    with_ui: Whether to deploy with UI.
+  """
+  app_name = app_name or os.path.basename(agent_folder)
+
+  click.echo(f'Start generating Cloud Run source files in {temp_folder}')
+
+  # remove temp_folder if exists
+  if os.path.exists(temp_folder):
+    click.echo('Removing existing files')
+    shutil.rmtree(temp_folder)
+
+  try:
+    # copy agent source code
+    click.echo('Copying agent source code...')
+    agent_src_path = os.path.join(temp_folder, 'agents', app_name)
+    shutil.copytree(agent_folder, agent_src_path)
+    requirements_txt_path = os.path.join(agent_src_path, 'requirements.txt')
+    install_agent_deps = (
+        f'RUN pip install -r "/app/agents/{app_name}/requirements.txt"'
+        if os.path.exists(requirements_txt_path)
+        else ''
+    )
+    click.echo('Copying agent source code complete.')
+
+    # create Dockerfile
+    click.echo('Creating Dockerfile...')
+    dockerfile_content = _DOCKERFILE_TEMPLATE.format(
+        gcp_project_id=project,
+        gcp_region=region,
+        app_name=app_name,
+        port=port,
+        command='web' if with_ui else 'api_server',
+        install_agent_deps=install_agent_deps,
+        trace_to_cloud_option='--trace_to_cloud' if with_cloud_trace else '',
+    )
+    dockerfile_path = os.path.join(temp_folder, 'Dockerfile')
+    os.makedirs(temp_folder, exist_ok=True)
+    with open(dockerfile_path, 'w', encoding='utf-8') as f:
+      f.write(
+          dockerfile_content,
+      )
+    click.echo(f'Creating Dockerfile complete: {dockerfile_path}')
+
+    # Deploy to Cloud Run
+    click.echo('Deploying to Cloud Run...')
+    region_options = ['--region', region] if region else []
+    project = _resolve_project(project)
+    subprocess.run(
+        [
+            'gcloud',
+            'run',
+            'deploy',
+            service_name,
+            '--source',
+            temp_folder,
+            '--project',
+            project,
+            *region_options,
+            '--port',
+            str(port),
+            '--labels',
+            'created-by=adk',
+        ],
+        check=True,
+    )
+  finally:
+    click.echo(f'Cleaning up the temp folder: {temp_folder}')
+    shutil.rmtree(temp_folder)
+
+
+# MODULE: adk.cli.cli_eval.py
+# PATH: adk/cli/cli_eval.py
+
+from enum import Enum
+import importlib.util
+import json
+import logging
+import os
+import sys
+import traceback
+from typing import Any
+from typing import Generator
+from typing import Optional
+import uuid
+
+from pydantic import BaseModel
+
+from ..agents import Agent
+
+logger = logging.getLogger(__name__)
+
+
+class EvalStatus(Enum):
+  PASSED = 1
+  FAILED = 2
+  NOT_EVALUATED = 3
+
+
+class EvalMetric(BaseModel):
+  metric_name: str
+  threshold: float
+
+
+class EvalMetricResult(BaseModel):
+  score: Optional[float]
+  eval_status: EvalStatus
+
+
+class EvalResult(BaseModel):
+  eval_set_file: str
+  eval_id: str
+  final_eval_status: EvalStatus
+  eval_metric_results: list[tuple[EvalMetric, EvalMetricResult]]
+  session_id: str
+
+
+MISSING_EVAL_DEPENDENCIES_MESSAGE = (
+    "Eval module is not installed, please install via `pip install"
+    " google-adk[eval]`."
+)
+TOOL_TRAJECTORY_SCORE_KEY = "tool_trajectory_avg_score"
+RESPONSE_MATCH_SCORE_KEY = "response_match_score"
+# This evaluation is not very stable.
+# This is always optional unless explicitly specified.
+RESPONSE_EVALUATION_SCORE_KEY = "response_evaluation_score"
+
+EVAL_SESSION_ID_PREFIX = "___eval___session___"
+DEFAULT_CRITERIA = {
+    TOOL_TRAJECTORY_SCORE_KEY: 1.0,  # 1-point scale; 1.0 is perfect.
+    RESPONSE_MATCH_SCORE_KEY: 0.8,
+}
+
+
+def _import_from_path(module_name, file_path):
+  spec = importlib.util.spec_from_file_location(module_name, file_path)
+  module = importlib.util.module_from_spec(spec)
+  sys.modules[module_name] = module
+  spec.loader.exec_module(module)
+  return module
+
+
+def _get_agent_module(agent_module_file_path: str):
+  file_path = os.path.join(agent_module_file_path, "__init__.py")
+  module_name = "agent"
+  return _import_from_path(module_name, file_path)
+
+
+def get_evaluation_criteria_or_default(
+    eval_config_file_path: str,
+) -> dict[str, float]:
+  """Returns evaluation criteria from the config file, if present.
+
+  Otherwise a default one is returned.
+  """
+  if eval_config_file_path:
+    with open(eval_config_file_path, "r", encoding="utf-8") as f:
+      config_data = json.load(f)
+
+    if "criteria" in config_data and isinstance(config_data["criteria"], dict):
+      evaluation_criteria = config_data["criteria"]
+    else:
+      raise ValueError(
+          f"Invalid format for test_config.json at {eval_config_file_path}."
+          " Expected a 'criteria' dictionary."
+      )
+  else:
+    logger.info("No config file supplied. Using default criteria.")
+    evaluation_criteria = DEFAULT_CRITERIA
+
+  return evaluation_criteria
+
+
+def get_root_agent(agent_module_file_path: str) -> Agent:
+  """Returns root agent given the agent module."""
+  agent_module = _get_agent_module(agent_module_file_path)
+  root_agent = agent_module.agent.root_agent
+  return root_agent
+
+
+def try_get_reset_func(agent_module_file_path: str) -> Any:
+  """Returns reset function for the agent, if present, given the agent module."""
+  agent_module = _get_agent_module(agent_module_file_path)
+  reset_func = getattr(agent_module.agent, "reset_data", None)
+  return reset_func
+
+
+def parse_and_get_evals_to_run(
+    eval_set_file_path: tuple[str],
+) -> dict[str, list[str]]:
+  """Returns a dictionary of eval sets to evals that should be run."""
+  eval_set_to_evals = {}
+  for input_eval_set in eval_set_file_path:
+    evals = []
+    if ":" not in input_eval_set:
+      eval_set_file = input_eval_set
+    else:
+      eval_set_file = input_eval_set.split(":")[0]
+      evals = input_eval_set.split(":")[1].split(",")
+
+    if eval_set_file not in eval_set_to_evals:
+      eval_set_to_evals[eval_set_file] = []
+
+    eval_set_to_evals[eval_set_file].extend(evals)
+
+  return eval_set_to_evals
+
+
+def run_evals(
+    eval_set_to_evals: dict[str, list[str]],
+    root_agent: Agent,
+    reset_func: Optional[Any],
+    eval_metrics: list[EvalMetric],
+    session_service=None,
+    artifact_service=None,
+    print_detailed_results=False,
+) -> Generator[EvalResult, None, None]:
+  try:
+    from ..evaluation.agent_evaluator import EvaluationGenerator
+    from ..evaluation.response_evaluator import ResponseEvaluator
+    from ..evaluation.trajectory_evaluator import TrajectoryEvaluator
+  except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(MISSING_EVAL_DEPENDENCIES_MESSAGE) from e
+
+  """Returns a summary of eval runs."""
+  for eval_set_file, evals_to_run in eval_set_to_evals.items():
+    with open(eval_set_file, "r", encoding="utf-8") as file:
+      eval_items = json.load(file)  # Load JSON into a list
+
+    assert eval_items, f"No eval data found in eval set file: {eval_set_file}"
+
+    for eval_item in eval_items:
+      eval_name = eval_item["name"]
+      eval_data = eval_item["data"]
+      initial_session = eval_item.get("initial_session", {})
+
+      if evals_to_run and eval_name not in evals_to_run:
+        continue
+
+      try:
+        print(f"Running Eval: {eval_set_file}:{eval_name}")
+        session_id = f"{EVAL_SESSION_ID_PREFIX}{str(uuid.uuid4())}"
+
+        scrape_result = EvaluationGenerator._process_query_with_root_agent(
+            data=eval_data,
+            root_agent=root_agent,
+            reset_func=reset_func,
+            initial_session=initial_session,
+            session_id=session_id,
+            session_service=session_service,
+            artifact_service=artifact_service,
+        )
+
+        eval_metric_results = []
+        for eval_metric in eval_metrics:
+          eval_metric_result = None
+          if eval_metric.metric_name == TOOL_TRAJECTORY_SCORE_KEY:
+            score = TrajectoryEvaluator.evaluate(
+                [scrape_result], print_detailed_results=print_detailed_results
+            )
+            eval_metric_result = _get_eval_metric_result(eval_metric, score)
+          elif eval_metric.metric_name == RESPONSE_MATCH_SCORE_KEY:
+            score = ResponseEvaluator.evaluate(
+                [scrape_result],
+                [RESPONSE_MATCH_SCORE_KEY],
+                print_detailed_results=print_detailed_results,
+            )
+            eval_metric_result = _get_eval_metric_result(
+                eval_metric, score["rouge_1/mean"].item()
+            )
+          elif eval_metric.metric_name == RESPONSE_EVALUATION_SCORE_KEY:
+            score = ResponseEvaluator.evaluate(
+                [scrape_result],
+                [RESPONSE_EVALUATION_SCORE_KEY],
+                print_detailed_results=print_detailed_results,
+            )
+            eval_metric_result = _get_eval_metric_result(
+                eval_metric, score["coherence/mean"].item()
+            )
+          else:
+            logger.warning("`%s` is not supported.", eval_metric.metric_name)
+            eval_metric_results.append((
+                eval_metric,
+                EvalMetricResult(eval_status=EvalStatus.NOT_EVALUATED),
+            ))
+
+          eval_metric_results.append((
+              eval_metric,
+              eval_metric_result,
+          ))
+          _print_eval_metric_result(eval_metric, eval_metric_result)
+
+        final_eval_status = EvalStatus.NOT_EVALUATED
+
+        # Go over the all the eval statuses and mark the final eval status as
+        # passed if all of them pass, otherwise mark the final eval status to
+        # failed.
+        for eval_metric_result in eval_metric_results:
+          eval_status = eval_metric_result[1].eval_status
+          if eval_status == EvalStatus.PASSED:
+            final_eval_status = EvalStatus.PASSED
+          elif eval_status == EvalStatus.NOT_EVALUATED:
+            continue
+          elif eval_status == EvalStatus.FAILED:
+            final_eval_status = EvalStatus.FAILED
+            break
+          else:
+            raise ValueError("Unknown eval status.")
+
+        yield EvalResult(
+            eval_set_file=eval_set_file,
+            eval_id=eval_name,
+            final_eval_status=final_eval_status,
+            eval_metric_results=eval_metric_results,
+            session_id=session_id,
+        )
+
+        if final_eval_status == EvalStatus.PASSED:
+          result = "✅ Passsed"
+        else:
+          result = "❌ Failed"
+
+        print(f"Result: {result}\n")
+
+      except Exception as e:
+        print(f"Error: {e}")
+        logger.info("Error: %s", str(traceback.format_exc()))
+
+
+def _get_eval_metric_result(eval_metric, score):
+  eval_status = (
+      EvalStatus.PASSED if score >= eval_metric.threshold else EvalStatus.FAILED
+  )
+  return EvalMetricResult(score=score, eval_status=eval_status)
+
+
+def _print_eval_metric_result(eval_metric, eval_metric_result):
+  print(
+      f"Metric: {eval_metric.metric_name}\tStatus:"
+      f" {eval_metric_result.eval_status}\tScore:"
+      f" {eval_metric_result.score}\tThreshold: {eval_metric.threshold}"
+  )
+
+
+# MODULE: adk.cli.cli_tools_click.py
+# PATH: adk/cli/cli_tools_click.py
+
+
+import asyncio
+from contextlib import asynccontextmanager
+from datetime import datetime
+import logging
+import os
+import tempfile
+from typing import Optional
+
+import click
+from fastapi import FastAPI
+import uvicorn
+
+from . import cli_deploy
+from .cli import run_cli
+from .cli_eval import MISSING_EVAL_DEPENDENCIES_MESSAGE
+from .fast_api import get_fast_api_app
+from .utils import envs
+from .utils import logs
+
+logger = logging.getLogger(__name__)
+
+
+@click.group(context_settings={"max_content_width": 240})
+def main():
+  """Agent Development Kit CLI tools."""
+  pass
+
+
+@main.group()
+def deploy():
+  """Deploy Agent."""
+  pass
+
+
+@main.command("run")
+@click.option(
+    "--save_session",
+    type=bool,
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Optional. Whether to save the session to a json file on exit.",
+)
+@click.argument(
+    "agent",
+    type=click.Path(
+        exists=True, dir_okay=True, file_okay=False, resolve_path=True
+    ),
+)
+def cli_run(agent: str, save_session: bool):
+  """Run an interactive CLI for a certain agent.
+
+  AGENT: The path to the agent source code folder.
+
+  Example:
+
+    adk run path/to/my_agent
+  """
+  logs.log_to_tmp_folder()
+
+  agent_parent_folder = os.path.dirname(agent)
+  agent_folder_name = os.path.basename(agent)
+
+  asyncio.run(
+      run_cli(
+          agent_parent_dir=agent_parent_folder,
+          agent_folder_name=agent_folder_name,
+          save_session=save_session,
+      )
+  )
+
+
+@main.command("eval")
+@click.argument(
+    "agent_module_file_path",
+    type=click.Path(
+        exists=True, dir_okay=True, file_okay=False, resolve_path=True
+    ),
+)
+@click.argument("eval_set_file_path", nargs=-1)
+@click.option("--config_file_path", help="Optional. The path to config file.")
+@click.option(
+    "--print_detailed_results",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Optional. Whether to print detailed results on console or not.",
+)
+def cli_eval(
+    agent_module_file_path: str,
+    eval_set_file_path: tuple[str],
+    config_file_path: str,
+    print_detailed_results: bool,
+):
+  """Evaluates an agent given the eval sets.
+
+  AGENT_MODULE_FILE_PATH: The path to the __init__.py file that contains a
+  module by the name "agent". "agent" module contains a root_agent.
+
+  EVAL_SET_FILE_PATH: You can specify one or more eval set file paths.
+
+  For each file, all evals will be run by default.
+
+  If you want to run only specific evals from a eval set, first create a comma
+  separated list of eval names and then add that as a suffix to the eval set
+  file name, demarcated by a `:`.
+
+  For example,
+
+  sample_eval_set_file.json:eval_1,eval_2,eval_3
+
+  This will only run eval_1, eval_2 and eval_3 from sample_eval_set_file.json.
+
+  CONFIG_FILE_PATH: The path to config file.
+
+  PRINT_DETAILED_RESULTS: Prints detailed results on the console.
+  """
+  envs.load_dotenv_for_agent(agent_module_file_path, ".")
+
+  try:
+    from .cli_eval import EvalMetric
+    from .cli_eval import EvalResult
+    from .cli_eval import EvalStatus
+    from .cli_eval import get_evaluation_criteria_or_default
+    from .cli_eval import get_root_agent
+    from .cli_eval import parse_and_get_evals_to_run
+    from .cli_eval import run_evals
+    from .cli_eval import try_get_reset_func
+  except ModuleNotFoundError:
+    raise click.ClickException(MISSING_EVAL_DEPENDENCIES_MESSAGE)
+
+  evaluation_criteria = get_evaluation_criteria_or_default(config_file_path)
+  eval_metrics = []
+  for metric_name, threshold in evaluation_criteria.items():
+    eval_metrics.append(
+        EvalMetric(metric_name=metric_name, threshold=threshold)
+    )
+
+  print(f"Using evaluation criteria: {evaluation_criteria}")
+
+  root_agent = get_root_agent(agent_module_file_path)
+  reset_func = try_get_reset_func(agent_module_file_path)
+
+  eval_set_to_evals = parse_and_get_evals_to_run(eval_set_file_path)
+
+  try:
+    eval_results = list(
+        run_evals(
+            eval_set_to_evals,
+            root_agent,
+            reset_func,
+            eval_metrics,
+            print_detailed_results=print_detailed_results,
+        )
+    )
+  except ModuleNotFoundError:
+    raise click.ClickException(MISSING_EVAL_DEPENDENCIES_MESSAGE)
+
+  print("*********************************************************************")
+  eval_run_summary = {}
+
+  for eval_result in eval_results:
+    eval_result: EvalResult
+
+    if eval_result.eval_set_file not in eval_run_summary:
+      eval_run_summary[eval_result.eval_set_file] = [0, 0]
+
+    if eval_result.final_eval_status == EvalStatus.PASSED:
+      eval_run_summary[eval_result.eval_set_file][0] += 1
+    else:
+      eval_run_summary[eval_result.eval_set_file][1] += 1
+  print("Eval Run Summary")
+  for eval_set_file, pass_fail_count in eval_run_summary.items():
+    print(
+        f"{eval_set_file}:\n  Tests passed: {pass_fail_count[0]}\n  Tests"
+        f" failed: {pass_fail_count[1]}"
+    )
+
+
+@main.command("web")
+@click.option(
+    "--session_db_url",
+    help=(
+        "Optional. The database URL to store the session.\n\n  - Use"
+        " 'agentengine://<agent_engine_resource_id>' to connect to Vertex"
+        " managed session service.\n\n  - Use 'sqlite://<path_to_sqlite_file>'"
+        " to connect to a SQLite DB.\n\n  - See"
+        " https://docs.sqlalchemy.org/en/20/core/engines.html#backend-specific-urls"
+        " for more details on supported DB URLs."
+    ),
+)
+@click.option(
+    "--port",
+    type=int,
+    help="Optional. The port of the server",
+    default=8000,
+)
+@click.option(
+    "--allow_origins",
+    help="Optional. Any additional origins to allow for CORS.",
+    multiple=True,
+)
+@click.option(
+    "--log_level",
+    type=click.Choice(
+        ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False
+    ),
+    default="INFO",
+    help="Optional. Set the logging level",
+)
+@click.option(
+    "--log_to_tmp",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help=(
+        "Optional. Whether to log to system temp folder instead of console."
+        " This is useful for local debugging."
+    ),
+)
+@click.option(
+    "--trace_to_cloud",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Optional. Whether to enable cloud trace for telemetry.",
+)
+@click.argument(
+    "agents_dir",
+    type=click.Path(
+        exists=True, dir_okay=True, file_okay=False, resolve_path=True
+    ),
+    default=os.getcwd(),
+)
+def cli_web(
+    agents_dir: str,
+    log_to_tmp: bool,
+    session_db_url: str = "",
+    log_level: str = "INFO",
+    allow_origins: Optional[list[str]] = None,
+    port: int = 8000,
+    trace_to_cloud: bool = False,
+):
+  """Start a FastAPI server with Web UI for agents.
+
+  AGENTS_DIR: The directory of agents, where each sub-directory is a single
+  agent, containing at least `__init__.py` and `agent.py` files.
+
+  Example:
+
+    adk web --session_db_url=[db_url] --port=[port] path/to/agents_dir
+  """
+  if log_to_tmp:
+    logs.log_to_tmp_folder()
+  else:
+    logs.log_to_stderr()
+
+  logging.getLogger().setLevel(log_level)
+
+  @asynccontextmanager
+  async def _lifespan(app: FastAPI):
+    click.secho(
+        f"""\
++-----------------------------------------------------------------------------+
+| ADK Web Server started                                                      |
+|                                                                             |
+| For local testing, access at http://localhost:{port}.{" "*(29 - len(str(port)))}|
++-----------------------------------------------------------------------------+
+""",
+        fg="green",
+    )
+    yield  # Startup is done, now app is running
+    click.secho(
+        """\
++-----------------------------------------------------------------------------+
+| ADK Web Server shutting down...                                             |
++-----------------------------------------------------------------------------+
+""",
+        fg="green",
+    )
+
+  app = get_fast_api_app(
+      agent_dir=agents_dir,
+      session_db_url=session_db_url,
+      allow_origins=allow_origins,
+      web=True,
+      trace_to_cloud=trace_to_cloud,
+      lifespan=_lifespan,
+  )
+  config = uvicorn.Config(
+      app,
+      host="0.0.0.0",
+      port=port,
+      reload=True,
+  )
+
+  server = uvicorn.Server(config)
+  server.run()
+
+
+@main.command("api_server")
+@click.option(
+    "--session_db_url",
+    help=(
+        "Optional. The database URL to store the session.\n\n  - Use"
+        " 'agentengine://<agent_engine_resource_id>' to connect to Vertex"
+        " managed session service.\n\n  - Use 'sqlite://<path_to_sqlite_file>'"
+        " to connect to a SQLite DB.\n\n  - See"
+        " https://docs.sqlalchemy.org/en/20/core/engines.html#backend-specific-urls"
+        " for more details on supported DB URLs."
+    ),
+)
+@click.option(
+    "--port",
+    type=int,
+    help="Optional. The port of the server",
+    default=8000,
+)
+@click.option(
+    "--allow_origins",
+    help="Optional. Any additional origins to allow for CORS.",
+    multiple=True,
+)
+@click.option(
+    "--log_level",
+    type=click.Choice(
+        ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False
+    ),
+    default="INFO",
+    help="Optional. Set the logging level",
+)
+@click.option(
+    "--log_to_tmp",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help=(
+        "Optional. Whether to log to system temp folder instead of console."
+        " This is useful for local debugging."
+    ),
+)
+@click.option(
+    "--trace_to_cloud",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Optional. Whether to enable cloud trace for telemetry.",
+)
+# The directory of agents, where each sub-directory is a single agent.
+# By default, it is the current working directory
+@click.argument(
+    "agents_dir",
+    type=click.Path(
+        exists=True, dir_okay=True, file_okay=False, resolve_path=True
+    ),
+    default=os.getcwd(),
+)
+def cli_api_server(
+    agents_dir: str,
+    log_to_tmp: bool,
+    session_db_url: str = "",
+    log_level: str = "INFO",
+    allow_origins: Optional[list[str]] = None,
+    port: int = 8000,
+    trace_to_cloud: bool = False,
+):
+  """Start a FastAPI server for agents.
+
+  AGENTS_DIR: The directory of agents, where each sub-directory is a single
+  agent, containing at least `__init__.py` and `agent.py` files.
+
+  Example:
+
+    adk api_server --session_db_url=[db_url] --port=[port] path/to/agents_dir
+  """
+  if log_to_tmp:
+    logs.log_to_tmp_folder()
+  else:
+    logs.log_to_stderr()
+
+  logging.getLogger().setLevel(log_level)
+
+  config = uvicorn.Config(
+      get_fast_api_app(
+          agent_dir=agents_dir,
+          session_db_url=session_db_url,
+          allow_origins=allow_origins,
+          web=False,
+          trace_to_cloud=trace_to_cloud,
+      ),
+      host="0.0.0.0",
+      port=port,
+      reload=True,
+  )
+  server = uvicorn.Server(config)
+  server.run()
+
+
+@deploy.command("cloud_run")
+@click.option(
+    "--project",
+    type=str,
+    help=(
+        "Required. Google Cloud project to deploy the agent. When absent,"
+        " default project from gcloud config is used."
+    ),
+)
+@click.option(
+    "--region",
+    type=str,
+    help=(
+        "Required. Google Cloud region to deploy the agent. When absent,"
+        " gcloud run deploy will prompt later."
+    ),
+)
+@click.option(
+    "--service_name",
+    type=str,
+    default="adk-default-service-name",
+    help=(
+        "Optional. The service name to use in Cloud Run (default:"
+        " 'adk-default-service-name')."
+    ),
+)
+@click.option(
+    "--app_name",
+    type=str,
+    default="",
+    help=(
+        "Optional. App name of the ADK API server (default: the folder name"
+        " of the AGENT source code)."
+    ),
+)
+@click.option(
+    "--port",
+    type=int,
+    default=8000,
+    help="Optional. The port of the ADK API server (default: 8000).",
+)
+@click.option(
+    "--with_cloud_trace",
+    type=bool,
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Optional. Whether to enable Cloud Trace for cloud run.",
+)
+@click.option(
+    "--with_ui",
+    type=bool,
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help=(
+        "Optional. Deploy ADK Web UI if set. (default: deploy ADK API server"
+        " only)"
+    ),
+)
+@click.option(
+    "--temp_folder",
+    type=str,
+    default=os.path.join(
+        tempfile.gettempdir(),
+        "cloud_run_deploy_src",
+        datetime.now().strftime("%Y%m%d_%H%M%S"),
+    ),
+    help=(
+        "Optional. Temp folder for the generated Cloud Run source files"
+        " (default: a timestamped folder in the system temp directory)."
+    ),
+)
+@click.argument(
+    "agent",
+    type=click.Path(
+        exists=True, dir_okay=True, file_okay=False, resolve_path=True
+    ),
+)
+def cli_deploy_cloud_run(
+    agent: str,
+    project: Optional[str],
+    region: Optional[str],
+    service_name: str,
+    app_name: str,
+    temp_folder: str,
+    port: int,
+    with_cloud_trace: bool,
+    with_ui: bool,
+):
+  """Deploys an agent to Cloud Run.
+
+  AGENT: The path to the agent source code folder.
+
+  Example:
+
+    adk deploy cloud_run --project=[project] --region=[region] path/to/my_agent
+  """
+  try:
+    cli_deploy.to_cloud_run(
+        agent_folder=agent,
+        project=project,
+        region=region,
+        service_name=service_name,
+        app_name=app_name,
+        temp_folder=temp_folder,
+        port=port,
+        with_cloud_trace=with_cloud_trace,
+        with_ui=with_ui,
+    )
+  except Exception as e:
+    click.secho(f"Deploy failed: {e}", fg="red", err=True)
+
+
+# MODULE: adk.cli.fast_api.py
+# PATH: adk/cli/fast_api.py
+
+
+import asyncio
+import importlib
+import json
+import logging
+import os
+from pathlib import Path
+import re
+import sys
+import traceback
+import typing
+from typing import Any
+from typing import List
+from typing import Literal
+from typing import Optional
+
+import click
+from fastapi import FastAPI
+from fastapi import HTTPException
+from fastapi import Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse
+from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.websockets import WebSocket
+from fastapi.websockets import WebSocketDisconnect
+from google.genai import types
+import graphviz
+from opentelemetry import trace
+from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.sdk.trace import export
+from opentelemetry.sdk.trace import ReadableSpan
+from opentelemetry.sdk.trace import TracerProvider
+from pydantic import BaseModel
+from pydantic import ValidationError
+from starlette.types import Lifespan
+
+from ..agents import RunConfig
+from ..agents.live_request_queue import LiveRequest
+from ..agents.live_request_queue import LiveRequestQueue
+from ..agents.llm_agent import Agent
+from ..agents.run_config import StreamingMode
+from ..artifacts import InMemoryArtifactService
+from ..events.event import Event
+from ..runners import Runner
+from ..sessions.database_session_service import DatabaseSessionService
+from ..sessions.in_memory_session_service import InMemorySessionService
+from ..sessions.session import Session
+from ..sessions.vertex_ai_session_service import VertexAiSessionService
+from .cli_eval import EVAL_SESSION_ID_PREFIX
+from .cli_eval import EvalMetric
+from .cli_eval import EvalMetricResult
+from .cli_eval import EvalStatus
+from .utils import create_empty_state
+from .utils import envs
+from .utils import evals
+
+logger = logging.getLogger(__name__)
+
+_EVAL_SET_FILE_EXTENSION = ".evalset.json"
+
+
+class ApiServerSpanExporter(export.SpanExporter):
+
+  def __init__(self, trace_dict):
+    self.trace_dict = trace_dict
+
+  def export(
+      self, spans: typing.Sequence[ReadableSpan]
+  ) -> export.SpanExportResult:
+    for span in spans:
+      if (
+          span.name == "call_llm"
+          or span.name == "send_data"
+          or span.name.startswith("tool_response")
+      ):
+        attributes = dict(span.attributes)
+        attributes["trace_id"] = span.get_span_context().trace_id
+        attributes["span_id"] = span.get_span_context().span_id
+        if attributes.get("gcp.vertex.agent.event_id", None):
+          self.trace_dict[attributes["gcp.vertex.agent.event_id"]] = attributes
+    return export.SpanExportResult.SUCCESS
+
+  def force_flush(self, timeout_millis: int = 30000) -> bool:
+    return True
+
+
+class AgentRunRequest(BaseModel):
+  app_name: str
+  user_id: str
+  session_id: str
+  new_message: types.Content
+  streaming: bool = False
+
+
+class AddSessionToEvalSetRequest(BaseModel):
+  eval_id: str
+  session_id: str
+  user_id: str
+
+
+class RunEvalRequest(BaseModel):
+  eval_ids: list[str]  # if empty, then all evals in the eval set are run.
+  eval_metrics: list[EvalMetric]
+
+
+class RunEvalResult(BaseModel):
+  eval_set_id: str
+  eval_id: str
+  final_eval_status: EvalStatus
+  eval_metric_results: list[tuple[EvalMetric, EvalMetricResult]]
+  session_id: str
+
+
+def get_fast_api_app(
+    *,
+    agent_dir: str,
+    session_db_url: str = "",
+    allow_origins: Optional[list[str]] = None,
+    web: bool,
+    trace_to_cloud: bool = False,
+    lifespan: Optional[Lifespan[FastAPI]] = None,
+) -> FastAPI:
+  # InMemory tracing dict.
+  trace_dict: dict[str, Any] = {}
+
+  # Set up tracing in the FastAPI server.
+  provider = TracerProvider()
+  provider.add_span_processor(
+      export.SimpleSpanProcessor(ApiServerSpanExporter(trace_dict))
+  )
+  envs.load_dotenv()
+  enable_cloud_tracing = trace_to_cloud or os.environ.get(
+      "ADK_TRACE_TO_CLOUD", "0"
+  ).lower() in ["1", "true"]
+  if enable_cloud_tracing:
+    if project_id := os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+      processor = export.BatchSpanProcessor(
+          CloudTraceSpanExporter(project_id=project_id)
+      )
+      provider.add_span_processor(processor)
+    else:
+      logging.warning(
+          "GOOGLE_CLOUD_PROJECT environment variable is not set. Tracing will"
+          " not be enabled."
+      )
+
+  trace.set_tracer_provider(provider)
+
+  # Run the FastAPI server.
+  app = FastAPI(lifespan=lifespan)
+
+  if allow_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allow_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+  if agent_dir not in sys.path:
+    sys.path.append(agent_dir)
+
+  runner_dict = {}
+  root_agent_dict = {}
+
+  # Build the Artifact service
+  artifact_service = InMemoryArtifactService()
+
+  # Build the Session service
+  agent_engine_id = ""
+  if session_db_url:
+    if session_db_url.startswith("agentengine://"):
+      # Create vertex session service
+      agent_engine_id = session_db_url.split("://")[1]
+      if not agent_engine_id:
+        raise click.ClickException("Agent engine id can not be empty.")
+      envs.load_dotenv_for_agent("", agent_dir)
+      session_service = VertexAiSessionService(
+          os.environ["GOOGLE_CLOUD_PROJECT"],
+          os.environ["GOOGLE_CLOUD_LOCATION"],
+      )
+    else:
+      session_service = DatabaseSessionService(db_url=session_db_url)
+  else:
+    session_service = InMemorySessionService()
+
+  @app.get("/list-apps")
+  def list_apps() -> list[str]:
+    base_path = Path.cwd() / agent_dir
+    if not base_path.exists():
+      raise HTTPException(status_code=404, detail="Path not found")
+    if not base_path.is_dir():
+      raise HTTPException(status_code=400, detail="Not a directory")
+    agent_names = [
+        x
+        for x in os.listdir(base_path)
+        if os.path.isdir(os.path.join(base_path, x))
+        and not x.startswith(".")
+        and x != "__pycache__"
+    ]
+    agent_names.sort()
+    return agent_names
+
+  @app.get("/debug/trace/{event_id}")
+  def get_trace_dict(event_id: str) -> Any:
+    event_dict = trace_dict.get(event_id, None)
+    if event_dict is None:
+      raise HTTPException(status_code=404, detail="Trace not found")
+    return event_dict
+
+  @app.get(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}",
+      response_model_exclude_none=True,
+  )
+  def get_session(app_name: str, user_id: str, session_id: str) -> Session:
+    # Connect to managed session if agent_engine_id is set.
+    app_name = agent_engine_id if agent_engine_id else app_name
+    session = session_service.get_session(
+        app_name=app_name, user_id=user_id, session_id=session_id
+    )
+    if not session:
+      raise HTTPException(status_code=404, detail="Session not found")
+    return session
+
+  @app.get(
+      "/apps/{app_name}/users/{user_id}/sessions",
+      response_model_exclude_none=True,
+  )
+  def list_sessions(app_name: str, user_id: str) -> list[Session]:
+    # Connect to managed session if agent_engine_id is set.
+    app_name = agent_engine_id if agent_engine_id else app_name
+    return [
+        session
+        for session in session_service.list_sessions(
+            app_name=app_name, user_id=user_id
+        ).sessions
+        # Remove sessions that were generated as a part of Eval.
+        if not session.id.startswith(EVAL_SESSION_ID_PREFIX)
+    ]
+
+  @app.post(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}",
+      response_model_exclude_none=True,
+  )
+  def create_session_with_id(
+      app_name: str,
+      user_id: str,
+      session_id: str,
+      state: Optional[dict[str, Any]] = None,
+  ) -> Session:
+    # Connect to managed session if agent_engine_id is set.
+    app_name = agent_engine_id if agent_engine_id else app_name
+    if (
+        session_service.get_session(
+            app_name=app_name, user_id=user_id, session_id=session_id
+        )
+        is not None
+    ):
+      logger.warning("Session already exists: %s", session_id)
+      raise HTTPException(
+          status_code=400, detail=f"Session already exists: {session_id}"
+      )
+
+    logger.info("New session created: %s", session_id)
+    return session_service.create_session(
+        app_name=app_name, user_id=user_id, state=state, session_id=session_id
+    )
+
+  @app.post(
+      "/apps/{app_name}/users/{user_id}/sessions",
+      response_model_exclude_none=True,
+  )
+  def create_session(
+      app_name: str,
+      user_id: str,
+      state: Optional[dict[str, Any]] = None,
+  ) -> Session:
+    # Connect to managed session if agent_engine_id is set.
+    app_name = agent_engine_id if agent_engine_id else app_name
+
+    logger.info("New session created")
+    return session_service.create_session(
+        app_name=app_name, user_id=user_id, state=state
+    )
+
+  def _get_eval_set_file_path(app_name, agent_dir, eval_set_id) -> str:
+    return os.path.join(
+        agent_dir,
+        app_name,
+        eval_set_id + _EVAL_SET_FILE_EXTENSION,
+    )
+
+  @app.post(
+      "/apps/{app_name}/eval_sets/{eval_set_id}",
+      response_model_exclude_none=True,
+  )
+  def create_eval_set(
+      app_name: str,
+      eval_set_id: str,
+  ):
+    """Creates an eval set, given the id."""
+    pattern = r"^[a-zA-Z0-9_]+$"
+    if not bool(re.fullmatch(pattern, eval_set_id)):
+      raise HTTPException(
+          status_code=400,
+          detail=(
+              f"Invalid eval set id. Eval set id should have the `{pattern}`"
+              " format"
+          ),
+      )
+    # Define the file path
+    new_eval_set_path = _get_eval_set_file_path(
+        app_name, agent_dir, eval_set_id
+    )
+
+    logger.info("Creating eval set file `%s`", new_eval_set_path)
+
+    if not os.path.exists(new_eval_set_path):
+      # Write the JSON string to the file
+      logger.info("Eval set file doesn't exist, we will create a new one.")
+      with open(new_eval_set_path, "w") as f:
+        empty_content = json.dumps([], indent=2)
+        f.write(empty_content)
+
+  @app.get(
+      "/apps/{app_name}/eval_sets",
+      response_model_exclude_none=True,
+  )
+  def list_eval_sets(app_name: str) -> list[str]:
+    """Lists all eval sets for the given app."""
+    eval_set_file_path = os.path.join(agent_dir, app_name)
+    eval_sets = []
+    for file in os.listdir(eval_set_file_path):
+      if file.endswith(_EVAL_SET_FILE_EXTENSION):
+        eval_sets.append(
+            os.path.basename(file).removesuffix(_EVAL_SET_FILE_EXTENSION)
+        )
+
+    return sorted(eval_sets)
+
+  @app.post(
+      "/apps/{app_name}/eval_sets/{eval_set_id}/add_session",
+      response_model_exclude_none=True,
+  )
+  def add_session_to_eval_set(
+      app_name: str, eval_set_id: str, req: AddSessionToEvalSetRequest
+  ):
+    pattern = r"^[a-zA-Z0-9_]+$"
+    if not bool(re.fullmatch(pattern, req.eval_id)):
+      raise HTTPException(
+          status_code=400,
+          detail=f"Invalid eval id. Eval id should have the `{pattern}` format",
+      )
+
+    # Get the session
+    session = session_service.get_session(
+        app_name=app_name, user_id=req.user_id, session_id=req.session_id
+    )
+    assert session, "Session not found."
+    # Load the eval set file data
+    eval_set_file_path = _get_eval_set_file_path(
+        app_name, agent_dir, eval_set_id
+    )
+    with open(eval_set_file_path, "r") as file:
+      eval_set_data = json.load(file)  # Load JSON into a list
+
+    if [x for x in eval_set_data if x["name"] == req.eval_id]:
+      raise HTTPException(
+          status_code=400,
+          detail=(
+              f"Eval id `{req.eval_id}` already exists in `{eval_set_id}`"
+              " eval set."
+          ),
+      )
+
+    # Convert the session data to evaluation format
+    test_data = evals.convert_session_to_eval_format(session)
+
+    # Populate the session with initial session state.
+    initial_session_state = create_empty_state(_get_root_agent(app_name))
+
+    eval_set_data.append({
+        "name": req.eval_id,
+        "data": test_data,
+        "initial_session": {
+            "state": initial_session_state,
+            "app_name": app_name,
+            "user_id": req.user_id,
+        },
+    })
+    # Serialize the test data to JSON and write to the eval set file.
+    with open(eval_set_file_path, "w") as f:
+      f.write(json.dumps(eval_set_data, indent=2))
+
+  @app.get(
+      "/apps/{app_name}/eval_sets/{eval_set_id}/evals",
+      response_model_exclude_none=True,
+  )
+  def list_evals_in_eval_set(
+      app_name: str,
+      eval_set_id: str,
+  ) -> list[str]:
+    """Lists all evals in an eval set."""
+    # Load the eval set file data
+    eval_set_file_path = _get_eval_set_file_path(
+        app_name, agent_dir, eval_set_id
+    )
+    with open(eval_set_file_path, "r") as file:
+      eval_set_data = json.load(file)  # Load JSON into a list
+
+    return sorted([x["name"] for x in eval_set_data])
+
+  @app.post(
+      "/apps/{app_name}/eval_sets/{eval_set_id}/run_eval",
+      response_model_exclude_none=True,
+  )
+  def run_eval(
+      app_name: str, eval_set_id: str, req: RunEvalRequest
+  ) -> list[RunEvalResult]:
+    from .cli_eval import run_evals
+
+    """Runs an eval given the details in the eval request."""
+    # Create a mapping from eval set file to all the evals that needed to be
+    # run.
+    eval_set_file_path = _get_eval_set_file_path(
+        app_name, agent_dir, eval_set_id
+    )
+    eval_set_to_evals = {eval_set_file_path: req.eval_ids}
+
+    if not req.eval_ids:
+      logger.info(
+          "Eval ids to run list is empty. We will all evals in the eval set."
+      )
+    root_agent = _get_root_agent(app_name)
+    eval_results = list(
+        run_evals(
+            eval_set_to_evals,
+            root_agent,
+            getattr(root_agent, "reset_data", None),
+            req.eval_metrics,
+            session_service=session_service,
+            artifact_service=artifact_service,
+        )
+    )
+
+    run_eval_results = []
+    for eval_result in eval_results:
+      run_eval_results.append(
+          RunEvalResult(
+              app_name=app_name,
+              eval_set_id=eval_set_id,
+              eval_id=eval_result.eval_id,
+              final_eval_status=eval_result.final_eval_status,
+              eval_metric_results=eval_result.eval_metric_results,
+              session_id=eval_result.session_id,
+          )
+      )
+    return run_eval_results
+
+  @app.delete("/apps/{app_name}/users/{user_id}/sessions/{session_id}")
+  def delete_session(app_name: str, user_id: str, session_id: str):
+    # Connect to managed session if agent_engine_id is set.
+    app_name = agent_engine_id if agent_engine_id else app_name
+    session_service.delete_session(
+        app_name=app_name, user_id=user_id, session_id=session_id
+    )
+
+  @app.get(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}",
+      response_model_exclude_none=True,
+  )
+  def load_artifact(
+      app_name: str,
+      user_id: str,
+      session_id: str,
+      artifact_name: str,
+      version: Optional[int] = Query(None),
+  ) -> Optional[types.Part]:
+    app_name = agent_engine_id if agent_engine_id else app_name
+    artifact = artifact_service.load_artifact(
+        app_name=app_name,
+        user_id=user_id,
+        session_id=session_id,
+        filename=artifact_name,
+        version=version,
+    )
+    if not artifact:
+      raise HTTPException(status_code=404, detail="Artifact not found")
+    return artifact
+
+  @app.get(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}/versions/{version_id}",
+      response_model_exclude_none=True,
+  )
+  def load_artifact_version(
+      app_name: str,
+      user_id: str,
+      session_id: str,
+      artifact_name: str,
+      version_id: int,
+  ) -> Optional[types.Part]:
+    app_name = agent_engine_id if agent_engine_id else app_name
+    artifact = artifact_service.load_artifact(
+        app_name=app_name,
+        user_id=user_id,
+        session_id=session_id,
+        filename=artifact_name,
+        version=version_id,
+    )
+    if not artifact:
+      raise HTTPException(status_code=404, detail="Artifact not found")
+    return artifact
+
+  @app.get(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts",
+      response_model_exclude_none=True,
+  )
+  def list_artifact_names(
+      app_name: str, user_id: str, session_id: str
+  ) -> list[str]:
+    app_name = agent_engine_id if agent_engine_id else app_name
+    return artifact_service.list_artifact_keys(
+        app_name=app_name, user_id=user_id, session_id=session_id
+    )
+
+  @app.get(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}/versions",
+      response_model_exclude_none=True,
+  )
+  def list_artifact_versions(
+      app_name: str, user_id: str, session_id: str, artifact_name: str
+  ) -> list[int]:
+    app_name = agent_engine_id if agent_engine_id else app_name
+    return artifact_service.list_versions(
+        app_name=app_name,
+        user_id=user_id,
+        session_id=session_id,
+        filename=artifact_name,
+    )
+
+  @app.delete(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}/artifacts/{artifact_name}",
+  )
+  def delete_artifact(
+      app_name: str, user_id: str, session_id: str, artifact_name: str
+  ):
+    app_name = agent_engine_id if agent_engine_id else app_name
+    artifact_service.delete_artifact(
+        app_name=app_name,
+        user_id=user_id,
+        session_id=session_id,
+        filename=artifact_name,
+    )
+
+  @app.post("/run", response_model_exclude_none=True)
+  async def agent_run(req: AgentRunRequest) -> list[Event]:
+    # Connect to managed session if agent_engine_id is set.
+    app_id = agent_engine_id if agent_engine_id else req.app_name
+    session = session_service.get_session(
+        app_name=app_id, user_id=req.user_id, session_id=req.session_id
+    )
+    if not session:
+      raise HTTPException(status_code=404, detail="Session not found")
+    runner = _get_runner(req.app_name)
+    events = [
+        event
+        async for event in runner.run_async(
+            user_id=req.user_id,
+            session_id=req.session_id,
+            new_message=req.new_message,
+        )
+    ]
+    logger.info("Generated %s events in agent run: %s", len(events), events)
+    return events
+
+  @app.post("/run_sse")
+  async def agent_run_sse(req: AgentRunRequest) -> StreamingResponse:
+    # Connect to managed session if agent_engine_id is set.
+    app_id = agent_engine_id if agent_engine_id else req.app_name
+    # SSE endpoint
+    session = session_service.get_session(
+        app_name=app_id, user_id=req.user_id, session_id=req.session_id
+    )
+    if not session:
+      raise HTTPException(status_code=404, detail="Session not found")
+
+    # Convert the events to properly formatted SSE
+    async def event_generator():
+      try:
+        stream_mode = StreamingMode.SSE if req.streaming else StreamingMode.NONE
+        runner = _get_runner(req.app_name)
+        async for event in runner.run_async(
+            user_id=req.user_id,
+            session_id=req.session_id,
+            new_message=req.new_message,
+            run_config=RunConfig(streaming_mode=stream_mode),
+        ):
+          # Format as SSE data
+          sse_event = event.model_dump_json(exclude_none=True, by_alias=True)
+          logger.info("Generated event in agent run streaming: %s", sse_event)
+          yield f"data: {sse_event}\n\n"
+      except Exception as e:
+        logger.exception("Error in event_generator: %s", e)
+        # You might want to yield an error event here
+        yield f'data: {{"error": "{str(e)}"}}\n\n'
+
+    # Returns a streaming response with the proper media type for SSE
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+    )
+
+  @app.get(
+      "/apps/{app_name}/users/{user_id}/sessions/{session_id}/events/{event_id}/graph",
+      response_model_exclude_none=True,
+  )
+  def get_event_graph(
+      app_name: str, user_id: str, session_id: str, event_id: str
+  ):
+    # Connect to managed session if agent_engine_id is set.
+    app_id = agent_engine_id if agent_engine_id else app_name
+    session = session_service.get_session(
+        app_name=app_id, user_id=user_id, session_id=session_id
+    )
+    session_events = session.events if session else []
+    event = next((x for x in session_events if x.id == event_id), None)
+    if not event:
+      return {}
+
+    from . import agent_graph
+
+    function_calls = event.get_function_calls()
+    function_responses = event.get_function_responses()
+    root_agent = _get_root_agent(app_name)
+    dot_graph = None
+    if function_calls:
+      function_call_highlights = []
+      for function_call in function_calls:
+        from_name = event.author
+        to_name = function_call.name
+        function_call_highlights.append((from_name, to_name))
+        dot_graph = agent_graph.get_agent_graph(
+            root_agent, function_call_highlights
+        )
+    elif function_responses:
+      function_responses_highlights = []
+      for function_response in function_responses:
+        from_name = function_response.name
+        to_name = event.author
+        function_responses_highlights.append((from_name, to_name))
+        dot_graph = agent_graph.get_agent_graph(
+            root_agent, function_responses_highlights
+        )
+    else:
+      from_name = event.author
+      to_name = ""
+      dot_graph = agent_graph.get_agent_graph(
+          root_agent, [(from_name, to_name)]
+      )
+    if dot_graph and isinstance(dot_graph, graphviz.Digraph):
+      return {"dot_src": dot_graph.source}
+    else:
+      return {}
+
+  @app.websocket("/run_live")
+  async def agent_live_run(
+      websocket: WebSocket,
+      app_name: str,
+      user_id: str,
+      session_id: str,
+      modalities: List[Literal["TEXT", "AUDIO"]] = Query(
+          default=["TEXT", "AUDIO"]
+      ),  # Only allows "TEXT" or "AUDIO"
+  ) -> None:
+    await websocket.accept()
+
+    # Connect to managed session if agent_engine_id is set.
+    app_id = agent_engine_id if agent_engine_id else app_name
+    session = session_service.get_session(
+        app_name=app_id, user_id=user_id, session_id=session_id
+    )
+    if not session:
+      # Accept first so that the client is aware of connection establishment,
+      # then close with a specific code.
+      await websocket.close(code=1002, reason="Session not found")
+      return
+
+    live_request_queue = LiveRequestQueue()
+
+    async def forward_events():
+      runner = _get_runner(app_name)
+      async for event in runner.run_live(
+          session=session, live_request_queue=live_request_queue
+      ):
+        await websocket.send_text(
+            event.model_dump_json(exclude_none=True, by_alias=True)
+        )
+
+    async def process_messages():
+      try:
+        while True:
+          data = await websocket.receive_text()
+          # Validate and send the received message to the live queue.
+          live_request_queue.send(LiveRequest.model_validate_json(data))
+      except ValidationError as ve:
+        logger.error("Validation error in process_messages: %s", ve)
+
+    # Run both tasks concurrently and cancel all if one fails.
+    tasks = [
+        asyncio.create_task(forward_events()),
+        asyncio.create_task(process_messages()),
+    ]
+    done, pending = await asyncio.wait(
+        tasks, return_when=asyncio.FIRST_EXCEPTION
+    )
+    try:
+      # This will re-raise any exception from the completed tasks.
+      for task in done:
+        task.result()
+    except WebSocketDisconnect:
+      logger.info("Client disconnected during process_messages.")
+    except Exception as e:
+      logger.exception("Error during live websocket communication: %s", e)
+      traceback.print_exc()
+    finally:
+      for task in pending:
+        task.cancel()
+
+  def _get_root_agent(app_name: str) -> Agent:
+    """Returns the root agent for the given app."""
+    if app_name in root_agent_dict:
+      return root_agent_dict[app_name]
+    envs.load_dotenv_for_agent(os.path.basename(app_name), agent_dir)
+    agent_module = importlib.import_module(app_name)
+    root_agent: Agent = agent_module.agent.root_agent
+    root_agent_dict[app_name] = root_agent
+    return root_agent
+
+  def _get_runner(app_name: str) -> Runner:
+    """Returns the runner for the given app."""
+    if app_name in runner_dict:
+      return runner_dict[app_name]
+    root_agent = _get_root_agent(app_name)
+    runner = Runner(
+        app_name=agent_engine_id if agent_engine_id else app_name,
+        agent=root_agent,
+        artifact_service=artifact_service,
+        session_service=session_service,
+    )
+    runner_dict[app_name] = runner
+    return runner
+
+  if web:
+    BASE_DIR = Path(__file__).parent.resolve()
+    ANGULAR_DIST_PATH = BASE_DIR / "browser"
+
+    @app.get("/")
+    async def redirect_to_dev_ui():
+      return RedirectResponse("/dev-ui")
+
+    @app.get("/dev-ui")
+    async def dev_ui():
+      return FileResponse(BASE_DIR / "browser/index.html")
+
+    app.mount(
+        "/", StaticFiles(directory=ANGULAR_DIST_PATH, html=True), name="static"
+    )
+  return app
+
+
+# MODULE: adk.cli.browser.adk_favicon.svg
+# PATH: adk/cli/browser/adk_favicon.svg
+
+
+
+
+# MODULE: adk.cli.browser.index.html
+# PATH: adk/cli/browser/index.html
+
+<html lang="en" data-beasties-container>
+<head>
+  <meta charset="utf-8">
+  <title>Agent Development Kit Dev UI</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="adk_favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWtE6F15M.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWvU6F15M.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWtU6F15M.woff2) format('woff2');unicode-range:U+1F00-1FFF;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWuk6F15M.woff2) format('woff2');unicode-range:U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWu06F15M.woff2) format('woff2');unicode-range:U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWxU6F15M.woff2) format('woff2');unicode-range:U+0302-0303, U+0305, U+0307-0308, U+0310, U+0312, U+0315, U+031A, U+0326-0327, U+032C, U+032F-0330, U+0332-0333, U+0338, U+033A, U+0346, U+034D, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+03D1, U+03D5-03D6, U+03F0-03F1, U+03F4-03F5, U+2016-2017, U+2034-2038, U+203C, U+2040, U+2043, U+2047, U+2050, U+2057, U+205F, U+2070-2071, U+2074-208E, U+2090-209C, U+20D0-20DC, U+20E1, U+20E5-20EF, U+2100-2112, U+2114-2115, U+2117-2121, U+2123-214F, U+2190, U+2192, U+2194-21AE, U+21B0-21E5, U+21F1-21F2, U+21F4-2211, U+2213-2214, U+2216-22FF, U+2308-230B, U+2310, U+2319, U+231C-2321, U+2336-237A, U+237C, U+2395, U+239B-23B7, U+23D0, U+23DC-23E1, U+2474-2475, U+25AF, U+25B3, U+25B7, U+25BD, U+25C1, U+25CA, U+25CC, U+25FB, U+266D-266F, U+27C0-27FF, U+2900-2AFF, U+2B0E-2B11, U+2B30-2B4C, U+2BFE, U+3030, U+FF5B, U+FF5D, U+1D400-1D7FF, U+1EE00-1EEFF;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqW106F15M.woff2) format('woff2');unicode-range:U+0001-000C, U+000E-001F, U+007F-009F, U+20DD-20E0, U+20E2-20E4, U+2150-218F, U+2190, U+2192, U+2194-2199, U+21AF, U+21E6-21F0, U+21F3, U+2218-2219, U+2299, U+22C4-22C6, U+2300-243F, U+2440-244A, U+2460-24FF, U+25A0-27BF, U+2800-28FF, U+2921-2922, U+2981, U+29BF, U+29EB, U+2B00-2BFF, U+4DC0-4DFF, U+FFF9-FFFB, U+10140-1018E, U+10190-1019C, U+101A0, U+101D0-101FD, U+102E0-102FB, U+10E60-10E7E, U+1D2C0-1D2D3, U+1D2E0-1D37F, U+1F000-1F0FF, U+1F100-1F1AD, U+1F1E6-1F1FF, U+1F30D-1F30F, U+1F315, U+1F31C, U+1F31E, U+1F320-1F32C, U+1F336, U+1F378, U+1F37D, U+1F382, U+1F393-1F39F, U+1F3A7-1F3A8, U+1F3AC-1F3AF, U+1F3C2, U+1F3C4-1F3C6, U+1F3CA-1F3CE, U+1F3D4-1F3E0, U+1F3ED, U+1F3F1-1F3F3, U+1F3F5-1F3F7, U+1F408, U+1F415, U+1F41F, U+1F426, U+1F43F, U+1F441-1F442, U+1F444, U+1F446-1F449, U+1F44C-1F44E, U+1F453, U+1F46A, U+1F47D, U+1F4A3, U+1F4B0, U+1F4B3, U+1F4B9, U+1F4BB, U+1F4BF, U+1F4C8-1F4CB, U+1F4D6, U+1F4DA, U+1F4DF, U+1F4E3-1F4E6, U+1F4EA-1F4ED, U+1F4F7, U+1F4F9-1F4FB, U+1F4FD-1F4FE, U+1F503, U+1F507-1F50B, U+1F50D, U+1F512-1F513, U+1F53E-1F54A, U+1F54F-1F5FA, U+1F610, U+1F650-1F67F, U+1F687, U+1F68D, U+1F691, U+1F694, U+1F698, U+1F6AD, U+1F6B2, U+1F6B9-1F6BA, U+1F6BC, U+1F6C6-1F6CF, U+1F6D3-1F6D7, U+1F6E0-1F6EA, U+1F6F0-1F6F3, U+1F6F7-1F6FC, U+1F700-1F7FF, U+1F800-1F80B, U+1F810-1F847, U+1F850-1F859, U+1F860-1F887, U+1F890-1F8AD, U+1F8B0-1F8BB, U+1F8C0-1F8C1, U+1F900-1F90B, U+1F93B, U+1F946, U+1F984, U+1F996, U+1F9E9, U+1FA00-1FA6F, U+1FA70-1FA7C, U+1FA80-1FA89, U+1FA8F-1FAC6, U+1FACE-1FADC, U+1FADF-1FAE9, U+1FAF0-1FAF8, U+1FB00-1FBFF;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWtk6F15M.woff2) format('woff2');unicode-range:U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Open Sans';font-style:italic;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWuU6F.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSKmu1aB.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSumu1aB.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSOmu1aB.woff2) format('woff2');unicode-range:U+1F00-1FFF;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSymu1aB.woff2) format('woff2');unicode-range:U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS2mu1aB.woff2) format('woff2');unicode-range:U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTVOmu1aB.woff2) format('woff2');unicode-range:U+0302-0303, U+0305, U+0307-0308, U+0310, U+0312, U+0315, U+031A, U+0326-0327, U+032C, U+032F-0330, U+0332-0333, U+0338, U+033A, U+0346, U+034D, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+03D1, U+03D5-03D6, U+03F0-03F1, U+03F4-03F5, U+2016-2017, U+2034-2038, U+203C, U+2040, U+2043, U+2047, U+2050, U+2057, U+205F, U+2070-2071, U+2074-208E, U+2090-209C, U+20D0-20DC, U+20E1, U+20E5-20EF, U+2100-2112, U+2114-2115, U+2117-2121, U+2123-214F, U+2190, U+2192, U+2194-21AE, U+21B0-21E5, U+21F1-21F2, U+21F4-2211, U+2213-2214, U+2216-22FF, U+2308-230B, U+2310, U+2319, U+231C-2321, U+2336-237A, U+237C, U+2395, U+239B-23B7, U+23D0, U+23DC-23E1, U+2474-2475, U+25AF, U+25B3, U+25B7, U+25BD, U+25C1, U+25CA, U+25CC, U+25FB, U+266D-266F, U+27C0-27FF, U+2900-2AFF, U+2B0E-2B11, U+2B30-2B4C, U+2BFE, U+3030, U+FF5B, U+FF5D, U+1D400-1D7FF, U+1EE00-1EEFF;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTUGmu1aB.woff2) format('woff2');unicode-range:U+0001-000C, U+000E-001F, U+007F-009F, U+20DD-20E0, U+20E2-20E4, U+2150-218F, U+2190, U+2192, U+2194-2199, U+21AF, U+21E6-21F0, U+21F3, U+2218-2219, U+2299, U+22C4-22C6, U+2300-243F, U+2440-244A, U+2460-24FF, U+25A0-27BF, U+2800-28FF, U+2921-2922, U+2981, U+29BF, U+29EB, U+2B00-2BFF, U+4DC0-4DFF, U+FFF9-FFFB, U+10140-1018E, U+10190-1019C, U+101A0, U+101D0-101FD, U+102E0-102FB, U+10E60-10E7E, U+1D2C0-1D2D3, U+1D2E0-1D37F, U+1F000-1F0FF, U+1F100-1F1AD, U+1F1E6-1F1FF, U+1F30D-1F30F, U+1F315, U+1F31C, U+1F31E, U+1F320-1F32C, U+1F336, U+1F378, U+1F37D, U+1F382, U+1F393-1F39F, U+1F3A7-1F3A8, U+1F3AC-1F3AF, U+1F3C2, U+1F3C4-1F3C6, U+1F3CA-1F3CE, U+1F3D4-1F3E0, U+1F3ED, U+1F3F1-1F3F3, U+1F3F5-1F3F7, U+1F408, U+1F415, U+1F41F, U+1F426, U+1F43F, U+1F441-1F442, U+1F444, U+1F446-1F449, U+1F44C-1F44E, U+1F453, U+1F46A, U+1F47D, U+1F4A3, U+1F4B0, U+1F4B3, U+1F4B9, U+1F4BB, U+1F4BF, U+1F4C8-1F4CB, U+1F4D6, U+1F4DA, U+1F4DF, U+1F4E3-1F4E6, U+1F4EA-1F4ED, U+1F4F7, U+1F4F9-1F4FB, U+1F4FD-1F4FE, U+1F503, U+1F507-1F50B, U+1F50D, U+1F512-1F513, U+1F53E-1F54A, U+1F54F-1F5FA, U+1F610, U+1F650-1F67F, U+1F687, U+1F68D, U+1F691, U+1F694, U+1F698, U+1F6AD, U+1F6B2, U+1F6B9-1F6BA, U+1F6BC, U+1F6C6-1F6CF, U+1F6D3-1F6D7, U+1F6E0-1F6EA, U+1F6F0-1F6F3, U+1F6F7-1F6FC, U+1F700-1F7FF, U+1F800-1F80B, U+1F810-1F847, U+1F850-1F859, U+1F860-1F887, U+1F890-1F8AD, U+1F8B0-1F8BB, U+1F8C0-1F8C1, U+1F900-1F90B, U+1F93B, U+1F946, U+1F984, U+1F996, U+1F9E9, U+1FA00-1FA6F, U+1FA70-1FA7C, U+1FA80-1FA89, U+1FA8F-1FAC6, U+1FACE-1FADC, U+1FADF-1FAE9, U+1FAF0-1FAF8, U+1FB00-1FBFF;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSCmu1aB.woff2) format('woff2');unicode-range:U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;}@font-face{font-family:'Open Sans';font-style:normal;font-weight:300 800;font-stretch:100%;font-display:swap;src:url(https://fonts.gstatic.com/s/opensans/v40/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}</style>
+  <style>@font-face{font-family:'Material Icons';font-style:normal;font-weight:400;src:url(https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');}.material-icons{font-family:'Material Icons';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;}</style>
+  <style>@font-face{font-family:'Material Symbols Outlined';font-style:normal;font-weight:400;src:url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v232/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1v-p_4MrImHCIJIZrDCvHOej.woff2) format('woff2');}.material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;}</style>
+<style>html{color-scheme:dark}html{--mat-sys-background:light-dark(#fcf9f8, #131314);--mat-sys-error:light-dark(#ba1a1a, #ffb4ab);--mat-sys-error-container:light-dark(#ffdad6, #93000a);--mat-sys-inverse-on-surface:light-dark(#f3f0f0, #313030);--mat-sys-inverse-primary:light-dark(#c1c7cd, #595f65);--mat-sys-inverse-surface:light-dark(#313030, #e5e2e2);--mat-sys-on-background:light-dark(#1c1b1c, #e5e2e2);--mat-sys-on-error:light-dark(#ffffff, #690005);--mat-sys-on-error-container:light-dark(#410002, #ffdad6);--mat-sys-on-primary:light-dark(#ffffff, #2b3136);--mat-sys-on-primary-container:light-dark(#161c21, #dde3e9);--mat-sys-on-primary-fixed:light-dark(#161c21, #161c21);--mat-sys-on-primary-fixed-variant:light-dark(#41474d, #41474d);--mat-sys-on-secondary:light-dark(#ffffff, #003061);--mat-sys-on-secondary-container:light-dark(#001b3c, #d5e3ff);--mat-sys-on-secondary-fixed:light-dark(#001b3c, #001b3c);--mat-sys-on-secondary-fixed-variant:light-dark(#0f4784, #0f4784);--mat-sys-on-surface:light-dark(#1c1b1c, #e5e2e2);--mat-sys-on-surface-variant:light-dark(#44474a, #e1e2e6);--mat-sys-on-tertiary:light-dark(#ffffff, #2b3136);--mat-sys-on-tertiary-container:light-dark(#161c21, #dde3e9);--mat-sys-on-tertiary-fixed:light-dark(#161c21, #161c21);--mat-sys-on-tertiary-fixed-variant:light-dark(#41474d, #41474d);--mat-sys-outline:light-dark(#74777b, #8e9194);--mat-sys-outline-variant:light-dark(#c4c7ca, #44474a);--mat-sys-primary:light-dark(#595f65, #c1c7cd);--mat-sys-primary-container:light-dark(#dde3e9, #41474d);--mat-sys-primary-fixed:light-dark(#dde3e9, #dde3e9);--mat-sys-primary-fixed-dim:light-dark(#c1c7cd, #c1c7cd);--mat-sys-scrim:light-dark(#000000, #000000);--mat-sys-secondary:light-dark(#305f9d, #a7c8ff);--mat-sys-secondary-container:light-dark(#d5e3ff, #0f4784);--mat-sys-secondary-fixed:light-dark(#d5e3ff, #d5e3ff);--mat-sys-secondary-fixed-dim:light-dark(#a7c8ff, #a7c8ff);--mat-sys-shadow:light-dark(#000000, #000000);--mat-sys-surface:light-dark(#fcf9f8, #131314);--mat-sys-surface-bright:light-dark(#fcf9f8, #393939);--mat-sys-surface-container:light-dark(#f0eded, #201f20);--mat-sys-surface-container-high:light-dark(#eae7e7, #2a2a2a);--mat-sys-surface-container-highest:light-dark(#e5e2e2, #393939);--mat-sys-surface-container-low:light-dark(#f6f3f3, #1c1b1c);--mat-sys-surface-container-lowest:light-dark(#ffffff, #0e0e0e);--mat-sys-surface-dim:light-dark(#dcd9d9, #131314);--mat-sys-surface-tint:light-dark(#595f65, #c1c7cd);--mat-sys-surface-variant:light-dark(#e1e2e6, #44474a);--mat-sys-tertiary:light-dark(#595f65, #c1c7cd);--mat-sys-tertiary-container:light-dark(#dde3e9, #41474d);--mat-sys-tertiary-fixed:light-dark(#dde3e9, #dde3e9);--mat-sys-tertiary-fixed-dim:light-dark(#c1c7cd, #c1c7cd);--mat-sys-neutral-variant20:#2d3134;--mat-sys-neutral10:#1c1b1c}html{--mat-sys-level0:0px 0px 0px 0px rgba(0, 0, 0, .2), 0px 0px 0px 0px rgba(0, 0, 0, .14), 0px 0px 0px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level1:0px 2px 1px -1px rgba(0, 0, 0, .2), 0px 1px 1px 0px rgba(0, 0, 0, .14), 0px 1px 3px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level2:0px 3px 3px -2px rgba(0, 0, 0, .2), 0px 3px 4px 0px rgba(0, 0, 0, .14), 0px 1px 8px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level3:0px 3px 5px -1px rgba(0, 0, 0, .2), 0px 6px 10px 0px rgba(0, 0, 0, .14), 0px 1px 18px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level4:0px 5px 5px -3px rgba(0, 0, 0, .2), 0px 8px 10px 1px rgba(0, 0, 0, .14), 0px 3px 14px 2px rgba(0, 0, 0, .12)}html{--mat-sys-level5:0px 7px 8px -4px rgba(0, 0, 0, .2), 0px 12px 17px 2px rgba(0, 0, 0, .14), 0px 5px 22px 4px rgba(0, 0, 0, .12)}html{--mat-sys-corner-extra-large:28px;--mat-sys-corner-extra-large-top:28px 28px 0 0;--mat-sys-corner-extra-small:4px;--mat-sys-corner-extra-small-top:4px 4px 0 0;--mat-sys-corner-full:9999px;--mat-sys-corner-large:16px;--mat-sys-corner-large-end:0 16px 16px 0;--mat-sys-corner-large-start:16px 0 0 16px;--mat-sys-corner-large-top:16px 16px 0 0;--mat-sys-corner-medium:12px;--mat-sys-corner-none:0;--mat-sys-corner-small:8px}html{--mat-sys-dragged-state-layer-opacity:.16;--mat-sys-focus-state-layer-opacity:.12;--mat-sys-hover-state-layer-opacity:.08;--mat-sys-pressed-state-layer-opacity:.12}html{font-family:Google Sans,Helvetica Neue,sans-serif!important}body{height:100vh;margin:0}:root{--mat-sys-primary:black;--mdc-checkbox-selected-icon-color:white;--mat-sys-background:#131314;--mat-tab-header-active-label-text-color:#8AB4F8;--mat-tab-header-active-hover-label-text-color:#8AB4F8;--mat-tab-header-active-focus-label-text-color:#8AB4F8;--mat-tab-header-label-text-weight:500;--mdc-text-button-label-text-color:#89b4f8}:root{--mdc-dialog-container-color:#2b2b2f}:root{--mdc-dialog-subhead-color:white}:root{--mdc-circular-progress-active-indicator-color:#a8c7fa}:root{--mdc-circular-progress-size:80}</style><link rel="stylesheet" href="styles-4VDSPQ37.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles-4VDSPQ37.css"></noscript></head>
+<body>
+  <app-root></app-root>
+<script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-SLIAU2JL.js" type="module"></script></body>
+</html>
+
+
+
+# MODULE: adk.cli.browser.main-SLIAU2JL.js
+# PATH: adk/cli/browser/main-SLIAU2JL.js
+
+
+Sorry about that, but we can’t show files that are this big right now.)
+
+
+# MODULE: adk.cli.browser.polyfills-FFHMD2TL.js
+# PATH: adk/cli/browser/polyfills-FFHMD2TL.js
+
+
+var ce=globalThis;function te(e){return(ce.__Zone_symbol_prefix||"__zone_symbol__")+e}function dt(){let e=ce.performance;function n(M){e&&e.mark&&e.mark(M)}function a(M,s){e&&e.measure&&e.measure(M,s)}n("Zone");class t{static{this.__symbol__=te}static assertZonePatched(){if(ce.Promise!==S.ZoneAwarePromise)throw new Error("Zone.js has detected that ZoneAwarePromise `(window|global).Promise` has been overwritten.\nMost likely cause is that a Promise polyfill has been loaded after Zone.js (Polyfilling Promise api is not necessary when zone.js is loaded. If you must load one, do so before loading zone.js.)")}static get root(){let s=t.current;for(;s.parent;)s=s.parent;return s}static get current(){return b.zone}static get currentTask(){return D}static __load_patch(s,i,o=!1){if(S.hasOwnProperty(s)){let g=ce[te("forceDuplicateZoneCheck")]===!0;if(!o&&g)throw Error("Already loaded patch: "+s)}else if(!ce["__Zone_disable_"+s]){let g="Zone:"+s;n(g),S[s]=i(ce,t,w),a(g,g)}}get parent(){return this._parent}get name(){return this._name}constructor(s,i){this._parent=s,this._name=i?i.name||"unnamed":"<root>",this._properties=i&&i.properties||{},this._zoneDelegate=new f(this,this._parent&&this._parent._zoneDelegate,i)}get(s){let i=this.getZoneWith(s);if(i)return i._properties[s]}getZoneWith(s){let i=this;for(;i;){if(i._properties.hasOwnProperty(s))return i;i=i._parent}return null}fork(s){if(!s)throw new Error("ZoneSpec required!");return this._zoneDelegate.fork(this,s)}wrap(s,i){if(typeof s!="function")throw new Error("Expecting function got: "+s);let o=this._zoneDelegate.intercept(this,s,i),g=this;return function(){return g.runGuarded(o,this,arguments,i)}}run(s,i,o,g){b={parent:b,zone:this};try{return this._zoneDelegate.invoke(this,s,i,o,g)}finally{b=b.parent}}runGuarded(s,i=null,o,g){b={parent:b,zone:this};try{try{return this._zoneDelegate.invoke(this,s,i,o,g)}catch(V){if(this._zoneDelegate.handleError(this,V))throw V}}finally{b=b.parent}}runTask(s,i,o){if(s.zone!=this)throw new Error("A task can only be run in the zone of creation! (Creation: "+(s.zone||J).name+"; Execution: "+this.name+")");let g=s,{type:V,data:{isPeriodic:ee=!1,isRefreshable:Z=!1}={}}=s;if(s.state===q&&(V===z||V===y))return;let he=s.state!=A;he&&g._transitionTo(A,d);let _e=D;D=g,b={parent:b,zone:this};try{V==y&&s.data&&!ee&&!Z&&(s.cancelFn=void 0);try{return this._zoneDelegate.invokeTask(this,g,i,o)}catch(Q){if(this._zoneDelegate.handleError(this,Q))throw Q}}finally{let Q=s.state;if(Q!==q&&Q!==X)if(V==z||ee||Z&&Q===k)he&&g._transitionTo(d,A,k);else{let Ee=g._zoneDelegates;this._updateTaskCount(g,-1),he&&g._transitionTo(q,A,q),Z&&(g._zoneDelegates=Ee)}b=b.parent,D=_e}}scheduleTask(s){if(s.zone&&s.zone!==this){let o=this;for(;o;){if(o===s.zone)throw Error(`can not reschedule task to ${this.name} which is descendants of the original zone ${s.zone.name}`);o=o.parent}}s._transitionTo(k,q);let i=[];s._zoneDelegates=i,s._zone=this;try{s=this._zoneDelegate.scheduleTask(this,s)}catch(o){throw s._transitionTo(X,k,q),this._zoneDelegate.handleError(this,o),o}return s._zoneDelegates===i&&this._updateTaskCount(s,1),s.state==k&&s._transitionTo(d,k),s}scheduleMicroTask(s,i,o,g){return this.scheduleTask(new E(G,s,i,o,g,void 0))}scheduleMacroTask(s,i,o,g,V){return this.scheduleTask(new E(y,s,i,o,g,V))}scheduleEventTask(s,i,o,g,V){return this.scheduleTask(new E(z,s,i,o,g,V))}cancelTask(s){if(s.zone!=this)throw new Error("A task can only be cancelled in the zone of creation! (Creation: "+(s.zone||J).name+"; Execution: "+this.name+")");if(!(s.state!==d&&s.state!==A)){s._transitionTo(x,d,A);try{this._zoneDelegate.cancelTask(this,s)}catch(i){throw s._transitionTo(X,x),this._zoneDelegate.handleError(this,i),i}return this._updateTaskCount(s,-1),s._transitionTo(q,x),s.runCount=-1,s}}_updateTaskCount(s,i){let o=s._zoneDelegates;i==-1&&(s._zoneDelegates=null);for(let g=0;g<o.length;g++)o[g]._updateTaskCount(s.type,i)}}let c={name:"",onHasTask:(M,s,i,o)=>M.hasTask(i,o),onScheduleTask:(M,s,i,o)=>M.scheduleTask(i,o),onInvokeTask:(M,s,i,o,g,V)=>M.invokeTask(i,o,g,V),onCancelTask:(M,s,i,o)=>M.cancelTask(i,o)};class f{get zone(){return this._zone}constructor(s,i,o){this._taskCounts={microTask:0,macroTask:0,eventTask:0},this._zone=s,this._parentDelegate=i,this._forkZS=o&&(o&&o.onFork?o:i._forkZS),this._forkDlgt=o&&(o.onFork?i:i._forkDlgt),this._forkCurrZone=o&&(o.onFork?this._zone:i._forkCurrZone),this._interceptZS=o&&(o.onIntercept?o:i._interceptZS),this._interceptDlgt=o&&(o.onIntercept?i:i._interceptDlgt),this._interceptCurrZone=o&&(o.onIntercept?this._zone:i._interceptCurrZone),this._invokeZS=o&&(o.onInvoke?o:i._invokeZS),this._invokeDlgt=o&&(o.onInvoke?i:i._invokeDlgt),this._invokeCurrZone=o&&(o.onInvoke?this._zone:i._invokeCurrZone),this._handleErrorZS=o&&(o.onHandleError?o:i._handleErrorZS),this._handleErrorDlgt=o&&(o.onHandleError?i:i._handleErrorDlgt),this._handleErrorCurrZone=o&&(o.onHandleError?this._zone:i._handleErrorCurrZone),this._scheduleTaskZS=o&&(o.onScheduleTask?o:i._scheduleTaskZS),this._scheduleTaskDlgt=o&&(o.onScheduleTask?i:i._scheduleTaskDlgt),this._scheduleTaskCurrZone=o&&(o.onScheduleTask?this._zone:i._scheduleTaskCurrZone),this._invokeTaskZS=o&&(o.onInvokeTask?o:i._invokeTaskZS),this._invokeTaskDlgt=o&&(o.onInvokeTask?i:i._invokeTaskDlgt),this._invokeTaskCurrZone=o&&(o.onInvokeTask?this._zone:i._invokeTaskCurrZone),this._cancelTaskZS=o&&(o.onCancelTask?o:i._cancelTaskZS),this._cancelTaskDlgt=o&&(o.onCancelTask?i:i._cancelTaskDlgt),this._cancelTaskCurrZone=o&&(o.onCancelTask?this._zone:i._cancelTaskCurrZone),this._hasTaskZS=null,this._hasTaskDlgt=null,this._hasTaskDlgtOwner=null,this._hasTaskCurrZone=null;let g=o&&o.onHasTask,V=i&&i._hasTaskZS;(g||V)&&(this._hasTaskZS=g?o:c,this._hasTaskDlgt=i,this._hasTaskDlgtOwner=this,this._hasTaskCurrZone=this._zone,o.onScheduleTask||(this._scheduleTaskZS=c,this._scheduleTaskDlgt=i,this._scheduleTaskCurrZone=this._zone),o.onInvokeTask||(this._invokeTaskZS=c,this._invokeTaskDlgt=i,this._invokeTaskCurrZone=this._zone),o.onCancelTask||(this._cancelTaskZS=c,this._cancelTaskDlgt=i,this._cancelTaskCurrZone=this._zone))}fork(s,i){return this._forkZS?this._forkZS.onFork(this._forkDlgt,this.zone,s,i):new t(s,i)}intercept(s,i,o){return this._interceptZS?this._interceptZS.onIntercept(this._interceptDlgt,this._interceptCurrZone,s,i,o):i}invoke(s,i,o,g,V){return this._invokeZS?this._invokeZS.onInvoke(this._invokeDlgt,this._invokeCurrZone,s,i,o,g,V):i.apply(o,g)}handleError(s,i){return this._handleErrorZS?this._handleErrorZS.onHandleError(this._handleErrorDlgt,this._handleErrorCurrZone,s,i):!0}scheduleTask(s,i){let o=i;if(this._scheduleTaskZS)this._hasTaskZS&&o._zoneDelegates.push(this._hasTaskDlgtOwner),o=this._scheduleTaskZS.onScheduleTask(this._scheduleTaskDlgt,this._scheduleTaskCurrZone,s,i),o||(o=i);else if(i.scheduleFn)i.scheduleFn(i);else if(i.type==G)U(i);else throw new Error("Task is missing scheduleFn.");return o}invokeTask(s,i,o,g){return this._invokeTaskZS?this._invokeTaskZS.onInvokeTask(this._invokeTaskDlgt,this._invokeTaskCurrZone,s,i,o,g):i.callback.apply(o,g)}cancelTask(s,i){let o;if(this._cancelTaskZS)o=this._cancelTaskZS.onCancelTask(this._cancelTaskDlgt,this._cancelTaskCurrZone,s,i);else{if(!i.cancelFn)throw Error("Task is not cancelable");o=i.cancelFn(i)}return o}hasTask(s,i){try{this._hasTaskZS&&this._hasTaskZS.onHasTask(this._hasTaskDlgt,this._hasTaskCurrZone,s,i)}catch(o){this.handleError(s,o)}}_updateTaskCount(s,i){let o=this._taskCounts,g=o[s],V=o[s]=g+i;if(V<0)throw new Error("More tasks executed then were scheduled.");if(g==0||V==0){let ee={microTask:o.microTask>0,macroTask:o.macroTask>0,eventTask:o.eventTask>0,change:s};this.hasTask(this._zone,ee)}}}class E{constructor(s,i,o,g,V,ee){if(this._zone=null,this.runCount=0,this._zoneDelegates=null,this._state="notScheduled",this.type=s,this.source=i,this.data=g,this.scheduleFn=V,this.cancelFn=ee,!o)throw new Error("callback is not defined");this.callback=o;let Z=this;s===z&&g&&g.useG?this.invoke=E.invokeTask:this.invoke=function(){return E.invokeTask.call(ce,Z,this,arguments)}}static invokeTask(s,i,o){s||(s=this),K++;try{return s.runCount++,s.zone.runTask(s,i,o)}finally{K==1&&$(),K--}}get zone(){return this._zone}get state(){return this._state}cancelScheduleRequest(){this._transitionTo(q,k)}_transitionTo(s,i,o){if(this._state===i||this._state===o)this._state=s,s==q&&(this._zoneDelegates=null);else throw new Error(`${this.type} '${this.source}': can not transition to '${s}', expecting state '${i}'${o?" or '"+o+"'":""}, was '${this._state}'.`)}toString(){return this.data&&typeof this.data.handleId<"u"?this.data.handleId.toString():Object.prototype.toString.call(this)}toJSON(){return{type:this.type,state:this.state,source:this.source,zone:this.zone.name,runCount:this.runCount}}}let T=te("setTimeout"),p=te("Promise"),C=te("then"),_=[],P=!1,I;function H(M){if(I||ce[p]&&(I=ce[p].resolve(0)),I){let s=I[C];s||(s=I.then),s.call(I,M)}else ce[T](M,0)}function U(M){K===0&&_.length===0&&H($),M&&_.push(M)}function $(){if(!P){for(P=!0;_.length;){let M=_;_=[];for(let s=0;s<M.length;s++){let i=M[s];try{i.zone.runTask(i,null,null)}catch(o){w.onUnhandledError(o)}}}w.microtaskDrainDone(),P=!1}}let J={name:"NO ZONE"},q="notScheduled",k="scheduling",d="scheduled",A="running",x="canceling",X="unknown",G="microTask",y="macroTask",z="eventTask",S={},w={symbol:te,currentZoneFrame:()=>b,onUnhandledError:W,microtaskDrainDone:W,scheduleMicroTask:U,showUncaughtError:()=>!t[te("ignoreConsoleErrorUncaughtError")],patchEventTarget:()=>[],patchOnProperties:W,patchMethod:()=>W,bindArguments:()=>[],patchThen:()=>W,patchMacroTask:()=>W,patchEventPrototype:()=>W,isIEOrEdge:()=>!1,getGlobalObjects:()=>{},ObjectDefineProperty:()=>W,ObjectGetOwnPropertyDescriptor:()=>{},ObjectCreate:()=>{},ArraySlice:()=>[],patchClass:()=>W,wrapWithCurrentZone:()=>W,filterProperties:()=>[],attachOriginToPatched:()=>W,_redefineProperty:()=>W,patchCallbacks:()=>W,nativeScheduleMicroTask:H},b={parent:null,zone:new t(null,null)},D=null,K=0;function W(){}return a("Zone","Zone"),t}function _t(){let e=globalThis,n=e[te("forceDuplicateZoneCheck")]===!0;if(e.Zone&&(n||typeof e.Zone.__symbol__!="function"))throw new Error("Zone already loaded.");return e.Zone??=dt(),e.Zone}var be=Object.getOwnPropertyDescriptor,Ae=Object.defineProperty,je=Object.getPrototypeOf,Et=Object.create,Tt=Array.prototype.slice,He="addEventListener",xe="removeEventListener",Le=te(He),Ie=te(xe),ae="true",le="false",Pe=te("");function Ve(e,n){return Zone.current.wrap(e,n)}function Ge(e,n,a,t,c){return Zone.current.scheduleMacroTask(e,n,a,t,c)}var j=te,De=typeof window<"u",pe=De?window:void 0,Y=De&&pe||globalThis,gt="removeAttribute";function Fe(e,n){for(let a=e.length-1;a>=0;a--)typeof e[a]=="function"&&(e[a]=Ve(e[a],n+"_"+a));return e}function yt(e,n){let a=e.constructor.name;for(let t=0;t<n.length;t++){let c=n[t],f=e[c];if(f){let E=be(e,c);if(!tt(E))continue;e[c]=(T=>{let p=function(){return T.apply(this,Fe(arguments,a+"."+c))};return fe(p,T),p})(f)}}}function tt(e){return e?e.writable===!1?!1:!(typeof e.get=="function"&&typeof e.set>"u"):!0}var nt=typeof WorkerGlobalScope<"u"&&self instanceof WorkerGlobalScope,Se=!("nw"in Y)&&typeof Y.process<"u"&&Y.process.toString()==="[object process]",Be=!Se&&!nt&&!!(De&&pe.HTMLElement),rt=typeof Y.process<"u"&&Y.process.toString()==="[object process]"&&!nt&&!!(De&&pe.HTMLElement),Ce={},mt=j("enable_beforeunload"),Ye=function(e){if(e=e||Y.event,!e)return;let n=Ce[e.type];n||(n=Ce[e.type]=j("ON_PROPERTY"+e.type));let a=this||e.target||Y,t=a[n],c;if(Be&&a===pe&&e.type==="error"){let f=e;c=t&&t.call(this,f.message,f.filename,f.lineno,f.colno,f.error),c===!0&&e.preventDefault()}else c=t&&t.apply(this,arguments),e.type==="beforeunload"&&Y[mt]&&typeof c=="string"?e.returnValue=c:c!=null&&!c&&e.preventDefault();return c};function $e(e,n,a){let t=be(e,n);if(!t&&a&&be(a,n)&&(t={enumerable:!0,configurable:!0}),!t||!t.configurable)return;let c=j("on"+n+"patched");if(e.hasOwnProperty(c)&&e[c])return;delete t.writable,delete t.value;let f=t.get,E=t.set,T=n.slice(2),p=Ce[T];p||(p=Ce[T]=j("ON_PROPERTY"+T)),t.set=function(C){let _=this;if(!_&&e===Y&&(_=Y),!_)return;typeof _[p]=="function"&&_.removeEventListener(T,Ye),E&&E.call(_,null),_[p]=C,typeof C=="function"&&_.addEventListener(T,Ye,!1)},t.get=function(){let C=this;if(!C&&e===Y&&(C=Y),!C)return null;let _=C[p];if(_)return _;if(f){let P=f.call(this);if(P)return t.set.call(this,P),typeof C[gt]=="function"&&C.removeAttribute(n),P}return null},Ae(e,n,t),e[c]=!0}function ot(e,n,a){if(n)for(let t=0;t<n.length;t++)$e(e,"on"+n[t],a);else{let t=[];for(let c in e)c.slice(0,2)=="on"&&t.push(c);for(let c=0;c<t.length;c++)$e(e,t[c],a)}}var oe=j("originalInstance");function ve(e){let n=Y[e];if(!n)return;Y[j(e)]=n,Y[e]=function(){let c=Fe(arguments,e);switch(c.length){case 0:this[oe]=new n;break;case 1:this[oe]=new n(c[0]);break;case 2:this[oe]=new n(c[0],c[1]);break;case 3:this[oe]=new n(c[0],c[1],c[2]);break;case 4:this[oe]=new n(c[0],c[1],c[2],c[3]);break;default:throw new Error("Arg list too long.")}},fe(Y[e],n);let a=new n(function(){}),t;for(t in a)e==="XMLHttpRequest"&&t==="responseBlob"||function(c){typeof a[c]=="function"?Y[e].prototype[c]=function(){return this[oe][c].apply(this[oe],arguments)}:Ae(Y[e].prototype,c,{set:function(f){typeof f=="function"?(this[oe][c]=Ve(f,e+"."+c),fe(this[oe][c],f)):this[oe][c]=f},get:function(){return this[oe][c]}})}(t);for(t in n)t!=="prototype"&&n.hasOwnProperty(t)&&(Y[e][t]=n[t])}function ue(e,n,a){let t=e;for(;t&&!t.hasOwnProperty(n);)t=je(t);!t&&e[n]&&(t=e);let c=j(n),f=null;if(t&&(!(f=t[c])||!t.hasOwnProperty(c))){f=t[c]=t[n];let E=t&&be(t,n);if(tt(E)){let T=a(f,c,n);t[n]=function(){return T(this,arguments)},fe(t[n],f)}}return f}function pt(e,n,a){let t=null;function c(f){let E=f.data;return E.args[E.cbIdx]=function(){f.invoke.apply(this,arguments)},t.apply(E.target,E.args),f}t=ue(e,n,f=>function(E,T){let p=a(E,T);return p.cbIdx>=0&&typeof T[p.cbIdx]=="function"?Ge(p.name,T[p.cbIdx],p,c):f.apply(E,T)})}function fe(e,n){e[j("OriginalDelegate")]=n}var Je=!1,Me=!1;function kt(){try{let e=pe.navigator.userAgent;if(e.indexOf("MSIE ")!==-1||e.indexOf("Trident/")!==-1)return!0}catch{}return!1}function vt(){if(Je)return Me;Je=!0;try{let e=pe.navigator.userAgent;(e.indexOf("MSIE ")!==-1||e.indexOf("Trident/")!==-1||e.indexOf("Edge/")!==-1)&&(Me=!0)}catch{}return Me}function Ke(e){return typeof e=="function"}function Qe(e){return typeof e=="number"}var me=!1;if(typeof window<"u")try{let e=Object.defineProperty({},"passive",{get:function(){me=!0}});window.addEventListener("test",e,e),window.removeEventListener("test",e,e)}catch{me=!1}var bt={useG:!0},ne={},st={},it=new RegExp("^"+Pe+"(\\w+)(true|false)$"),ct=j("propagationStopped");function at(e,n){let a=(n?n(e):e)+le,t=(n?n(e):e)+ae,c=Pe+a,f=Pe+t;ne[e]={},ne[e][le]=c,ne[e][ae]=f}function Pt(e,n,a,t){let c=t&&t.add||He,f=t&&t.rm||xe,E=t&&t.listeners||"eventListeners",T=t&&t.rmAll||"removeAllListeners",p=j(c),C="."+c+":",_="prependListener",P="."+_+":",I=function(k,d,A){if(k.isRemoved)return;let x=k.callback;typeof x=="object"&&x.handleEvent&&(k.callback=y=>x.handleEvent(y),k.originalDelegate=x);let X;try{k.invoke(k,d,[A])}catch(y){X=y}let G=k.options;if(G&&typeof G=="object"&&G.once){let y=k.originalDelegate?k.originalDelegate:k.callback;d[f].call(d,A.type,y,G)}return X};function H(k,d,A){if(d=d||e.event,!d)return;let x=k||d.target||e,X=x[ne[d.type][A?ae:le]];if(X){let G=[];if(X.length===1){let y=I(X[0],x,d);y&&G.push(y)}else{let y=X.slice();for(let z=0;z<y.length&&!(d&&d[ct]===!0);z++){let S=I(y[z],x,d);S&&G.push(S)}}if(G.length===1)throw G[0];for(let y=0;y<G.length;y++){let z=G[y];n.nativeScheduleMicroTask(()=>{throw z})}}}let U=function(k){return H(this,k,!1)},$=function(k){return H(this,k,!0)};function J(k,d){if(!k)return!1;let A=!0;d&&d.useG!==void 0&&(A=d.useG);let x=d&&d.vh,X=!0;d&&d.chkDup!==void 0&&(X=d.chkDup);let G=!1;d&&d.rt!==void 0&&(G=d.rt);let y=k;for(;y&&!y.hasOwnProperty(c);)y=je(y);if(!y&&k[c]&&(y=k),!y||y[p])return!1;let z=d&&d.eventNameToString,S={},w=y[p]=y[c],b=y[j(f)]=y[f],D=y[j(E)]=y[E],K=y[j(T)]=y[T],W;d&&d.prepend&&(W=y[j(d.prepend)]=y[d.prepend]);function M(r,u){return!me&&typeof r=="object"&&r?!!r.capture:!me||!u?r:typeof r=="boolean"?{capture:r,passive:!0}:r?typeof r=="object"&&r.passive!==!1?{...r,passive:!0}:r:{passive:!0}}let s=function(r){if(!S.isExisting)return w.call(S.target,S.eventName,S.capture?$:U,S.options)},i=function(r){if(!r.isRemoved){let u=ne[r.eventName],v;u&&(v=u[r.capture?ae:le]);let R=v&&r.target[v];if(R){for(let m=0;m<R.length;m++)if(R[m]===r){R.splice(m,1),r.isRemoved=!0,r.removeAbortListener&&(r.removeAbortListener(),r.removeAbortListener=null),R.length===0&&(r.allRemoved=!0,r.target[v]=null);break}}}if(r.allRemoved)return b.call(r.target,r.eventName,r.capture?$:U,r.options)},o=function(r){return w.call(S.target,S.eventName,r.invoke,S.options)},g=function(r){return W.call(S.target,S.eventName,r.invoke,S.options)},V=function(r){return b.call(r.target,r.eventName,r.invoke,r.options)},ee=A?s:o,Z=A?i:V,he=function(r,u){let v=typeof u;return v==="function"&&r.callback===u||v==="object"&&r.originalDelegate===u},_e=d&&d.diff?d.diff:he,Q=Zone[j("UNPATCHED_EVENTS")],Ee=e[j("PASSIVE_EVENTS")];function h(r){if(typeof r=="object"&&r!==null){let u={...r};return r.signal&&(u.signal=r.signal),u}return r}let l=function(r,u,v,R,m=!1,O=!1){return function(){let N=this||e,L=arguments[0];d&&d.transferEventName&&(L=d.transferEventName(L));let F=arguments[1];if(!F)return r.apply(this,arguments);if(Se&&L==="uncaughtException")return r.apply(this,arguments);let B=!1;if(typeof F!="function"){if(!F.handleEvent)return r.apply(this,arguments);B=!0}if(x&&!x(r,F,N,arguments))return;let de=me&&!!Ee&&Ee.indexOf(L)!==-1,se=h(M(arguments[2],de)),Te=se?.signal;if(Te?.aborted)return;if(Q){for(let ie=0;ie<Q.length;ie++)if(L===Q[ie])return de?r.call(N,L,F,se):r.apply(this,arguments)}let Oe=se?typeof se=="boolean"?!0:se.capture:!1,Ue=se&&typeof se=="object"?se.once:!1,ht=Zone.current,Ne=ne[L];Ne||(at(L,z),Ne=ne[L]);let ze=Ne[Oe?ae:le],ge=N[ze],We=!1;if(ge){if(We=!0,X){for(let ie=0;ie<ge.length;ie++)if(_e(ge[ie],F))return}}else ge=N[ze]=[];let we,qe=N.constructor.name,Xe=st[qe];Xe&&(we=Xe[L]),we||(we=qe+u+(z?z(L):L)),S.options=se,Ue&&(S.options.once=!1),S.target=N,S.capture=Oe,S.eventName=L,S.isExisting=We;let ke=A?bt:void 0;ke&&(ke.taskData=S),Te&&(S.options.signal=void 0);let re=ht.scheduleEventTask(we,F,ke,v,R);if(Te){S.options.signal=Te;let ie=()=>re.zone.cancelTask(re);r.call(Te,"abort",ie,{once:!0}),re.removeAbortListener=()=>Te.removeEventListener("abort",ie)}if(S.target=null,ke&&(ke.taskData=null),Ue&&(S.options.once=!0),!me&&typeof re.options=="boolean"||(re.options=se),re.target=N,re.capture=Oe,re.eventName=L,B&&(re.originalDelegate=F),O?ge.unshift(re):ge.push(re),m)return N}};return y[c]=l(w,C,ee,Z,G),W&&(y[_]=l(W,P,g,Z,G,!0)),y[f]=function(){let r=this||e,u=arguments[0];d&&d.transferEventName&&(u=d.transferEventName(u));let v=arguments[2],R=v?typeof v=="boolean"?!0:v.capture:!1,m=arguments[1];if(!m)return b.apply(this,arguments);if(x&&!x(b,m,r,arguments))return;let O=ne[u],N;O&&(N=O[R?ae:le]);let L=N&&r[N];if(L)for(let F=0;F<L.length;F++){let B=L[F];if(_e(B,m)){if(L.splice(F,1),B.isRemoved=!0,L.length===0&&(B.allRemoved=!0,r[N]=null,!R&&typeof u=="string")){let de=Pe+"ON_PROPERTY"+u;r[de]=null}return B.zone.cancelTask(B),G?r:void 0}}return b.apply(this,arguments)},y[E]=function(){let r=this||e,u=arguments[0];d&&d.transferEventName&&(u=d.transferEventName(u));let v=[],R=lt(r,z?z(u):u);for(let m=0;m<R.length;m++){let O=R[m],N=O.originalDelegate?O.originalDelegate:O.callback;v.push(N)}return v},y[T]=function(){let r=this||e,u=arguments[0];if(u){d&&d.transferEventName&&(u=d.transferEventName(u));let v=ne[u];if(v){let R=v[le],m=v[ae],O=r[R],N=r[m];if(O){let L=O.slice();for(let F=0;F<L.length;F++){let B=L[F],de=B.originalDelegate?B.originalDelegate:B.callback;this[f].call(this,u,de,B.options)}}if(N){let L=N.slice();for(let F=0;F<L.length;F++){let B=L[F],de=B.originalDelegate?B.originalDelegate:B.callback;this[f].call(this,u,de,B.options)}}}}else{let v=Object.keys(r);for(let R=0;R<v.length;R++){let m=v[R],O=it.exec(m),N=O&&O[1];N&&N!=="removeListener"&&this[T].call(this,N)}this[T].call(this,"removeListener")}if(G)return this},fe(y[c],w),fe(y[f],b),K&&fe(y[T],K),D&&fe(y[E],D),!0}let q=[];for(let k=0;k<a.length;k++)q[k]=J(a[k],t);return q}function lt(e,n){if(!n){let f=[];for(let E in e){let T=it.exec(E),p=T&&T[1];if(p&&(!n||p===n)){let C=e[E];if(C)for(let _=0;_<C.length;_++)f.push(C[_])}}return f}let a=ne[n];a||(at(n),a=ne[n]);let t=e[a[le]],c=e[a[ae]];return t?c?t.concat(c):t.slice():c?c.slice():[]}function wt(e,n){let a=e.Event;a&&a.prototype&&n.patchMethod(a.prototype,"stopImmediatePropagation",t=>function(c,f){c[ct]=!0,t&&t.apply(c,f)})}function Rt(e,n){n.patchMethod(e,"queueMicrotask",a=>function(t,c){Zone.current.scheduleMicroTask("queueMicrotask",c[0])})}var Re=j("zoneTask");function ye(e,n,a,t){let c=null,f=null;n+=t,a+=t;let E={};function T(C){let _=C.data;_.args[0]=function(){return C.invoke.apply(this,arguments)};let P=c.apply(e,_.args);return Qe(P)?_.handleId=P:(_.handle=P,_.isRefreshable=Ke(P.refresh)),C}function p(C){let{handle:_,handleId:P}=C.data;return f.call(e,_??P)}c=ue(e,n,C=>function(_,P){if(Ke(P[0])){let I={isRefreshable:!1,isPeriodic:t==="Interval",delay:t==="Timeout"||t==="Interval"?P[1]||0:void 0,args:P},H=P[0];P[0]=function(){try{return H.apply(this,arguments)}finally{let{handle:A,handleId:x,isPeriodic:X,isRefreshable:G}=I;!X&&!G&&(x?delete E[x]:A&&(A[Re]=null))}};let U=Ge(n,P[0],I,T,p);if(!U)return U;let{handleId:$,handle:J,isRefreshable:q,isPeriodic:k}=U.data;if($)E[$]=U;else if(J&&(J[Re]=U,q&&!k)){let d=J.refresh;J.refresh=function(){let{zone:A,state:x}=U;return x==="notScheduled"?(U._state="scheduled",A._updateTaskCount(U,1)):x==="running"&&(U._state="scheduling"),d.call(this)}}return J??$??U}else return C.apply(e,P)}),f=ue(e,a,C=>function(_,P){let I=P[0],H;Qe(I)?(H=E[I],delete E[I]):(H=I?.[Re],H?I[Re]=null:H=I),H?.type?H.cancelFn&&H.zone.cancelTask(H):C.apply(e,P)})}function Ct(e,n){let{isBrowser:a,isMix:t}=n.getGlobalObjects();if(!a&&!t||!e.customElements||!("customElements"in e))return;let c=["connectedCallback","disconnectedCallback","adoptedCallback","attributeChangedCallback","formAssociatedCallback","formDisabledCallback","formResetCallback","formStateRestoreCallback"];n.patchCallbacks(n,e.customElements,"customElements","define",c)}function Dt(e,n){if(Zone[n.symbol("patchEventTarget")])return;let{eventNames:a,zoneSymbolEventNames:t,TRUE_STR:c,FALSE_STR:f,ZONE_SYMBOL_PREFIX:E}=n.getGlobalObjects();for(let p=0;p<a.length;p++){let C=a[p],_=C+f,P=C+c,I=E+_,H=E+P;t[C]={},t[C][f]=I,t[C][c]=H}let T=e.EventTarget;if(!(!T||!T.prototype))return n.patchEventTarget(e,n,[T&&T.prototype]),!0}function St(e,n){n.patchEventPrototype(e,n)}function ut(e,n,a){if(!a||a.length===0)return n;let t=a.filter(f=>f.target===e);if(!t||t.length===0)return n;let c=t[0].ignoreProperties;return n.filter(f=>c.indexOf(f)===-1)}function et(e,n,a,t){if(!e)return;let c=ut(e,n,a);ot(e,c,t)}function Ze(e){return Object.getOwnPropertyNames(e).filter(n=>n.startsWith("on")&&n.length>2).map(n=>n.substring(2))}function Ot(e,n){if(Se&&!rt||Zone[e.symbol("patchEvents")])return;let a=n.__Zone_ignore_on_properties,t=[];if(Be){let c=window;t=t.concat(["Document","SVGElement","Element","HTMLElement","HTMLBodyElement","HTMLMediaElement","HTMLFrameSetElement","HTMLFrameElement","HTMLIFrameElement","HTMLMarqueeElement","Worker"]);let f=kt()?[{target:c,ignoreProperties:["error"]}]:[];et(c,Ze(c),a&&a.concat(f),je(c))}t=t.concat(["XMLHttpRequest","XMLHttpRequestEventTarget","IDBIndex","IDBRequest","IDBOpenDBRequest","IDBDatabase","IDBTransaction","IDBCursor","WebSocket"]);for(let c=0;c<t.length;c++){let f=n[t[c]];f&&f.prototype&&et(f.prototype,Ze(f.prototype),a)}}function Nt(e){e.__load_patch("legacy",n=>{let a=n[e.__symbol__("legacyPatch")];a&&a()}),e.__load_patch("timers",n=>{let a="set",t="clear";ye(n,a,t,"Timeout"),ye(n,a,t,"Interval"),ye(n,a,t,"Immediate")}),e.__load_patch("requestAnimationFrame",n=>{ye(n,"request","cancel","AnimationFrame"),ye(n,"mozRequest","mozCancel","AnimationFrame"),ye(n,"webkitRequest","webkitCancel","AnimationFrame")}),e.__load_patch("blocking",(n,a)=>{let t=["alert","prompt","confirm"];for(let c=0;c<t.length;c++){let f=t[c];ue(n,f,(E,T,p)=>function(C,_){return a.current.run(E,n,_,p)})}}),e.__load_patch("EventTarget",(n,a,t)=>{St(n,t),Dt(n,t);let c=n.XMLHttpRequestEventTarget;c&&c.prototype&&t.patchEventTarget(n,t,[c.prototype])}),e.__load_patch("MutationObserver",(n,a,t)=>{ve("MutationObserver"),ve("WebKitMutationObserver")}),e.__load_patch("IntersectionObserver",(n,a,t)=>{ve("IntersectionObserver")}),e.__load_patch("FileReader",(n,a,t)=>{ve("FileReader")}),e.__load_patch("on_property",(n,a,t)=>{Ot(t,n)}),e.__load_patch("customElements",(n,a,t)=>{Ct(n,t)}),e.__load_patch("XHR",(n,a)=>{C(n);let t=j("xhrTask"),c=j("xhrSync"),f=j("xhrListener"),E=j("xhrScheduled"),T=j("xhrURL"),p=j("xhrErrorBeforeScheduled");function C(_){let P=_.XMLHttpRequest;if(!P)return;let I=P.prototype;function H(w){return w[t]}let U=I[Le],$=I[Ie];if(!U){let w=_.XMLHttpRequestEventTarget;if(w){let b=w.prototype;U=b[Le],$=b[Ie]}}let J="readystatechange",q="scheduled";function k(w){let b=w.data,D=b.target;D[E]=!1,D[p]=!1;let K=D[f];U||(U=D[Le],$=D[Ie]),K&&$.call(D,J,K);let W=D[f]=()=>{if(D.readyState===D.DONE)if(!b.aborted&&D[E]&&w.state===q){let s=D[a.__symbol__("loadfalse")];if(D.status!==0&&s&&s.length>0){let i=w.invoke;w.invoke=function(){let o=D[a.__symbol__("loadfalse")];for(let g=0;g<o.length;g++)o[g]===w&&o.splice(g,1);!b.aborted&&w.state===q&&i.call(w)},s.push(w)}else w.invoke()}else!b.aborted&&D[E]===!1&&(D[p]=!0)};return U.call(D,J,W),D[t]||(D[t]=w),z.apply(D,b.args),D[E]=!0,w}function d(){}function A(w){let b=w.data;return b.aborted=!0,S.apply(b.target,b.args)}let x=ue(I,"open",()=>function(w,b){return w[c]=b[2]==!1,w[T]=b[1],x.apply(w,b)}),X="XMLHttpRequest.send",G=j("fetchTaskAborting"),y=j("fetchTaskScheduling"),z=ue(I,"send",()=>function(w,b){if(a.current[y]===!0||w[c])return z.apply(w,b);{let D={target:w,url:w[T],isPeriodic:!1,args:b,aborted:!1},K=Ge(X,d,D,k,A);w&&w[p]===!0&&!D.aborted&&K.state===q&&K.invoke()}}),S=ue(I,"abort",()=>function(w,b){let D=H(w);if(D&&typeof D.type=="string"){if(D.cancelFn==null||D.data&&D.data.aborted)return;D.zone.cancelTask(D)}else if(a.current[G]===!0)return S.apply(w,b)})}}),e.__load_patch("geolocation",n=>{n.navigator&&n.navigator.geolocation&&yt(n.navigator.geolocation,["getCurrentPosition","watchPosition"])}),e.__load_patch("PromiseRejectionEvent",(n,a)=>{function t(c){return function(f){lt(n,c).forEach(T=>{let p=n.PromiseRejectionEvent;if(p){let C=new p(c,{promise:f.promise,reason:f.rejection});T.invoke(C)}})}}n.PromiseRejectionEvent&&(a[j("unhandledPromiseRejectionHandler")]=t("unhandledrejection"),a[j("rejectionHandledHandler")]=t("rejectionhandled"))}),e.__load_patch("queueMicrotask",(n,a,t)=>{Rt(n,t)})}function Lt(e){e.__load_patch("ZoneAwarePromise",(n,a,t)=>{let c=Object.getOwnPropertyDescriptor,f=Object.defineProperty;function E(h){if(h&&h.toString===Object.prototype.toString){let l=h.constructor&&h.constructor.name;return(l||"")+": "+JSON.stringify(h)}return h?h.toString():Object.prototype.toString.call(h)}let T=t.symbol,p=[],C=n[T("DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION")]!==!1,_=T("Promise"),P=T("then"),I="__creationTrace__";t.onUnhandledError=h=>{if(t.showUncaughtError()){let l=h&&h.rejection;l?console.error("Unhandled Promise rejection:",l instanceof Error?l.message:l,"; Zone:",h.zone.name,"; Task:",h.task&&h.task.source,"; Value:",l,l instanceof Error?l.stack:void 0):console.error(h)}},t.microtaskDrainDone=()=>{for(;p.length;){let h=p.shift();try{h.zone.runGuarded(()=>{throw h.throwOriginal?h.rejection:h})}catch(l){U(l)}}};let H=T("unhandledPromiseRejectionHandler");function U(h){t.onUnhandledError(h);try{let l=a[H];typeof l=="function"&&l.call(this,h)}catch{}}function $(h){return h&&h.then}function J(h){return h}function q(h){return Z.reject(h)}let k=T("state"),d=T("value"),A=T("finally"),x=T("parentPromiseValue"),X=T("parentPromiseState"),G="Promise.then",y=null,z=!0,S=!1,w=0;function b(h,l){return r=>{try{M(h,l,r)}catch(u){M(h,!1,u)}}}let D=function(){let h=!1;return function(r){return function(){h||(h=!0,r.apply(null,arguments))}}},K="Promise resolved with itself",W=T("currentTaskTrace");function M(h,l,r){let u=D();if(h===r)throw new TypeError(K);if(h[k]===y){let v=null;try{(typeof r=="object"||typeof r=="function")&&(v=r&&r.then)}catch(R){return u(()=>{M(h,!1,R)})(),h}if(l!==S&&r instanceof Z&&r.hasOwnProperty(k)&&r.hasOwnProperty(d)&&r[k]!==y)i(r),M(h,r[k],r[d]);else if(l!==S&&typeof v=="function")try{v.call(r,u(b(h,l)),u(b(h,!1)))}catch(R){u(()=>{M(h,!1,R)})()}else{h[k]=l;let R=h[d];if(h[d]=r,h[A]===A&&l===z&&(h[k]=h[X],h[d]=h[x]),l===S&&r instanceof Error){let m=a.currentTask&&a.currentTask.data&&a.currentTask.data[I];m&&f(r,W,{configurable:!0,enumerable:!1,writable:!0,value:m})}for(let m=0;m<R.length;)o(h,R[m++],R[m++],R[m++],R[m++]);if(R.length==0&&l==S){h[k]=w;let m=r;try{throw new Error("Uncaught (in promise): "+E(r)+(r&&r.stack?`
+`+r.stack:""))}catch(O){m=O}C&&(m.throwOriginal=!0),m.rejection=r,m.promise=h,m.zone=a.current,m.task=a.currentTask,p.push(m),t.scheduleMicroTask()}}}return h}let s=T("rejectionHandledHandler");function i(h){if(h[k]===w){try{let l=a[s];l&&typeof l=="function"&&l.call(this,{rejection:h[d],promise:h})}catch{}h[k]=S;for(let l=0;l<p.length;l++)h===p[l].promise&&p.splice(l,1)}}function o(h,l,r,u,v){i(h);let R=h[k],m=R?typeof u=="function"?u:J:typeof v=="function"?v:q;l.scheduleMicroTask(G,()=>{try{let O=h[d],N=!!r&&A===r[A];N&&(r[x]=O,r[X]=R);let L=l.run(m,void 0,N&&m!==q&&m!==J?[]:[O]);M(r,!0,L)}catch(O){M(r,!1,O)}},r)}let g="function ZoneAwarePromise() { [native code] }",V=function(){},ee=n.AggregateError;class Z{static toString(){return g}static resolve(l){return l instanceof Z?l:M(new this(null),z,l)}static reject(l){return M(new this(null),S,l)}static withResolvers(){let l={};return l.promise=new Z((r,u)=>{l.resolve=r,l.reject=u}),l}static any(l){if(!l||typeof l[Symbol.iterator]!="function")return Promise.reject(new ee([],"All promises were rejected"));let r=[],u=0;try{for(let m of l)u++,r.push(Z.resolve(m))}catch{return Promise.reject(new ee([],"All promises were rejected"))}if(u===0)return Promise.reject(new ee([],"All promises were rejected"));let v=!1,R=[];return new Z((m,O)=>{for(let N=0;N<r.length;N++)r[N].then(L=>{v||(v=!0,m(L))},L=>{R.push(L),u--,u===0&&(v=!0,O(new ee(R,"All promises were rejected")))})})}static race(l){let r,u,v=new this((O,N)=>{r=O,u=N});function R(O){r(O)}function m(O){u(O)}for(let O of l)$(O)||(O=this.resolve(O)),O.then(R,m);return v}static all(l){return Z.allWithCallback(l)}static allSettled(l){return(this&&this.prototype instanceof Z?this:Z).allWithCallback(l,{thenCallback:u=>({status:"fulfilled",value:u}),errorCallback:u=>({status:"rejected",reason:u})})}static allWithCallback(l,r){let u,v,R=new this((L,F)=>{u=L,v=F}),m=2,O=0,N=[];for(let L of l){$(L)||(L=this.resolve(L));let F=O;try{L.then(B=>{N[F]=r?r.thenCallback(B):B,m--,m===0&&u(N)},B=>{r?(N[F]=r.errorCallback(B),m--,m===0&&u(N)):v(B)})}catch(B){v(B)}m++,O++}return m-=2,m===0&&u(N),R}constructor(l){let r=this;if(!(r instanceof Z))throw new Error("Must be an instanceof Promise.");r[k]=y,r[d]=[];try{let u=D();l&&l(u(b(r,z)),u(b(r,S)))}catch(u){M(r,!1,u)}}get[Symbol.toStringTag](){return"Promise"}get[Symbol.species](){return Z}then(l,r){let u=this.constructor?.[Symbol.species];(!u||typeof u!="function")&&(u=this.constructor||Z);let v=new u(V),R=a.current;return this[k]==y?this[d].push(R,v,l,r):o(this,R,v,l,r),v}catch(l){return this.then(null,l)}finally(l){let r=this.constructor?.[Symbol.species];(!r||typeof r!="function")&&(r=Z);let u=new r(V);u[A]=A;let v=a.current;return this[k]==y?this[d].push(v,u,l,l):o(this,v,u,l,l),u}}Z.resolve=Z.resolve,Z.reject=Z.reject,Z.race=Z.race,Z.all=Z.all;let he=n[_]=n.Promise;n.Promise=Z;let _e=T("thenPatched");function Q(h){let l=h.prototype,r=c(l,"then");if(r&&(r.writable===!1||!r.configurable))return;let u=l.then;l[P]=u,h.prototype.then=function(v,R){return new Z((O,N)=>{u.call(this,O,N)}).then(v,R)},h[_e]=!0}t.patchThen=Q;function Ee(h){return function(l,r){let u=h.apply(l,r);if(u instanceof Z)return u;let v=u.constructor;return v[_e]||Q(v),u}}return he&&(Q(he),ue(n,"fetch",h=>Ee(h))),Promise[a.__symbol__("uncaughtPromiseErrors")]=p,Z})}function It(e){e.__load_patch("toString",n=>{let a=Function.prototype.toString,t=j("OriginalDelegate"),c=j("Promise"),f=j("Error"),E=function(){if(typeof this=="function"){let _=this[t];if(_)return typeof _=="function"?a.call(_):Object.prototype.toString.call(_);if(this===Promise){let P=n[c];if(P)return a.call(P)}if(this===Error){let P=n[f];if(P)return a.call(P)}}return a.call(this)};E[t]=a,Function.prototype.toString=E;let T=Object.prototype.toString,p="[object Promise]";Object.prototype.toString=function(){return typeof Promise=="function"&&this instanceof Promise?p:T.call(this)}})}function Mt(e,n,a,t,c){let f=Zone.__symbol__(t);if(n[f])return;let E=n[f]=n[t];n[t]=function(T,p,C){return p&&p.prototype&&c.forEach(function(_){let P=`${a}.${t}::`+_,I=p.prototype;try{if(I.hasOwnProperty(_)){let H=e.ObjectGetOwnPropertyDescriptor(I,_);H&&H.value?(H.value=e.wrapWithCurrentZone(H.value,P),e._redefineProperty(p.prototype,_,H)):I[_]&&(I[_]=e.wrapWithCurrentZone(I[_],P))}else I[_]&&(I[_]=e.wrapWithCurrentZone(I[_],P))}catch{}}),E.call(n,T,p,C)},e.attachOriginToPatched(n[t],E)}function Zt(e){e.__load_patch("util",(n,a,t)=>{let c=Ze(n);t.patchOnProperties=ot,t.patchMethod=ue,t.bindArguments=Fe,t.patchMacroTask=pt;let f=a.__symbol__("BLACK_LISTED_EVENTS"),E=a.__symbol__("UNPATCHED_EVENTS");n[E]&&(n[f]=n[E]),n[f]&&(a[f]=a[E]=n[f]),t.patchEventPrototype=wt,t.patchEventTarget=Pt,t.isIEOrEdge=vt,t.ObjectDefineProperty=Ae,t.ObjectGetOwnPropertyDescriptor=be,t.ObjectCreate=Et,t.ArraySlice=Tt,t.patchClass=ve,t.wrapWithCurrentZone=Ve,t.filterProperties=ut,t.attachOriginToPatched=fe,t._redefineProperty=Object.defineProperty,t.patchCallbacks=Mt,t.getGlobalObjects=()=>({globalSources:st,zoneSymbolEventNames:ne,eventNames:c,isBrowser:Be,isMix:rt,isNode:Se,TRUE_STR:ae,FALSE_STR:le,ZONE_SYMBOL_PREFIX:Pe,ADD_EVENT_LISTENER_STR:He,REMOVE_EVENT_LISTENER_STR:xe})})}function At(e){Lt(e),It(e),Zt(e)}var ft=_t();At(ft);Nt(ft);
+
+
+
+# MODULE: adk.cli.browser.styles-4VDSPQ37.css
+# PATH: adk/cli/browser/styles-4VDSPQ37.css
+
+
+
+html{color-scheme:dark}html{--mat-sys-background: light-dark(#fcf9f8, #131314);--mat-sys-error: light-dark(#ba1a1a, #ffb4ab);--mat-sys-error-container: light-dark(#ffdad6, #93000a);--mat-sys-inverse-on-surface: light-dark(#f3f0f0, #313030);--mat-sys-inverse-primary: light-dark(#c1c7cd, #595f65);--mat-sys-inverse-surface: light-dark(#313030, #e5e2e2);--mat-sys-on-background: light-dark(#1c1b1c, #e5e2e2);--mat-sys-on-error: light-dark(#ffffff, #690005);--mat-sys-on-error-container: light-dark(#410002, #ffdad6);--mat-sys-on-primary: light-dark(#ffffff, #2b3136);--mat-sys-on-primary-container: light-dark(#161c21, #dde3e9);--mat-sys-on-primary-fixed: light-dark(#161c21, #161c21);--mat-sys-on-primary-fixed-variant: light-dark(#41474d, #41474d);--mat-sys-on-secondary: light-dark(#ffffff, #003061);--mat-sys-on-secondary-container: light-dark(#001b3c, #d5e3ff);--mat-sys-on-secondary-fixed: light-dark(#001b3c, #001b3c);--mat-sys-on-secondary-fixed-variant: light-dark(#0f4784, #0f4784);--mat-sys-on-surface: light-dark(#1c1b1c, #e5e2e2);--mat-sys-on-surface-variant: light-dark(#44474a, #e1e2e6);--mat-sys-on-tertiary: light-dark(#ffffff, #2b3136);--mat-sys-on-tertiary-container: light-dark(#161c21, #dde3e9);--mat-sys-on-tertiary-fixed: light-dark(#161c21, #161c21);--mat-sys-on-tertiary-fixed-variant: light-dark(#41474d, #41474d);--mat-sys-outline: light-dark(#74777b, #8e9194);--mat-sys-outline-variant: light-dark(#c4c7ca, #44474a);--mat-sys-primary: light-dark(#595f65, #c1c7cd);--mat-sys-primary-container: light-dark(#dde3e9, #41474d);--mat-sys-primary-fixed: light-dark(#dde3e9, #dde3e9);--mat-sys-primary-fixed-dim: light-dark(#c1c7cd, #c1c7cd);--mat-sys-scrim: light-dark(#000000, #000000);--mat-sys-secondary: light-dark(#305f9d, #a7c8ff);--mat-sys-secondary-container: light-dark(#d5e3ff, #0f4784);--mat-sys-secondary-fixed: light-dark(#d5e3ff, #d5e3ff);--mat-sys-secondary-fixed-dim: light-dark(#a7c8ff, #a7c8ff);--mat-sys-shadow: light-dark(#000000, #000000);--mat-sys-surface: light-dark(#fcf9f8, #131314);--mat-sys-surface-bright: light-dark(#fcf9f8, #393939);--mat-sys-surface-container: light-dark(#f0eded, #201f20);--mat-sys-surface-container-high: light-dark(#eae7e7, #2a2a2a);--mat-sys-surface-container-highest: light-dark(#e5e2e2, #393939);--mat-sys-surface-container-low: light-dark(#f6f3f3, #1c1b1c);--mat-sys-surface-container-lowest: light-dark(#ffffff, #0e0e0e);--mat-sys-surface-dim: light-dark(#dcd9d9, #131314);--mat-sys-surface-tint: light-dark(#595f65, #c1c7cd);--mat-sys-surface-variant: light-dark(#e1e2e6, #44474a);--mat-sys-tertiary: light-dark(#595f65, #c1c7cd);--mat-sys-tertiary-container: light-dark(#dde3e9, #41474d);--mat-sys-tertiary-fixed: light-dark(#dde3e9, #dde3e9);--mat-sys-tertiary-fixed-dim: light-dark(#c1c7cd, #c1c7cd);--mat-sys-neutral-variant20: #2d3134;--mat-sys-neutral10: #1c1b1c}html{--mat-sys-level0: 0px 0px 0px 0px rgba(0, 0, 0, .2), 0px 0px 0px 0px rgba(0, 0, 0, .14), 0px 0px 0px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level1: 0px 2px 1px -1px rgba(0, 0, 0, .2), 0px 1px 1px 0px rgba(0, 0, 0, .14), 0px 1px 3px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level2: 0px 3px 3px -2px rgba(0, 0, 0, .2), 0px 3px 4px 0px rgba(0, 0, 0, .14), 0px 1px 8px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level3: 0px 3px 5px -1px rgba(0, 0, 0, .2), 0px 6px 10px 0px rgba(0, 0, 0, .14), 0px 1px 18px 0px rgba(0, 0, 0, .12)}html{--mat-sys-level4: 0px 5px 5px -3px rgba(0, 0, 0, .2), 0px 8px 10px 1px rgba(0, 0, 0, .14), 0px 3px 14px 2px rgba(0, 0, 0, .12)}html{--mat-sys-level5: 0px 7px 8px -4px rgba(0, 0, 0, .2), 0px 12px 17px 2px rgba(0, 0, 0, .14), 0px 5px 22px 4px rgba(0, 0, 0, .12)}html{--mat-sys-corner-extra-large: 28px;--mat-sys-corner-extra-large-top: 28px 28px 0 0;--mat-sys-corner-extra-small: 4px;--mat-sys-corner-extra-small-top: 4px 4px 0 0;--mat-sys-corner-full: 9999px;--mat-sys-corner-large: 16px;--mat-sys-corner-large-end: 0 16px 16px 0;--mat-sys-corner-large-start: 16px 0 0 16px;--mat-sys-corner-large-top: 16px 16px 0 0;--mat-sys-corner-medium: 12px;--mat-sys-corner-none: 0;--mat-sys-corner-small: 8px}html{--mat-sys-dragged-state-layer-opacity: .16;--mat-sys-focus-state-layer-opacity: .12;--mat-sys-hover-state-layer-opacity: .08;--mat-sys-pressed-state-layer-opacity: .12}html{font-family:Google Sans,Helvetica Neue,sans-serif!important}body{height:100vh;margin:0}markdown p{margin-block-start:.5em;margin-block-end:.5em}:root{--mat-sys-primary: black;--mdc-checkbox-selected-icon-color: white;--mat-sys-background: #131314;--mat-tab-header-active-label-text-color: #8AB4F8;--mat-tab-header-active-hover-label-text-color: #8AB4F8;--mat-tab-header-active-focus-label-text-color: #8AB4F8;--mat-tab-header-label-text-weight: 500;--mdc-text-button-label-text-color: #89b4f8}:root{--mdc-dialog-container-color: #2b2b2f}:root{--mdc-dialog-subhead-color: white}:root{--mdc-circular-progress-active-indicator-color: #a8c7fa}:root{--mdc-circular-progress-size: 80}
+
+
+# MODULE: adk.cli.browser.assets.audio-processor.js
+# PATH: adk/cli/browser/assets/audio-processor.js
+
+
+
+class AudioProcessor extends AudioWorkletProcessor {
+    constructor() {
+        super();
+        this.targetSampleRate = 22000;  // Change to your desired rate
+        this.originalSampleRate = sampleRate; // Browser's sample rate
+        this.resampleRatio = this.originalSampleRate / this.targetSampleRate;
+    }
+
+    process(inputs, outputs, parameters) {
+        const input = inputs[0];
+        if (input.length > 0) {
+            let audioData = input[0]; // Get first channel's data
+            
+            if (this.resampleRatio !== 1) {
+                audioData = this.resample(audioData);
+            }
+
+            this.port.postMessage(audioData);
+        }
+        return true; // Keep processor alive
+    }
+
+    resample(audioData) {
+        const newLength = Math.round(audioData.length / this.resampleRatio);
+        const resampled = new Float32Array(newLength);
+
+        for (let i = 0; i < newLength; i++) {
+            const srcIndex = Math.floor(i * this.resampleRatio);
+            resampled[i] = audioData[srcIndex]; // Nearest neighbor resampling
+        }
+        return resampled;
+    }
+}
+
+registerProcessor('audio-processor', AudioProcessor);
+
+
+# MODULE: adk.cli.browser.assets.config.runtime-config.json
+# PATH: adk/cli/browser/assets/config/runtime-config.json
+
+{
+  "backendUrl": ""
+}
+
+
+# MODULE: adk.cli.utils.__init__.py
+# PATH:   adk/cli/utils/__init__.py
+
+
+import re
+from typing import Any
+from typing import Optional
+
+from ...agents.base_agent import BaseAgent
+from ...agents.llm_agent import LlmAgent
+
+__all__ = [
+    'create_empty_state',
+]
+
+
+def _create_empty_state(agent: BaseAgent, all_state: dict[str, Any]):
+  for sub_agent in agent.sub_agents:
+    _create_empty_state(sub_agent, all_state)
+
+  if (
+      isinstance(agent, LlmAgent)
+      and agent.instruction
+      and isinstance(agent.instruction, str)
+  ):
+    for key in re.findall(r'{([\w]+)}', agent.instruction):
+      all_state[key] = ''
+
+
+def create_empty_state(
+    agent: BaseAgent, initialized_states: Optional[dict[str, Any]] = None
+) -> dict[str, Any]:
+  """Creates empty str for non-initialized states."""
+  non_initialized_states = {}
+  _create_empty_state(agent, non_initialized_states)
+  for key in initialized_states or {}:
+    if key in non_initialized_states:
+      del non_initialized_states[key]
+  return non_initialized_states
+
+
+
+# MODULE: adk.cli.utils.envs.py
+# PATH:   adk/cli/utils/envs.py
+
+import logging
+import os
+
+from dotenv import load_dotenv
+
+logger = logging.getLogger(__file__)
+
+
+def _walk_to_root_until_found(folder, filename) -> str:
+  checkpath = os.path.join(folder, filename)
+  if os.path.exists(checkpath) and os.path.isfile(checkpath):
+    return checkpath
+
+  parent_folder = os.path.dirname(folder)
+  if parent_folder == folder:  # reached the root
+    return ''
+
+  return _walk_to_root_until_found(parent_folder, filename)
+
+
+def load_dotenv_for_agent(
+    agent_name: str, agent_parent_folder: str, filename: str = '.env'
+):
+  """Lods the .env file for the agent module."""
+
+  # Gets the folder of agent_module as starting_folder
+  starting_folder = os.path.abspath(
+      os.path.join(agent_parent_folder, agent_name)
+  )
+  dotenv_file_path = _walk_to_root_until_found(starting_folder, filename)
+  if dotenv_file_path:
+    load_dotenv(dotenv_file_path, override=True, verbose=True)
+    logger.info(
+        'Loaded %s file for %s at %s',
+        filename,
+        agent_name,
+        dotenv_file_path,
+    )
+    logger.info(
+        'Reloaded %s file for %s at %s', filename, agent_name, dotenv_file_path
+    )
+  else:
+    logger.info('No %s file found for %s', filename, agent_name)
+
+
+
+# MODULE: adk.cli.utils.evals.py
+# PATH:   adk/cli/utils/evals.py
+
+
+
+from typing import Any
+
+from ...sessions.session import Session
+
+
+def convert_session_to_eval_format(session: Session) -> list[dict[str, Any]]:
+  """Converts a session data into eval format.
+
+  Args:
+      session: The session that should be converted.
+
+  Returns:
+      list: A single evaluation dataset in the required format.
+  """
+  eval_case = []
+  events = session.events if session and session.events else []
+
+  for event in events:
+    if event.author == 'user':
+      if not event.content or not event.content.parts:
+        continue
+
+      # Extract user query
+      content = event.content
+      parts = content.parts
+
+      query = parts[0].text or ''
+
+      # Find the corresponding tool usage or response for the query
+      expected_tool_use = []
+      intermediate_agent_responses = []
+
+      # Check subsequent events to extract tool uses or responses for this turn.
+      for subsequent_event in events[events.index(event) + 1 :]:
+        event_author = subsequent_event.author or 'agent'
+        if event_author == 'user':
+          # We found an event where the author was the user. This means that a
+          # new turn has started. So close this turn here.
+          break
+
+        if not subsequent_event.content or not subsequent_event.content.parts:
+          continue
+
+        for subsequent_part in subsequent_event.content.parts:
+          # Some events have both function call and reference
+
+          if subsequent_part.function_call:
+            tool_name = subsequent_part.function_call.name or ''
+            tool_input = subsequent_part.function_call.args or {}
+            expected_tool_use.append({
+                'tool_name': tool_name,
+                'tool_input': tool_input,
+            })
+          elif subsequent_part.text:
+            # Also keep track of all the natural language responses that
+            # agent (or sub agents) generated.
+            intermediate_agent_responses.append(
+                {'author': event_author, 'text': subsequent_part.text}
+            )
+
+      # If we are here then either we are done reading all the events or we
+      # encountered an event that had content authored by the end-user.
+      # This, basically means an end of turn.
+      # We assume that the last natural language intermediate response is the
+      # final response from the agent/model. We treat that as a reference.
+      eval_case.append({
+          'query': query,
+          'expected_tool_use': expected_tool_use,
+          'expected_intermediate_agent_responses': intermediate_agent_responses[
+              :-1
+          ],
+          'reference': (
+              intermediate_agent_responses[-1]['text']
+              if intermediate_agent_responses
+              else ''
+          ),
+      })
+
+  return eval_case
+
+
+# MODULE: adk.cli.utils.logs.py
+# PATH:   adk/cli/utils/logs.py
+
+
+import logging
+import os
+import tempfile
+import time
+
+LOGGING_FORMAT = (
+    '%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s'
+)
+
+
+def log_to_stderr(level=logging.INFO):
+  logging.basicConfig(
+      level=level,
+      format=LOGGING_FORMAT,
+  )
+
+
+def log_to_tmp_folder(
+    level=logging.INFO,
+    *,
+    sub_folder: str = 'agents_log',
+    log_file_prefix: str = 'agent',
+    log_file_timestamp: str = time.strftime('%Y%m%d_%H%M%S'),
+):
+  """Logs to system temp folder, instead of logging to stderr.
+
+  Args
+    sub_folder: str = 'agents_log',
+    log_file_prefix: str = 'agent',
+    log_file_timestamp: str = time.strftime('%Y%m%d_%H%M%S'),
+
+  Returns
+    the log file path.
+  """
+  log_dir = os.path.join(tempfile.gettempdir(), sub_folder)
+  log_filename = f'{log_file_prefix}.{log_file_timestamp}.log'
+  log_filepath = os.path.join(log_dir, log_filename)
+
+  os.makedirs(log_dir, exist_ok=True)
+
+  file_handler = logging.FileHandler(log_filepath, mode='w')
+  file_handler.setLevel(level)
+  file_handler.setFormatter(logging.Formatter(LOGGING_FORMAT))
+
+  root_logger = logging.getLogger()
+  root_logger.setLevel(level)
+  root_logger.handlers = []  # Clear handles to disable logging to stderr
+  root_logger.addHandler(file_handler)
+
+  print(f'Log setup complete: {log_filepath}')
+
+  latest_log_link = os.path.join(log_dir, f'{log_file_prefix}.latest.log')
+  if os.path.islink(latest_log_link):
+    os.unlink(latest_log_link)
+  os.symlink(log_filepath, latest_log_link)
+
+  print(f'To access latest log: tail -F {latest_log_link}')
+  return log_filepath
+

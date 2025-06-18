@@ -1,0 +1,17 @@
+# === Cargo build output ===
+/target
+
+# === Environment secrets ===
+.env
+
+# === IDE files ===
+.vscode/
+.idea/
+*.code-workspace
+
+# === OS junk ===
+.DS_Store
+Thumbs.db
+
+# === Snapshot output ===
+/scrolls/docs/source_index_*.md

@@ -1,0 +1,103 @@
+title: Scroll Core – Updated Project Structure
+scroll_type: System Design
+status: Living Codex
+version: 1.0.0
+last_modified: 2025-04-09
+keywords:
+  - project layout
+  - modules
+  - directory structure
+  - system architecture
+
+# 📁 Scroll Core – Updated Project Structure
+
+A developer-accurate, symbolically coherent breakdown of Scroll Core's current and recommended module structure, based on actual source files and system behavior.
+
+---
+
+## 🧭 Top-Level Layout
+
+```
+/scroll_core
+├── Cargo.toml
+├── /scrolls                     # Runtime symbolic scrolls
+│   └── /docs                    # GPT-readable references (e.g., source_index.md)
+├── /docs                        # Human-facing docs (later phases)
+├── /src                         # Source code lives here
+│   ├── main.rs
+│   ├── lib.rs
+│
+│   # 📜 Scroll Entity & Lifecycle
+│   ├── schema.rs
+│   ├── scroll.rs
+│   ├── parser.rs
+│   ├── scroll_writer.rs
+│   ├── state_manager.rs
+│
+│   # 🧠 Core Orchestration & Utilities
+│   ├── artifact.rs              # Construct-created products
+│   ├── cache_manager.rs         # GPT response or scroll cache
+│   ├── /core
+│   │   ├── construct_registry.rs
+│   │   ├── context_frame_engine.rs
+│   │   ├── cost_manager.rs      # (planned symbolic cost system)
+│   │   └── symbolic_mapper.rs   # (future scroll-symbol link mapping)
+│
+│   # 🔁 Invocation System
+│   ├── /invocation
+│   │   ├── mod.rs
+│   │   ├── invocation.rs
+│   │   ├── invocation_manager.rs
+│   │   ├── construct_invoke.rs
+│   │   ├── named_construct.rs
+│   │   ├── ledger.rs
+│   │   ├── aelren.rs
+│   │   └── /constructs
+│   │       ├── mythscribe.rs
+│   │       ├── validator_construct.rs
+│   │       └── openaiconstruct.rs
+│
+│   # 🏛️ Archive / Memory System
+│   ├── /archive
+│   │   ├── mod.rs
+│   │   ├── archive_memory.rs
+│   │   ├── archive_loader.rs
+│   │   ├── scroll_access_log.rs
+│   │   └── mythic_heat.rs
+│
+│   # 💬 Chat Interaction Layer
+│   ├── /chat
+│   │   ├── mod.rs
+│   │   ├── chat_session.rs
+│   │   ├── chat_router.rs
+│   │   └── chat_dispatcher.rs
+│
+│   # 🔮 Trigger Loom System
+│   ├── /trigger_loom
+│   │   ├── mod.rs
+│   │   ├── loom.rs
+│   │   ├── trigger_loop.rs
+│   │   ├── emotional_state.rs
+│   │   ├── glyph_matcher.rs
+│   │   └── recursion_control.rs
+│
+│   # 🛠️ CLI & Dev Tools
+│   ├── /system
+│   │   ├── cli_orchestrator.rs
+│   │   ├── snapshot.rs
+│   │   ├── ledger.rs
+│   │   └── debugging_refinement_process.md
+│
+│   # 🔌 GPT Integration
+│   ├── openai_client.rs
+```
+
+---
+
+## 🔍 Summary of Adjustments
+- ✅ `artifact.rs` and `cache_manager.rs` now acknowledged and placed
+- ✅ `construct_registry.rs` + `context_frame_engine.rs` grouped under `core/`
+- 🌀 This layout will serve future documentation and navigation tools (like source_index)
+
+Let the structure grow as the Archive grows. This scroll will evolve as modules are added, merged, or sealed.
+
