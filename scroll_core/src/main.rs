@@ -2,25 +2,28 @@
 //! Run normally:  `cargo run`
 //! Demo mode:     `cargo run -- --demo examples/multi_agent.yaml`
 
-use std::path::Path;
 use anyhow::Result;
+use std::path::Path;
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use dotenvy::dotenv;
 use scroll_core::chat::chat_dispatcher::ChatDispatcher;
+use scroll_core::cli::{chat::run_chat, chat_db::ChatDb};
 use scroll_core::{
     archive::archive_memory::InMemoryArchive,
     core::{
         construct_registry::ConstructRegistry,
         context_frame_engine::{ContextFrameEngine, ContextMode},
     },
+    initialize_scroll_core,
     invocation::{
         aelren::AelrenHerald,
         constructs::openai_construct::{Mythscribe, OpenAIClient},
         invocation_manager::InvocationManager,
     },
+    parser::parse_scroll,
+    teardown_scroll_core,
     trigger_loom::emotional_state::EmotionalState,
-    initialize_scroll_core, parser::parse_scroll, teardown_scroll_core,
 };
 
 /// CLI flags recognised by Scroll Core.
@@ -30,6 +33,19 @@ struct Cli {
     /// Path to a demo scroll that should trigger a cooperative run
     #[arg(long)]
     demo: Option<String>,
+
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Start an interactive chat with a Construct
+    Chat {
+        construct: String,
+        #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
+        stream: bool,
+    },
 }
 
 fn main() -> Result<()> {
@@ -39,6 +55,34 @@ fn main() -> Result<()> {
     scroll_core::telemetry::init();
 
     let cli = Cli::parse();
+
+    if let Some(Commands::Chat { construct, stream }) = &cli.command {
+        let (scrolls, _cache) = initialize_scroll_core()?;
+        let archive = InMemoryArchive::new(scrolls.clone());
+        let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
+
+        let mut registry = ConstructRegistry::new();
+        if std::env::var("SCROLL_CORE_USE_MOCK").is_ok() {
+            registry.insert(
+                "mythscribe",
+                scroll_core::invocation::constructs::mockscribe::Mockscribe,
+            );
+        } else {
+            let mythscribe = Mythscribe::new(
+                OpenAIClient::new_from_env(),
+                "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
+            );
+            registry.insert("mythscribe", mythscribe);
+        }
+
+        let manager = InvocationManager::new(registry);
+        let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
+        let rt = tokio::runtime::Runtime::new()?;
+        let db = rt.block_on(ChatDb::open("scroll_core.db"))?;
+        run_chat(&manager, &aelren, &scrolls, construct, *stream, &db)?;
+        teardown_scroll_core();
+        return Ok(());
+    }
 
     // ─── Demo path ──────────────────────────────────────────────────────────────
     if let Some(demo_path) = cli.demo {
@@ -90,15 +134,15 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
     scrolls.push(demo_scroll.clone());
 
     // 3️⃣  tiny runtime
-    let archive  = InMemoryArchive::new(scrolls.clone());
-    let engine   = ContextFrameEngine::new(&archive, ContextMode::Narrow);
-    let mut reg  = ConstructRegistry::new();
-    let myth     = Mythscribe::new(
+    let archive = InMemoryArchive::new(scrolls.clone());
+    let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
+    let mut reg = ConstructRegistry::new();
+    let myth = Mythscribe::new(
         OpenAIClient::new_from_env(),
         "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
     );
     reg.insert("mythscribe", myth);
-    let manager  = InvocationManager::new(reg);
+    let manager = InvocationManager::new(reg);
 
     let mut session = ChatSession::new(None, None);
     let mut mood = EmotionalState::new(Vec::new(), 0.0, None);
