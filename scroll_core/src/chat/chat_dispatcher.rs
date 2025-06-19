@@ -6,7 +6,6 @@ use crate::chat::chat_router::ChatRouter;
 use crate::chat::chat_session::{ChatMessage, ChatSession};
 use crate::construct_ai::{ConstructContext, ConstructResult};
 use crate::invocation::aelren::AelrenHerald;
-use crate::invocation::invocation::InvocationResult;
 use crate::invocation::invocation_manager::InvocationManager;
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
@@ -35,17 +34,8 @@ impl ChatDispatcher {
         // Get latest scroll for context
         let scroll = memory.last().expect("No scrolls available");
 
-        let context = ConstructContext {
-            scrolls: vec![scroll.clone()],
-            emotion_signature: EmotionSignature {
-                tone: "neutral".into(),
-                emphasis: 0.0,
-                resonance: "balanced".into(),
-                intensity: Some(0.0),
-            },
-            tags: vec![],
-            user_input: Some(user_input.to_string()),
-        };
+        let mut context = manager.registry.build_context(scroll);
+        context.user_input = Some(user_input.to_string());
 
         let result = if target == "symbolic" {
             manager.invoke_symbolically_with_aelren(scroll, aelren)
@@ -54,9 +44,10 @@ impl ChatDispatcher {
         };
 
         let reply = match result {
-            InvocationResult::Success(text) => text,
-            InvocationResult::ModifiedScroll(scroll) => scroll.markdown_body,
-            InvocationResult::Failure(reason) => reason,
+            ConstructResult::Insight { text } => text,
+            ConstructResult::ScrollDraft { content, .. } => content,
+            ConstructResult::ModifiedScroll(scroll) => scroll.markdown_body,
+            ConstructResult::Refusal { reason, .. } => reason,
         };
 
         let assistant_msg = ChatMessage {

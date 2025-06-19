@@ -41,6 +41,15 @@ impl ConstructRegistry {
         self.constructs.keys().cloned().collect()
     }
 
+    pub fn build_context(&self, scroll: &Scroll) -> ConstructContext {
+        ConstructContext {
+            scrolls: vec![scroll.clone()],
+            emotion_signature: scroll.emotion_signature.clone(),
+            tags: scroll.yaml_metadata.tags.clone(),
+            user_input: None,
+        }
+    }
+
     pub fn build_context_from_scroll(&self, scroll: &Scroll, user_input: &str) -> ConstructContext {
         ConstructContext {
             scrolls: vec![scroll.clone()],

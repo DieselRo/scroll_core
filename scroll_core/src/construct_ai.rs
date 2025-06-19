@@ -28,7 +28,8 @@ pub struct ConstructContext {
 
 #[derive(Debug, Clone)]
 pub enum ConstructResult {
-    Success(String),
+    Insight { text: String },
+    ScrollDraft { title: String, content: String },
     ModifiedScroll(Scroll),
     Refusal { reason: String, echo: Option<String> },
 }

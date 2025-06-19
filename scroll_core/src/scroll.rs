@@ -154,3 +154,10 @@ impl fmt::Display for Scroll {
     }
 } 
 
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ScrollDraft {
+    pub title: String,
+    pub content: String,
+}
+

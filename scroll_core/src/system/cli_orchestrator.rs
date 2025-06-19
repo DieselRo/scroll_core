@@ -131,7 +131,7 @@ let context = ConstructContext {
                 let result = mythscribe.reflect_on_scroll(&context);
             
                 match result {
-                    crate::construct_ai::ConstructResult::Success(reply) => println!("\n🪶 Mythscribe:\n{}", reply),
+                    crate::construct_ai::ConstructResult::Insight { text } => println!("\n🪶 Mythscribe:\n{}", text),
                     crate::construct_ai::ConstructResult::Refusal { reason, echo } => {
                         println!("Mythscribe refused: {}", reason);
                         if let Some(e) = echo {
@@ -140,6 +140,9 @@ let context = ConstructContext {
                     }
                     crate::construct_ai::ConstructResult::ModifiedScroll(scroll) => {
                         println!("(Modified scroll returned):\n{}", scroll.markdown_body)
+                    }
+                    crate::construct_ai::ConstructResult::ScrollDraft { content, .. } => {
+                        println!("Draft:\n{}", content)
                     }
                 }
             }
