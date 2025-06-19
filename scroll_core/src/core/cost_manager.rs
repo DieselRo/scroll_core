@@ -4,6 +4,7 @@
 
 use crate::invocation::invocation::Invocation;
 use crate::scroll::Scroll;
+use chrono::Utc;
 
 #[cfg(test)]
 use std::cell::RefCell;
@@ -67,7 +68,45 @@ pub struct SystemCost {
 }
 
 pub trait ContextScorer {
-    fn score(&self, invocation: &Invocation, scrolls: &[Scroll]) -> f32;
+    fn score(&self, invocation: &Invocation, scrolls: &[Scroll], semantic_score: f32) -> f32;
+}
+
+pub struct SemanticContextScorer;
+
+impl ContextScorer for SemanticContextScorer {
+    fn score(&self, _invocation: &Invocation, scrolls: &[Scroll], semantic_score: f32) -> f32 {
+        if scrolls.is_empty() {
+            return 0.0;
+        }
+
+        let relevance = normalize_distance(semantic_score);
+
+        let now = chrono::Utc::now();
+        let recency: f32 = scrolls
+            .iter()
+            .map(|s| {
+                let elapsed = now
+                    .signed_duration_since(s.origin.last_modified)
+                    .num_seconds()
+                    .max(1) as f32;
+                1.0 / elapsed.log2()
+            })
+            .sum::<f32>()
+            / scrolls.len() as f32;
+
+        let importance: f32 = scrolls
+            .iter()
+            .map(|s| s.emotion_signature.intensity.unwrap_or(0.5))
+            .sum::<f32>()
+            / scrolls.len() as f32;
+
+        (relevance.clamp(0.0, 1.0)) * (recency.clamp(0.0, 1.0)) * (importance.clamp(0.0, 1.0))
+    }
+}
+
+fn normalize_distance(distance: f32) -> f32 {
+    let norm = 1.0 / (1.0 + distance.abs());
+    norm.clamp(0.0, 1.0)
 }
 
 pub struct CostManager;
@@ -121,7 +160,8 @@ impl CostManager {
             };
         }
         let token_estimate = scrolls.iter().map(|s| s.markdown_body.len() / 4).sum();
-        let relevance_score = 0.75; // Placeholder — consider future ContextScorer
+        let scorer = SemanticContextScorer;
+        let relevance_score = scorer.score(_invocation, scrolls, 0.5);
 
         let context = ContextCost {
             token_estimate,

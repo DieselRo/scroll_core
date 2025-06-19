@@ -2031,8 +2031,10 @@ pub struct SystemCost {
 }
 
 pub trait ContextScorer {
-    fn score(&self, invocation: &Invocation, scrolls: &[Scroll]) -> f32;
+    fn score(&self, invocation: &Invocation, scrolls: &[Scroll], semantic_score: f32) -> f32;
 }
+
+pub struct SemanticContextScorer;
 
 pub struct CostManager;
 
@@ -2056,7 +2058,8 @@ impl CostManager {
 
     pub fn assess(_invocation: &Invocation, scrolls: &[Scroll]) -> InvocationCost {
         let token_estimate = scrolls.iter().map(|s| s.markdown_body.len() / 4).sum();
-        let relevance_score = 0.75; // Placeholder — consider future ContextScorer
+        let scorer = SemanticContextScorer;
+        let relevance_score = scorer.score(_invocation, scrolls, 0.5);
 
         let context = ContextCost {
             token_estimate,
