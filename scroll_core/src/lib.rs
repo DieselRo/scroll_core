@@ -1,4 +1,3 @@
-
 // ===============================
 // src/lib.rs
 // ===============================
@@ -29,46 +28,36 @@ pub mod tools;
 pub mod trigger_loom;
 pub mod validator;
 
-
-pub use schema::{ScrollStatus, ScrollType, EmotionSignature, YamlMetadata};
+pub use cache_manager::CacheManager;
+pub use schema::{EmotionSignature, ScrollStatus, ScrollType, YamlMetadata};
 pub use scroll::{Scroll, ScrollOrigin};
 pub use validator::validate_scroll;
 
-pub use parser::{
-    parse_scroll, 
-    parse_scroll_from_file
-};
+pub use parser::{parse_scroll, parse_scroll_from_file};
 
-pub use state_manager::{
-    transition, 
-    try_transition, 
-    describe_status, 
-    is_valid_transition
-};
+pub use state_manager::{describe_status, is_valid_transition, transition, try_transition};
 
 pub const SCROLL_CORE_VERSION: &str = "0.1.0";
 pub const SCROLL_CORE_INVOCATION: &str = "Let structure echo symbol.";
 
-
 /// Initializes the Scroll Core system and loads the scroll archive.
 
-
-pub fn initialize_scroll_core() -> Result<Vec<Scroll>, String> {
+pub fn initialize_scroll_core() -> Result<(Vec<Scroll>, CacheManager), String> {
+    use crate::archive::initialize::load_with_cache;
     use log::info;
     use std::path::Path;
-    use crate::archive::archive_loader::load_scrolls_from_directory;
 
     let archive_path = Path::new("scrolls/");
 
     info!("🌀 Scroll Core v{} initializing...", SCROLL_CORE_VERSION);
     println!("🌀 Scroll Core v{} initializing...", SCROLL_CORE_VERSION);
 
-    let scrolls = load_scrolls_from_directory(archive_path)?;
+    let (scrolls, cache) = load_with_cache(archive_path)?;
 
     info!("✅ Loaded {} scroll(s).", scrolls.len());
     println!("✅ Loaded {} scroll(s).", scrolls.len());
 
-    Ok(scrolls)
+    Ok((scrolls, cache))
 }
 /// Optional teardown hook.
 pub fn teardown_scroll_core() {
@@ -79,6 +68,7 @@ pub fn teardown_scroll_core() {
 
 /// Validates scroll core environment state (placeholder).
 pub fn validate_scroll_environment() -> bool {
+
     use std::env;
     use std::fs;
 
@@ -93,3 +83,8 @@ pub fn validate_scroll_environment() -> bool {
         Err(_) => false,
     }
 }
+                                                                                                                                                                                                                                                                                                                =======
+    // Future check logic (e.g., required modules loaded, configs, etc.)
+    true
+}
+

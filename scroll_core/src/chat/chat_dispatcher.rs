@@ -2,14 +2,15 @@
 // src/chat/chat_dispatcher.rs
 // ===============================
 
-use crate::chat::chat_session::{ChatSession, ChatMessage};
 use crate::chat::chat_router::ChatRouter;
+use crate::chat::chat_session::{ChatMessage, ChatSession};
 use crate::construct_ai::{ConstructContext, ConstructResult};
-use crate::invocation::invocation_manager::InvocationManager;
-use crate::invocation::invocation::InvocationResult;
 use crate::invocation::aelren::AelrenHerald;
-use crate::scroll::Scroll;
+use crate::invocation::invocation::InvocationResult;
+use crate::invocation::invocation_manager::InvocationManager;
 use crate::schema::EmotionSignature;
+use crate::scroll::Scroll;
+use crate::trigger_loom::emotional_state::EmotionalState;
 
 pub struct ChatDispatcher;
 
@@ -20,11 +21,13 @@ impl ChatDispatcher {
         manager: &InvocationManager,
         aelren: &AelrenHerald,
         memory: &[Scroll],
+        mood: &mut EmotionalState,
     ) -> ChatMessage {
         // Append user message to session
         session.add_message("user", user_input, None);
 
         let user_msg = session.messages.last().unwrap();
+        mood.update_from_message(user_msg);
         let target = ChatRouter::route_target(user_msg)
             .or_else(|| session.target_construct.clone())
             .unwrap_or_else(ChatRouter::default_target);
@@ -49,7 +52,7 @@ impl ChatDispatcher {
         } else {
             manager.invoke_by_name(&target, &context, 0)
         };
-        
+
         let reply = match result {
             InvocationResult::Success(text) => text,
             InvocationResult::ModifiedScroll(scroll) => scroll.markdown_body,
@@ -64,11 +67,11 @@ impl ChatDispatcher {
                 emphasis: 0.5,
                 resonance: todo!(),
                 intensity: Some(0.5),
-                
             }),
         };
 
         session.messages.push(assistant_msg.clone());
+        mood.update_from_message(&assistant_msg);
         assistant_msg
     }
 }

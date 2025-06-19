@@ -2,6 +2,7 @@
 // src/trigger_loom/config.rs
 // ===============================
 
+use crate::trigger_loom::emotion::modulate_frequency;
 use crate::EmotionSignature;
 use chrono::{Local, TimeZone, Timelike};
 
@@ -20,16 +21,6 @@ pub struct TriggerLoopConfig {
     pub max_invocations_per_tick: usize,
     pub allow_test_ticks: bool,
     pub emotional_signature: Option<EmotionSignature>,
-}
-
-pub fn modulate_frequency(base: f32, emotion: &EmotionSignature) -> f32 {
-    match emotion.intensity.unwrap_or(0.0).round() as i32 {
-        0 => base * 0.5,
-        1 => base * 0.8,
-        2 => base,
-        3 => base * 1.5,
-        _ => base * 2.0,
-    }
 }
 
 impl TriggerLoopConfig {
