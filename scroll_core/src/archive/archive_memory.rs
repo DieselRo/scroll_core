@@ -5,9 +5,10 @@
 use std::collections::HashMap;
 use uuid::Uuid;
 
+use crate::archive::error::ArchiveError;
+use crate::archive::semantic_index::{Embedder, SemanticIndex};
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
-use crate::archive::semantic_index::SemanticIndex;
 use log::info;
 
 /// Defines access methods for interacting with the Archive's scroll memory.
@@ -67,11 +68,19 @@ impl InMemoryArchive {
             .collect()
     }
 
+    pub fn semantic_index_len(&self) -> usize {
+        self.semantic_index
+            .as_ref()
+            .map(|i| i.vectors.len())
+            .unwrap_or(0)
+    }
+
     /// Build semantic vector index for all scrolls.
-    pub fn build_semantic_index(&mut self) {
+    pub fn build_semantic_index(&mut self, embedder: &dyn Embedder) -> Result<(), ArchiveError> {
         let scrolls: Vec<Scroll> = self.scrolls.values().cloned().collect();
-        let index = SemanticIndex::build(&scrolls);
+        let index = SemanticIndex::build(&scrolls, embedder)?;
         self.semantic_index = Some(index);
+        Ok(())
     }
 
     /// Query scrolls using semantic similarity of title and tags.

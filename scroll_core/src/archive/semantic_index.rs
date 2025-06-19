@@ -5,14 +5,39 @@ use uuid::Uuid;
 #[cfg(feature = "metrics")]
 use metrics::histogram;
 
+use crate::archive::error::ArchiveError;
 use crate::scroll::Scroll;
 
+pub trait Embedder {
+    fn embed(&self, text: &str) -> Result<HashSet<String>, ArchiveError>;
+}
+
+pub struct TokenEmbedder;
+
+impl Embedder for TokenEmbedder {
+    fn embed(&self, text: &str) -> Result<HashSet<String>, ArchiveError> {
+        Ok(tokenize(text))
+    }
+}
+
+pub struct MockEmbedder;
+
+impl Embedder for MockEmbedder {
+    fn embed(&self, _text: &str) -> Result<HashSet<String>, ArchiveError> {
+        Ok(HashSet::new())
+    }
+}
+
 pub struct SemanticIndex {
-    vectors: Vec<(Uuid, HashSet<String>)>,
+    pub vectors: Vec<(Uuid, HashSet<String>)>,
 }
 
 impl SemanticIndex {
-    pub fn build(scrolls: &[Scroll]) -> Self {
+    pub fn build(scrolls: &[Scroll], embedder: &dyn Embedder) -> Result<Self, ArchiveError> {
+        if scrolls.is_empty() {
+            return Err(ArchiveError::EmptyScrollSet);
+        }
+
         info!("Generating semantic vectors for {} scrolls", scrolls.len());
 
         #[cfg(feature = "metrics")]
@@ -36,14 +61,14 @@ impl SemanticIndex {
                     s.yaml_metadata.tags.join(" "),
                     first_lines
                 );
-                let result = (s.id, tokenize(&text));
+                let vec = embedder.embed(&text)?;
 
                 #[cfg(feature = "metrics")]
                 histogram!("scroll_embed_time_seconds").record(embed_timer.elapsed().as_secs_f64());
 
-                result
+                Ok((s.id, vec))
             })
-            .collect::<Vec<_>>();
+            .collect::<Result<Vec<_>, ArchiveError>>()?;
 
         #[cfg(feature = "metrics")]
         {
@@ -60,7 +85,7 @@ impl SemanticIndex {
         }
 
         info!("Vector generation complete");
-        Self { vectors }
+        Ok(Self { vectors })
     }
 
     pub fn query(&self, input: &str, k: usize) -> Vec<(Uuid, f32)> {
