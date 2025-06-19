@@ -44,10 +44,37 @@ impl<'a> ContextFrameEngine<'a> {
             ContextMode::Narrow => self
                 .archive
                 .query_by_tags(&triggering_scroll.yaml_metadata.tags),
-            ContextMode::Broad => self
-                .archive
-                .query_by_emotion(triggering_scroll.emotion_signature.clone()),
-            ContextMode::Echo => self.archive.query_by_links(&triggering_scroll.id),
+            ContextMode::Broad => {
+                let query = compose_query(triggering_scroll);
+                let semantic: Vec<_> = self
+                    .archive
+                    .query_semantic(&query, self.max_scrolls * 2)
+                    .into_iter()
+                    .filter(|(_, score)| *score > 0.65)
+                    .map(|(s, _)| s)
+                    .collect();
+                if semantic.is_empty() {
+                    self.archive
+                        .query_by_emotion(triggering_scroll.emotion_signature.clone())
+                } else {
+                    semantic
+                }
+            }
+            ContextMode::Echo => {
+                let query = compose_query(triggering_scroll);
+                let semantic: Vec<_> = self
+                    .archive
+                    .query_semantic(&query, self.max_scrolls * 2)
+                    .into_iter()
+                    .filter(|(_, score)| *score > 0.65)
+                    .map(|(s, _)| s)
+                    .collect();
+                if semantic.is_empty() {
+                    self.archive.query_by_links(&triggering_scroll.id)
+                } else {
+                    semantic
+                }
+            }
         };
 
         for s in related {
@@ -66,4 +93,19 @@ impl<'a> ContextFrameEngine<'a> {
             user_input: None,
         }
     }
+}
+
+fn compose_query(scroll: &Scroll) -> String {
+    let first_lines = scroll
+        .markdown_body
+        .lines()
+        .take(3)
+        .collect::<Vec<_>>()
+        .join(" ");
+    format!(
+        "{} {} {}",
+        scroll.title,
+        scroll.yaml_metadata.tags.join(" "),
+        first_lines
+    )
 }
