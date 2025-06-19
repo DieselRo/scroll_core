@@ -99,6 +99,7 @@ fn test_whispering_bus() {
             emotion_signature: scroll_core::EmotionSignature::default(),
             last_modified: None,
             tags: vec![],
+            file_path: None,
         },
         markdown_body: String::new(),
         invocation_phrase: String::new(),

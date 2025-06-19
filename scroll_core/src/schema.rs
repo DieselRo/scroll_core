@@ -177,4 +177,6 @@ pub struct YamlMetadata {
     pub tags: Vec<String>,
     #[serde(default)]
     pub last_modified: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(default)]
+    pub file_path: Option<String>,
 }

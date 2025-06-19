@@ -111,6 +111,7 @@ impl ScrollWriter {
                 emotion_signature: emotion.clone(),
                 tags,
                 last_modified: Some(now),
+                file_path: None,
             },
 
             markdown_body: String::new(),

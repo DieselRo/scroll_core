@@ -110,6 +110,7 @@ pub fn run_cli(manager: &InvocationManager, aelren: &AelrenHerald, scrolls: &[Sc
                         emotion_signature: EmotionSignature::curious(),
                         tags: vec!["ephemeral".into(), "prompt".into()],
                         last_modified: Some(now),
+                        file_path: None,
                     },
                     markdown_body: prompt.clone(),
                     invocation_phrase: prompt.clone(),

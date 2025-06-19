@@ -25,6 +25,7 @@ fn dummy_scroll(intensity: f32) -> Scroll {
             },
             tags: vec![],
             last_modified: None,
+            file_path: None,
         },
         markdown_body: "Body".into(),
         invocation_phrase: "Invoke".into(),
