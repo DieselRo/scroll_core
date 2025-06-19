@@ -2,7 +2,9 @@
 //====================================
 #![allow(unused_imports)]
 
+use crate::errors::MetricError;
 use crate::invocation::invocation::Invocation;
+use crate::metrics::clamp_finite;
 use crate::scroll::Scroll;
 use chrono::Utc;
 
@@ -45,6 +47,35 @@ pub struct InvocationCost {
     pub emotion_tension: Option<f32>,
 }
 
+impl Default for InvocationCost {
+    fn default() -> Self {
+        Self {
+            context: ContextCost {
+                token_estimate: 0,
+                context_span: 0,
+                relevance_score: 0.0,
+            },
+            system: SystemCost {
+                cpu_cycles: 0.0,
+                memory_used_mb: 0.0,
+                io_ops: 0,
+                scrolls_touched: 0,
+            },
+            decision: CostDecision::Allow,
+            cost_profile: CostProfile {
+                system_pressure: 0.0,
+                token_pressure: 0.0,
+                symbolic_origin: None,
+            },
+            rejection_origin: None,
+            hesitation_signal: None,
+            poetic_rejection: None,
+            symbolic_echo: None,
+            emotion_tension: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct CostProfile {
     pub system_pressure: f32,
@@ -68,17 +99,28 @@ pub struct SystemCost {
 }
 
 pub trait ContextScorer {
-    fn score(&self, invocation: &Invocation, scrolls: &[Scroll], semantic_score: f32) -> f32;
+    fn score(
+        &self,
+        invocation: &Invocation,
+        scrolls: &[Scroll],
+        semantic_score: f32,
+    ) -> Result<f32, MetricError>;
 }
 
 pub struct SemanticContextScorer;
 
 impl ContextScorer for SemanticContextScorer {
-    fn score(&self, _invocation: &Invocation, scrolls: &[Scroll], semantic_score: f32) -> f32 {
+    fn score(
+        &self,
+        _invocation: &Invocation,
+        scrolls: &[Scroll],
+        semantic_score: f32,
+    ) -> Result<f32, MetricError> {
         if scrolls.is_empty() {
-            return 0.0;
+            return Ok(0.0);
         }
 
+        let semantic_score = clamp_finite(semantic_score as f64)? as f32;
         let relevance = normalize_distance(semantic_score);
 
         let now = chrono::Utc::now();
@@ -100,7 +142,10 @@ impl ContextScorer for SemanticContextScorer {
             .sum::<f32>()
             / scrolls.len() as f32;
 
-        (relevance.clamp(0.0, 1.0)) * (recency.clamp(0.0, 1.0)) * (importance.clamp(0.0, 1.0))
+        let result =
+            (relevance.clamp(0.0, 1.0)) * (recency.clamp(0.0, 1.0)) * (importance.clamp(0.0, 1.0));
+
+        Ok(result)
     }
 }
 
@@ -112,7 +157,14 @@ fn normalize_distance(distance: f32) -> f32 {
 pub struct CostManager;
 
 impl CostManager {
-    pub fn calculate_cost_profile(context: &ContextCost, system: &SystemCost) -> CostProfile {
+    pub fn calculate_cost_profile(
+        context: &ContextCost,
+        system: &SystemCost,
+    ) -> Result<CostProfile, MetricError> {
+        clamp_finite(context.relevance_score as f64)?;
+        clamp_finite(system.cpu_cycles)?;
+        clamp_finite(system.memory_used_mb)?;
+
         let token_pressure = (context.token_estimate as f32 * 0.001
             + context.context_span as f32 * 0.1
             - context.relevance_score * 0.3)
@@ -124,17 +176,20 @@ impl CostManager {
             + system.scrolls_touched as f64 * 0.2)
             .max(0.0);
 
-        CostProfile {
+        Ok(CostProfile {
             system_pressure: system_pressure as f32,
             token_pressure,
             symbolic_origin: None,
-        }
+        })
     }
 
-    pub fn assess(_invocation: &Invocation, scrolls: &[Scroll]) -> InvocationCost {
+    pub fn assess(
+        _invocation: &Invocation,
+        scrolls: &[Scroll],
+    ) -> Result<InvocationCost, MetricError> {
         #[cfg(test)]
         if let Some(decision) = TEST_DECISION.with(|d| d.borrow().clone()) {
-            return InvocationCost {
+            return Ok(InvocationCost {
                 context: ContextCost {
                     token_estimate: 0,
                     context_span: 0,
@@ -157,11 +212,11 @@ impl CostManager {
                 poetic_rejection: None,
                 symbolic_echo: None,
                 emotion_tension: None,
-            };
+            });
         }
         let token_estimate = scrolls.iter().map(|s| s.markdown_body.len() / 4).sum();
         let scorer = SemanticContextScorer;
-        let relevance_score = scorer.score(_invocation, scrolls, 0.5);
+        let relevance_score = scorer.score(_invocation, scrolls, 0.5)?;
 
         let context = ContextCost {
             token_estimate,
@@ -182,9 +237,9 @@ impl CostManager {
             CostDecision::Allow
         };
 
-        let cost_profile = Self::calculate_cost_profile(&context, &system);
+        let cost_profile = Self::calculate_cost_profile(&context, &system)?;
 
-        InvocationCost {
+        Ok(InvocationCost {
             context,
             system,
             decision: decision.clone(),
@@ -201,6 +256,6 @@ impl CostManager {
             symbolic_echo: Some("The loom remained still.".to_string()),
             emotion_tension: Some(0.82),
             cost_profile,
-        }
+        })
     }
 }
