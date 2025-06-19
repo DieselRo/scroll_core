@@ -1,3 +1,3 @@
 [workspace]
-members = [ "scroll_core", "migration" ]
+members = [ "scroll_core", "migration", "fuzz" ]
 resolver = "3"
