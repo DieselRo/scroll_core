@@ -1,23 +1,22 @@
-use scroll_core::invocation::invocation_manager::InvocationManager;
-use scroll_core::invocation::aelren::AelrenHerald;
-use scroll_core::{initialize_scroll_core, teardown_scroll_core};
-use scroll_core::core::context_frame_engine::{ContextFrameEngine, ContextMode};
 use scroll_core::archive::archive_memory::InMemoryArchive;
-use scroll_core::system::cli_orchestrator::run_cli;
-use scroll_core::invocation::constructs::openai_construct::{Mythscribe, OpenAIClient};
 use scroll_core::construct_ai::ConstructAI;
 use scroll_core::core::construct_registry::ConstructRegistry;
+use scroll_core::core::context_frame_engine::{ContextFrameEngine, ContextMode};
+use scroll_core::invocation::aelren::AelrenHerald;
+use scroll_core::invocation::constructs::openai_construct::{Mythscribe, OpenAIClient};
+use scroll_core::invocation::invocation_manager::InvocationManager;
+use scroll_core::system::cli_orchestrator::run_cli;
+use scroll_core::{initialize_scroll_core, teardown_scroll_core};
 
 use dotenvy::dotenv;
 use std::env;
 
-
 fn main() {
     dotenv().ok();
     println!("🔑 OPENAI key: {:?}", std::env::var("OPENAI_API_KEY"));
-    
+
     match initialize_scroll_core() {
-        Ok(scrolls) => {
+        Ok((scrolls, _cache)) => {
             println!("✨ Scroll Core is active. Awaiting construct cadence...\n");
 
             let archive = InMemoryArchive::new(scrolls.clone());
