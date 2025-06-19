@@ -14,7 +14,14 @@ use crate::adk::common::types::FunctionDeclaration;
 use crate::adk::tools::base_tool::BaseTool;
 
 /// Type alias for async function tool callback
-pub type AsyncToolFn = Arc<dyn Fn(HashMap<String, serde_json::Value>, ToolContext<'_>) -> Pin<Box<dyn Future<Output = Result<serde_json::Value, AdkError>> + Send>> + Send + Sync>;
+pub type AsyncToolFn = Arc<
+    dyn for<'a> Fn(
+            HashMap<String, serde_json::Value>,
+            ToolContext<'a>,
+        ) -> Pin<Box<dyn Future<Output = Result<serde_json::Value, AdkError>> + Send + 'a>>
+        + Send
+        + Sync,
+>;
 
 /// Function-based tool implementation
 pub struct FunctionTool {

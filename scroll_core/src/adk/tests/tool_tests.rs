@@ -61,7 +61,7 @@ mod tests {
                 .as_str()
                 .ok_or_else(|| AdkError::InvalidRequest("Input must be a string".to_string()))?;
             
-            Ok(serde_json::json!({
+            Ok::<serde_json::Value, AdkError>(serde_json::json!({
                 "result": format!("Processed: {}", input)
             }))
         }
@@ -86,7 +86,7 @@ mod tests {
             Some("test-session"),
         ).await.unwrap();
         
-        let context = InvocationContext {
+        let context = Box::new(InvocationContext {
             artifact_service: None,
             session_service: session_service.clone(),
             memory_service: None,
@@ -98,10 +98,11 @@ mod tests {
             end_invocation: false,
             run_config: RunConfig::default(),
             active_streaming_tools: HashMap::new(),
-        };
-        
+        });
+        let context: &'static InvocationContext = Box::leak(context);
+
         let tool_context = ToolContext {
-            invocation_context: &context,
+            invocation_context: context,
             execution_id: "test-execution".to_string(),
         };
         
@@ -138,7 +139,7 @@ mod tests {
                     .as_str()
                     .ok_or_else(|| AdkError::InvalidRequest("Input must be a string".to_string()))?;
                 
-                Ok(serde_json::json!({
+                Ok::<serde_json::Value, AdkError>(serde_json::json!({
                     "result": format!("Function processed: {}", input)
                 }))
             }
@@ -153,7 +154,7 @@ mod tests {
             Some("test-session"),
         ).await.unwrap();
         
-        let context = InvocationContext {
+        let context = Box::new(InvocationContext {
             artifact_service: None,
             session_service: session_service.clone(),
             memory_service: None,
@@ -165,10 +166,11 @@ mod tests {
             end_invocation: false,
             run_config: RunConfig::default(),
             active_streaming_tools: HashMap::new(),
-        };
-        
+        });
+        let context: &'static InvocationContext = Box::leak(context);
+
         let tool_context = ToolContext {
-            invocation_context: &context,
+            invocation_context: context,
             execution_id: "test-execution".to_string(),
         };
         
@@ -209,7 +211,7 @@ mod tests {
                     return Err(AdkError::ToolExecution("Tool error requested".to_string()));
                 }
                 
-                Ok(serde_json::json!({
+                Ok::<serde_json::Value, AdkError>(serde_json::json!({
                     "result": "No error occurred"
                 }))
             }
@@ -224,7 +226,7 @@ mod tests {
             Some("test-session"),
         ).await.unwrap();
         
-        let context = InvocationContext {
+        let context = Box::new(InvocationContext {
             artifact_service: None,
             session_service: session_service.clone(),
             memory_service: None,
@@ -236,10 +238,11 @@ mod tests {
             end_invocation: false,
             run_config: RunConfig::default(),
             active_streaming_tools: HashMap::new(),
-        };
-        
+        });
+        let context: &'static InvocationContext = Box::leak(context);
+
         let tool_context = ToolContext {
-            invocation_context: &context,
+            invocation_context: context,
             execution_id: "test-execution".to_string(),
         };
         

@@ -143,66 +143,103 @@ mod tests {
         )
     }
 
-    #[test]
-    fn test_create_and_append_event() {
+    #[tokio::test]
+    async fn test_create_and_append_event() {
         let service = InMemorySessionService::new();
         let session = service
             .create_session("app", "user", None, None)
+            .await
             .unwrap();
 
         let mut session = session;
         let event = dummy_event();
-        let appended = service.append_event(&mut session, event.clone()).unwrap();
+        let appended = service
+            .append_event(&mut session, event.clone())
+            .await
+            .unwrap();
 
         assert_eq!(appended.content.unwrap().text, "Hello, world!");
         assert_eq!(session.events.len(), 1);
         assert_eq!(session.events[0].content.as_ref().unwrap().text, "Hello, world!");
     }
 
-    #[test]
-    fn test_get_session() {
+    #[tokio::test]
+    async fn test_get_session() {
         let service = InMemorySessionService::new();
-        let session = service.create_session("app", "user", None, None).unwrap();
-        let found = service.get_session("app", "user", &session.id, None).unwrap();
+        let session = service
+            .create_session("app", "user", None, None)
+            .await
+            .unwrap();
+        let found = service
+            .get_session("app", "user", &session.id, None)
+            .await
+            .unwrap();
         assert!(found.is_some());
         assert_eq!(found.unwrap().id, session.id);
     }
 
-    #[test]
-    fn test_list_sessions() {
+    #[tokio::test]
+    async fn test_list_sessions() {
         let service = InMemorySessionService::new();
-        service.create_session("app", "user", None, None).unwrap();
-        service.create_session("app", "user", None, None).unwrap();
-        let listed = service.list_sessions("app", "user").unwrap();
+        service
+            .create_session("app", "user", None, None)
+            .await
+            .unwrap();
+        service
+            .create_session("app", "user", None, None)
+            .await
+            .unwrap();
+        let listed = service.list_sessions("app", "user").await.unwrap();
         assert_eq!(listed.sessions.len(), 2);
     }
 
-    #[test]
-    fn test_delete_session() {
+    #[tokio::test]
+    async fn test_delete_session() {
         let service = InMemorySessionService::new();
-        let session = service.create_session("app", "user", None, None).unwrap();
-        service.delete_session("app", "user", &session.id, None).unwrap();
-        let retrieved = service.get_session("app", "user", &session.id, None).unwrap();
+        let session = service
+            .create_session("app", "user", None, None)
+            .await
+            .unwrap();
+        service
+            .delete_session("app", "user", &session.id, None)
+            .await
+            .unwrap();
+        let retrieved = service
+            .get_session("app", "user", &session.id, None)
+            .await
+            .unwrap();
         assert!(retrieved.is_none());
     }
 
-    #[test]
-    fn test_list_events() {
+    #[tokio::test]
+    async fn test_list_events() {
         let service = InMemorySessionService::new();
-        let mut session = service.create_session("app", "user", None, None).unwrap();
+        let mut session = service
+            .create_session("app", "user", None, None)
+            .await
+            .unwrap();
         let event = dummy_event();
-        service.append_event(&mut session, event.clone()).unwrap();
+        service
+            .append_event(&mut session, event.clone())
+            .await
+            .unwrap();
         let _ = service.store.lock().unwrap().insert(session.id.clone(), session);
 
-        let listed = service.list_events("app", "user", &event.id.to_string()).unwrap();
+        let listed = service
+            .list_events("app", "user", &event.id.to_string())
+            .await
+            .unwrap();
         assert_eq!(listed.events.len(), 0); // event.id != session_id (intentional mis-test)
     }
 
-    #[test]
-    fn test_close_session() {
+    #[tokio::test]
+    async fn test_close_session() {
         let service = InMemorySessionService::new();
-        let mut session = service.create_session("app", "user", None, None).unwrap();
-        let result = service.close_session(&mut session);
+        let mut session = service
+            .create_session("app", "user", None, None)
+            .await
+            .unwrap();
+        let result = service.close_session(&mut session).await;
         assert!(result.is_ok());
     }
 }

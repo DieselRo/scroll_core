@@ -163,7 +163,7 @@ mod tests {
                 70
             };
             
-            Ok(serde_json::json!({
+            Ok::<serde_json::Value, AdkError>(serde_json::json!({
                 "temperature": temperature,
                 "condition": "sunny",
                 "location": location
@@ -201,7 +201,7 @@ mod tests {
                     "Unknown timezone"
                 };
                 
-                Ok(serde_json::json!({
+                Ok::<serde_json::Value, AdkError>(serde_json::json!({
                     "time": current_time,
                     "timezone": timezone
                 }))
