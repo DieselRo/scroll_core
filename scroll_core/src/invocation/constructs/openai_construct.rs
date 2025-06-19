@@ -97,7 +97,7 @@ impl ConstructAI for Mythscribe {
         );
 
         match self.client.send_prompt(&full_prompt) {
-            Ok(response) => ConstructResult::Success(response),
+            Ok(response) => ConstructResult::Insight { text: response },
             Err(err) => ConstructResult::Refusal {
                 reason: format!("Invocation failed: {}", err),
                 echo: Some("The Archive stirred, but no voice replied.".to_string()),
@@ -106,9 +106,15 @@ impl ConstructAI for Mythscribe {
     }
 
     fn suggest_scroll(&self, _context: &ConstructContext) -> ConstructResult {
-        ConstructResult::Refusal {
-            reason: "Mythscribe has not yet learned to suggest scrolls".into(),
-            echo: Some("The glyphs remain unwritten.".into()),
+        match self.client.send_prompt("Propose new scroll") {
+            Ok(response) => ConstructResult::ScrollDraft {
+                title: "Proposed Scroll".into(),
+                content: response,
+            },
+            Err(err) => ConstructResult::Refusal {
+                reason: format!("Invocation failed: {}", err),
+                echo: Some("The glyphs remain unwritten.".into()),
+            },
         }
     }
 

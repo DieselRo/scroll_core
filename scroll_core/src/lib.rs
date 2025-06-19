@@ -83,8 +83,3 @@ pub fn validate_scroll_environment() -> bool {
         Err(_) => false,
     }
 }
-                                                                                                                                                                                                                                                                                                                =======
-    // Future check logic (e.g., required modules loaded, configs, etc.)
-    true
-}
-
