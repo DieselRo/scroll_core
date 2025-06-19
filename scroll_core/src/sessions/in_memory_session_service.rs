@@ -3,6 +3,7 @@ use crate::sessions::session_service::{GetSessionConfig, ListEventsResponse, Lis
 use crate::events::scroll_event::ScrollEvent;
 
 use std::collections::HashMap;
+use async_trait::async_trait;
 use std::sync::{Arc, Mutex};
 use chrono::Utc;
 use std::error::Error;
@@ -20,8 +21,9 @@ impl InMemorySessionService {
     }
 }
 
+#[async_trait]
 impl SessionService for InMemorySessionService {
-    fn create_session(
+    async fn create_session(
         &self,
         app_name: &str,
         user_id: &str,
@@ -39,7 +41,7 @@ impl SessionService for InMemorySessionService {
         Ok(session)
     }
 
-    fn get_session(
+    async fn get_session(
         &self,
         _app_name: &str,
         _user_id: &str,
@@ -49,7 +51,7 @@ impl SessionService for InMemorySessionService {
         Ok(self.store.lock().unwrap().get(session_id).cloned())
     }
 
-    fn list_sessions(
+    async fn list_sessions(
         &self,
         app_name: &str,
         user_id: &str,
@@ -66,7 +68,7 @@ impl SessionService for InMemorySessionService {
         Ok(ListSessionsResponse { sessions })
     }
 
-    fn delete_session(
+    async fn delete_session(
         &self,
         app_name: &str,
         user_id: &str,
@@ -82,7 +84,7 @@ impl SessionService for InMemorySessionService {
         Ok(())
     }
 
-    fn append_event(
+    async fn append_event(
         &self,
         session: &mut ScrollSession,
         event: ScrollEvent,
@@ -92,7 +94,7 @@ impl SessionService for InMemorySessionService {
         Ok(event)
     }
 
-    fn list_events(
+    async fn list_events(
         &self,
         app_name: &str,
         user_id: &str,
@@ -113,7 +115,7 @@ impl SessionService for InMemorySessionService {
         })
     }
 
-    fn close_session(
+    async fn close_session(
         &self,
         _session: &mut ScrollSession,
     ) -> Result<(), Box<dyn std::error::Error>> {

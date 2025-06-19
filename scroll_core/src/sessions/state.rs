@@ -22,6 +22,12 @@ pub struct State {
     delta: HashMap<String, String>,
 }
 
+impl std::fmt::Display for State {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.to_full_map())
+    }
+}
+
 impl State {
     pub fn new() -> Self {
         Self {

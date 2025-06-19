@@ -5,3 +5,4 @@ pub mod session_event_log;
 pub mod session_file;
 pub mod session_service;
 pub mod state;
+pub mod error;
