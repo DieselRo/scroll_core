@@ -396,7 +396,7 @@ mod tests {
         // Check partial flags
         assert_eq!(events[0].partial, Some(true));
         assert_eq!(events[1].partial, Some(true));
-        assert_eq!(events[2].partial, None);
+        assert_eq!(events[2].partial, Some(false));
         
         // Check content
         let content0 = events[0].content.as_ref().unwrap();
