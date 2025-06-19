@@ -1,8 +1,9 @@
-use logtest::Logger;
-use uuid::Uuid;
 use chrono::Utc;
+use logtest::Logger;
 use scroll_core::archive::archive_memory::InMemoryArchive;
+use scroll_core::archive::semantic_index::TokenEmbedder;
 use scroll_core::{EmotionSignature, Scroll, ScrollOrigin, ScrollStatus, ScrollType, YamlMetadata};
+use uuid::Uuid;
 
 fn make_scroll(title: &str, tags: &[&str], body: &str) -> Scroll {
     Scroll {
@@ -39,10 +40,14 @@ fn make_scroll(title: &str, tags: &[&str], body: &str) -> Scroll {
 #[test]
 fn test_semantic_query_returns_relevant_scroll() {
     let mut logger = Logger::start();
-    let s1 = make_scroll("Rust Guide", &["rust", "code"], "Learn Rust programming language.");
+    let s1 = make_scroll(
+        "Rust Guide",
+        &["rust", "code"],
+        "Learn Rust programming language.",
+    );
     let s2 = make_scroll("Cooking Tips", &["cook"], "How to cook pasta.");
     let mut archive = InMemoryArchive::new(vec![s1.clone(), s2.clone()]);
-    archive.build_semantic_index();
+    archive.build_semantic_index(&TokenEmbedder).unwrap();
     let results = archive.query_semantic("rust code tutorial", 1);
     assert_eq!(results.first().unwrap().0.title, "Rust Guide");
     let messages: Vec<String> = logger.map(|r| r.args().to_string()).collect();

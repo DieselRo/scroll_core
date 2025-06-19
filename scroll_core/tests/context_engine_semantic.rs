@@ -1,6 +1,7 @@
 use chrono::Utc;
 use logtest::Logger;
 use scroll_core::archive::archive_memory::InMemoryArchive;
+use scroll_core::archive::semantic_index::TokenEmbedder;
 use scroll_core::core::context_frame_engine::{ContextFrameEngine, ContextMode};
 use scroll_core::{EmotionSignature, Scroll, ScrollOrigin, ScrollStatus, ScrollType, YamlMetadata};
 use uuid::Uuid;
@@ -43,7 +44,7 @@ fn test_context_engine_semantic_recall() {
     let s1 = make_scroll("Rust Guide", &["rust", "code"], "Learn Rust.");
     let s2 = make_scroll("Cooking Tips", &["cook"], "How to cook pasta.");
     let mut archive = InMemoryArchive::new(vec![s1.clone(), s2]);
-    archive.build_semantic_index();
+    archive.build_semantic_index(&TokenEmbedder).unwrap();
 
     let trigger = make_scroll(
         "Advanced Rust patterns",
