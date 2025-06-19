@@ -42,9 +42,11 @@ pub enum ScrollStatus {
     Emergent,
     Draft,
     Active,
+    MythicValidated,
     Sealed,
     Archived,
     Latent,
+    Deprecated,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -175,6 +177,10 @@ pub struct YamlMetadata {
     pub scroll_type: ScrollType,
     pub emotion_signature: EmotionSignature,
     pub tags: Vec<String>,
+    #[serde(default)]
+    pub archetype: Option<String>,
+    #[serde(default)]
+    pub quorum_required: bool,
     #[serde(default)]
     pub last_modified: Option<chrono::DateTime<chrono::Utc>>,
     #[serde(default)]
