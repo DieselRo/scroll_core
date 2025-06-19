@@ -11,6 +11,8 @@ use dotenvy::dotenv;
 
 fn main() {
     dotenv().ok();
+    #[cfg(feature = "metrics")]
+    scroll_core::telemetry::init();
     println!("🔑 OPENAI key: {:?}", std::env::var("OPENAI_API_KEY"));
 
     match initialize_scroll_core() {

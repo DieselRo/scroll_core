@@ -4,9 +4,18 @@
 
 use crate::construct_ai::ConstructContext;
 use crate::construct_ai::ConstructResult;
+use crate::core::cost_manager::CostManager;
 use crate::core::ConstructRegistry;
 use crate::invocation::aelren::AelrenHerald;
+use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
+use chrono::Utc;
+use uuid::Uuid;
+
 use crate::Scroll;
+#[cfg(feature = "metrics")]
+use metrics::{histogram, increment_counter};
+use tracing::info_span;
+use tracing_subscriber::EnvFilter;
 
 pub struct InvocationManager {
     pub registry: ConstructRegistry,
@@ -27,14 +36,50 @@ impl InvocationManager {
         context: &ConstructContext,
         depth: usize,
     ) -> ConstructResult {
+        let _ = tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .with_span_events(tracing_subscriber::fmt::format::FmtSpan::FULL)
+            .try_init();
+
         if depth > self.max_chain_depth {
             return ConstructResult::Refusal {
                 reason: "Max invocation depth exceeded".into(),
                 echo: None,
             };
         }
+        let invocation = Invocation {
+            id: Uuid::new_v4(),
+            phrase: "invoke".into(),
+            invoker: "InvocationManager".into(),
+            invoked: name.to_string(),
+            tier: InvocationTier::True,
+            mode: InvocationMode::Read,
+            resonance_required: false,
+            timestamp: Utc::now(),
+        };
+        let cost = CostManager::assess(&invocation, &context.scrolls);
+        let system_pressure = cost.cost_profile.system_pressure;
+        let token_pressure = cost.cost_profile.token_pressure;
+        let _span = info_span!(
+            "construct.invoke",
+            construct = %name,
+            system_pressure = system_pressure,
+            token_pressure = token_pressure
+        )
+        .entered();
 
-        self.registry.invoke(name, context)
+        #[cfg(feature = "metrics")]
+        let timer = std::time::Instant::now();
+
+        #[cfg(feature = "metrics")]
+        increment_counter!("construct_invocations_total", "construct" => name);
+
+        let result = self.registry.invoke(name, context);
+
+        #[cfg(feature = "metrics")]
+        histogram!("construct_duration_ms", timer.elapsed().as_millis() as f64);
+
+        result
     }
 
     pub fn invoke_symbolically_with_aelren(
