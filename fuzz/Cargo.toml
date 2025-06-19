@@ -1,0 +1,21 @@
+[package]
+name = "scroll_core-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.scroll_core]
+path = "../scroll_core"
+
+[[bin]]
+name = "scroll_parser"
+path = "fuzz_targets/scroll_parser.rs"
+test = false
+doc = false
+bench = false

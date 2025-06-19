@@ -15,3 +15,5 @@ Thumbs.db
 
 # === Snapshot output ===
 /scrolls/docs/source_index_*.md
+fuzz/artifacts/
+fuzz/corpus/
