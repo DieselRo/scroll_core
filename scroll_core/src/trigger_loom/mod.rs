@@ -3,6 +3,7 @@
 // ===============================
 
 pub mod config;
+pub mod emotion;
 pub mod emotional_state;
 pub mod engine;
 pub mod glyph_matcher;
