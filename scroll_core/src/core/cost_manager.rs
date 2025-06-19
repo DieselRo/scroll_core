@@ -74,14 +74,16 @@ pub struct CostManager;
 
 impl CostManager {
     pub fn calculate_cost_profile(context: &ContextCost, system: &SystemCost) -> CostProfile {
-        let token_pressure = context.token_estimate as f32 * 0.001
+        let token_pressure = (context.token_estimate as f32 * 0.001
             + context.context_span as f32 * 0.1
-            - context.relevance_score * 0.3;
+            - context.relevance_score * 0.3)
+            .max(0.0);
 
-        let system_pressure = system.cpu_cycles * 100.0
+        let system_pressure = (system.cpu_cycles * 100.0
             + system.memory_used_mb * 0.25
             + system.io_ops as f64 * 0.05
-            + system.scrolls_touched as f64 * 0.2;
+            + system.scrolls_touched as f64 * 0.2)
+            .max(0.0);
 
         CostProfile {
             system_pressure: system_pressure as f32,
