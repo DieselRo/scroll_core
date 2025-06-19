@@ -14,9 +14,7 @@ emotion_signature:
 # Markdown Body
 This is the body of the scroll.
 "#;
-    let result = parse_scroll(input);
-    assert!(result.is_ok());
-    let scroll = result.unwrap();
+    let scroll = parse_scroll(input).unwrap();
     assert_eq!(scroll.title, "Test Scroll");
     assert_eq!(scroll.status, ScrollStatus::Draft);
 }

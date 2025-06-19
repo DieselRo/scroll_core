@@ -3,7 +3,8 @@
 //! Demo mode:     `cargo run -- --demo examples/multi_agent.yaml`
 
 use std::path::Path;
-use anyhow::anyhow;
+use anyhow::Result;
+
 use clap::Parser;
 use dotenvy::dotenv;
 use scroll_core::chat::chat_dispatcher::ChatDispatcher;
@@ -18,6 +19,7 @@ use scroll_core::{
         constructs::openai_construct::{Mythscribe, OpenAIClient},
         invocation_manager::InvocationManager,
     },
+    trigger_loom::emotional_state::EmotionalState,
     initialize_scroll_core, parser::parse_scroll, teardown_scroll_core,
 };
 
@@ -30,7 +32,7 @@ struct Cli {
     demo: Option<String>,
 }
 
-fn main() -> anyhow::Result<()> {
+fn main() -> Result<()> {
     dotenv().ok();
 
     #[cfg(feature = "metrics")]
@@ -76,15 +78,15 @@ fn main() -> anyhow::Result<()> {
 // ───────────────────────────────────────────────────────────────────────────────
 // Demo helper
 // ───────────────────────────────────────────────────────────────────────────────
-fn run_demo<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
-    use scroll_core::chat::chat_message::ChatMessage;
+fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
+    use scroll_core::chat::chat_session::{ChatMessage, ChatSession};
 
-    // 1️⃣  init core – convert String-error into anyhow
-    let (mut scrolls, _cache) = initialize_scroll_core().map_err(anyhow)?;
+    // 1️⃣  init core
+    let (mut scrolls, _cache) = initialize_scroll_core()?;
 
     // 2️⃣  load demo scroll the same way
     let raw = std::fs::read_to_string(path)?;
-    let demo_scroll = parse_scroll(&raw).map_err(anyhow)?;
+    let demo_scroll = parse_scroll(&raw)?;
     scrolls.push(demo_scroll.clone());
 
     // 3️⃣  tiny runtime
@@ -98,11 +100,20 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> anyhow::Result<()> {
     reg.insert("mythscribe", myth);
     let manager  = InvocationManager::new(reg);
 
-    // 🔄 ChatDispatcher constructor in current codebase is `dispatch`
-    let mut dispatcher = ChatDispatcher::dispatch(&manager, &engine);
+    let mut session = ChatSession::new(None, None);
+    let mut mood = EmotionalState::new(Vec::new(), 0.0, None);
+    let _dispatcher = ChatDispatcher::new(&manager, &engine);
+    let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
 
     let user_msg = "@validator Please inspect The Ballad";
-    let reply: ChatMessage = dispatcher.dispatch(user_msg)?;
+    let reply: ChatMessage = ChatDispatcher::dispatch(
+        &mut session,
+        user_msg,
+        &manager,
+        &aelren,
+        &scrolls,
+        &mut mood,
+    );
 
     println!("\n=== Assistant replied ===\n{}\n", reply.content);
     Ok(())
