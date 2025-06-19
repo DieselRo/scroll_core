@@ -48,3 +48,11 @@ fn test_invalid_transition() {
     let result = try_transition(&mut scroll, ScrollStatus::Archived);
     assert!(result.is_err());
 }
+
+#[test]
+fn test_validation_on_draft_to_active() {
+    let mut scroll = dummy_scroll();
+    scroll.invocation_phrase = String::new();
+    let result = try_transition(&mut scroll, ScrollStatus::Active);
+    assert!(result.is_err());
+}

@@ -50,13 +50,17 @@ pub fn is_valid_transition(current: &ScrollStatus, next: &ScrollStatus) -> bool 
 }
 
 pub fn try_transition(scroll: &mut Scroll, next_status: ScrollStatus) -> Result<(), String> {
-    if is_valid_transition(&scroll.status, &next_status) {
-        transition(scroll, next_status);
-        Ok(())
-    } else {
-        Err(format!(
+    if !is_valid_transition(&scroll.status, &next_status) {
+        return Err(format!(
             "Invalid state transition: {:?} -> {:?}",
             scroll.status, next_status
-        ))
+        ));
     }
+
+    if matches!((&scroll.status, &next_status), (ScrollStatus::Draft, ScrollStatus::Active)) {
+        scroll.validate()?;
+    }
+
+    transition(scroll, next_status);
+    Ok(())
 }

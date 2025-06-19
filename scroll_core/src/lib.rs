@@ -79,6 +79,17 @@ pub fn teardown_scroll_core() {
 
 /// Validates scroll core environment state (placeholder).
 pub fn validate_scroll_environment() -> bool {
-    // Future check logic (e.g., required modules loaded, configs, etc.)
-    true
+    use std::env;
+    use std::fs;
+
+    dotenvy::dotenv().ok();
+
+    if env::var("OPENAI_API_KEY").is_err() {
+        return false;
+    }
+
+    match fs::read_dir("scrolls/") {
+        Ok(mut entries) => entries.next().is_some(),
+        Err(_) => false,
+    }
 }

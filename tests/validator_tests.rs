@@ -10,6 +10,7 @@ fn test_valid_metadata() {
     emphasis: 0.5,
     resonance: "gentle".into(),
 },
+        tags: vec!["test".into()],
     };
     assert!(validate_scroll(&metadata).is_ok());
 }
@@ -24,6 +25,18 @@ fn test_empty_title() {
     emphasis: 0.5,
     resonance: "gentle".into(),
 },
+        tags: vec![],
+    };
+    assert!(validate_scroll(&metadata).is_err());
+}
+
+#[test]
+fn test_myth_requires_tags() {
+    let metadata = YamlMetadata {
+        title: "Myth Scroll".into(),
+        scroll_type: ScrollType::Myth,
+        emotion_signature: EmotionSignature::default(),
+        tags: vec![],
     };
     assert!(validate_scroll(&metadata).is_err());
 }
