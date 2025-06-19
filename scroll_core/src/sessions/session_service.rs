@@ -6,6 +6,7 @@
 
 use crate::sessions::session::ScrollSession;
 use std::collections::HashMap;
+use async_trait::async_trait;
 
 use crate::events::scroll_event::ScrollEvent;
 
@@ -29,8 +30,9 @@ pub struct ListEventsResponse {
 }
 
 /// Trait for session backends (in-memory, database, etc).
+#[async_trait]
 pub trait SessionService {
-    fn create_session(
+    async fn create_session(
         &self,
         app_name: &str,
         user_id: &str,
@@ -38,7 +40,7 @@ pub trait SessionService {
         session_id: Option<String>,
     ) -> Result<ScrollSession, Box<dyn Error>>;
 
-    fn get_session(
+    async fn get_session(
         &self,
         app_name: &str,
         user_id: &str,
@@ -46,13 +48,13 @@ pub trait SessionService {
         config: Option<GetSessionConfig>,
     ) -> Result<Option<ScrollSession>, Box<dyn Error>>;
 
-    fn list_sessions(
+    async fn list_sessions(
         &self,
         app_name: &str,
         user_id: &str,
     ) -> Result<ListSessionsResponse, Box<dyn Error>>;
 
-    fn delete_session(
+    async fn delete_session(
         &self,
         app_name: &str,
         user_id: &str,
@@ -60,20 +62,20 @@ pub trait SessionService {
         config: Option<GetSessionConfig>,
     ) -> Result<(), Box<dyn Error>>;
 
-    fn list_events(
+    async fn list_events(
         &self,
         app_name: &str,
         user_id: &str,
         session_id: &str,
     ) -> Result<ListEventsResponse, Box<dyn Error>>;
 
-    fn append_event(
+    async fn append_event(
         &self,
         session: &mut ScrollSession,
         event: ScrollEvent,
     ) -> Result<ScrollEvent, Box<dyn Error>>;
 
-    fn close_session(
+    async fn close_session(
         &self,
         session: &mut ScrollSession,
     ) -> Result<(), Box<dyn Error>>;

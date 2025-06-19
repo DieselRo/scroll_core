@@ -114,8 +114,8 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_events_sessions")
-                            .from(Events::Table, vec![Events::AppName, Events::UserId, Events::SessionId])
-                            .to(Sessions::Table, vec![Sessions::AppName, Sessions::UserId, Sessions::Id])
+                            .from(Events::Table, (Events::AppName, Events::UserId, Events::SessionId))
+                            .to(Sessions::Table, (Sessions::AppName, Sessions::UserId, Sessions::Id))
                             .on_delete(ForeignKeyAction::Cascade)
                     )
                     .to_owned(),
@@ -171,8 +171,8 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_artifacts_sessions")
-                            .from(Artifacts::Table, vec![Artifacts::AppName, Artifacts::UserId, Artifacts::SessionId])
-                            .to(Sessions::Table, vec![Sessions::AppName, Sessions::UserId, Sessions::Id])
+                            .from(Artifacts::Table, (Artifacts::AppName, Artifacts::UserId, Artifacts::SessionId))
+                            .to(Sessions::Table, (Sessions::AppName, Sessions::UserId, Sessions::Id))
                             .on_delete(ForeignKeyAction::Cascade)
                     )
                     .to_owned(),

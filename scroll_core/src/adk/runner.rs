@@ -112,7 +112,11 @@ impl Runner {
         
         // Run the agent - create a clone of the context to avoid ownership issues
         let context_clone = invocation_context.clone();
-        let event_stream = invocation_context.agent.run_async(context_clone).await?;
+        let event_stream = self
+            .agent
+            .run_async(context_clone)
+            .await?
+            .boxed();
         
         // Create a stream that appends non-partial events to the session
         let session_service = self.session_service.clone();
@@ -120,11 +124,12 @@ impl Runner {
         let user_id = user_id.to_string();
         let session_id = session_id.to_string();
         
-        let stream = event_stream.filter_map(move |event| {
-            let session_service = session_service.clone();
-            let app_name = app_name.clone();
-            let user_id = user_id.clone();
-            let session_id = session_id.clone();
+        let stream = event_stream
+            .filter_map(move |event| {
+                let session_service = session_service.clone();
+                let app_name = app_name.clone();
+                let user_id = user_id.clone();
+                let session_id = session_id.clone();
             
             async move {
                 // Save non-partial events to the session
@@ -142,9 +147,10 @@ impl Runner {
                 
                 Some(event)
             }
-        });
-        
-        Ok(Box::pin(stream))
+        })
+        .boxed();
+
+        Ok(stream)
     }
     
     /// Create a new invocation context
