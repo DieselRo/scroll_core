@@ -9,6 +9,10 @@ pub fn validate_scroll(metadata: &YamlMetadata) -> Result<(), String> {
         return Err("Scroll must have a non-empty title.".to_string());
     }
 
+    if matches!(metadata.scroll_type, ScrollType::Myth) && metadata.tags.is_empty() {
+        return Err("Myth scrolls must include at least one tag.".to_string());
+    }
+
     match metadata.scroll_type {
         ScrollType::Canon
         | ScrollType::Protocol
