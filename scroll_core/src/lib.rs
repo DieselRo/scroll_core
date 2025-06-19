@@ -38,6 +38,8 @@ pub use validator::validate_scroll;
 
 pub use parser::{parse_scroll, parse_scroll_from_file};
 
+use anyhow::Result;
+
 pub use state_manager::{describe_status, is_valid_transition, transition, try_transition};
 
 pub const SCROLL_CORE_VERSION: &str = "0.1.0";
@@ -45,7 +47,7 @@ pub const SCROLL_CORE_INVOCATION: &str = "Let structure echo symbol.";
 
 /// Initializes the Scroll Core system and loads the scroll archive.
 
-pub fn initialize_scroll_core() -> Result<(Vec<Scroll>, CacheManager), String> {
+pub fn initialize_scroll_core() -> Result<(Vec<Scroll>, CacheManager)> {
     use crate::archive::initialize::load_with_cache;
     use log::info;
     use std::path::Path;
@@ -55,7 +57,7 @@ pub fn initialize_scroll_core() -> Result<(Vec<Scroll>, CacheManager), String> {
     info!("🌀 Scroll Core v{} initializing...", SCROLL_CORE_VERSION);
     println!("🌀 Scroll Core v{} initializing...", SCROLL_CORE_VERSION);
 
-    let (scrolls, cache) = load_with_cache(archive_path)?;
+    let (scrolls, cache) = load_with_cache(archive_path).map_err(anyhow::Error::msg)?;
 
     info!("✅ Loaded {} scroll(s).", scrolls.len());
     println!("✅ Loaded {} scroll(s).", scrolls.len());

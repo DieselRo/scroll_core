@@ -58,7 +58,7 @@ impl ScrollWriter {
 
     /// Applies patch and updates an existing scroll.
     pub fn update_scroll(_id: Uuid, updates: ScrollPatch, path: &Path) -> Result<(), String> {
-        let mut scroll = parse_scroll_from_file(path)?;
+        let mut scroll = parse_scroll_from_file(path).map_err(|e| e.to_string())?;
 
         if let Some(title) = updates.title {
             scroll.title = title.clone();

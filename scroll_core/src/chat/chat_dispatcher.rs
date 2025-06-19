@@ -12,6 +12,7 @@ use crate::orchestra::AgentMessage;
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 use crate::trigger_loom::emotional_state::EmotionalState;
+use crate::core::context_frame_engine::ContextFrameEngine;
 use chrono::Utc;
 use log::info;
 use uuid::Uuid;
@@ -19,6 +20,11 @@ use uuid::Uuid;
 pub struct ChatDispatcher;
 
 impl ChatDispatcher {
+    #[allow(deprecated)]
+    pub fn new(_manager: &InvocationManager, _engine: &ContextFrameEngine) -> Self {
+        ChatDispatcher
+    }
+
     pub fn dispatch(
         session: &mut ChatSession,
         user_input: &str,
