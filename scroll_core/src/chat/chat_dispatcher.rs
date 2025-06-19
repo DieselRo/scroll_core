@@ -56,7 +56,7 @@ impl ChatDispatcher {
             emotion: Some(EmotionSignature {
                 tone: "reflective".into(),
                 emphasis: 0.5,
-                resonance: todo!(),
+                resonance: "balanced".into(),
                 intensity: Some(0.5),
             }),
         };
