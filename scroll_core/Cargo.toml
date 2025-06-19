@@ -64,5 +64,8 @@ serde_json = "1"
 chrono = { version = "0.4", features = ["clock"] }
 wiremock = "0.6"
 
+
 [features]
 metrics = ["dep:metrics", "dep:metrics-exporter-prometheus"]
+cargo-deny = "0.18.3"
+
