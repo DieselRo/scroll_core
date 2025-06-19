@@ -71,4 +71,8 @@ impl ConstructRegistry {
             user_input: Some(user_input.to_string()),
         }
     }
+
+    pub fn bus(&self) -> Bus {
+        self.bus.clone()
+    }
 }

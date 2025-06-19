@@ -11,6 +11,8 @@ fn test_valid_metadata() {
     resonance: "gentle".into(),
 },
         tags: vec!["test".into()],
+        last_modified: None,
+        file_path: None,
     };
     assert!(validate_scroll(&metadata).is_ok());
 }
@@ -26,6 +28,8 @@ fn test_empty_title() {
     resonance: "gentle".into(),
 },
         tags: vec![],
+        last_modified: None,
+        file_path: None,
     };
     assert!(validate_scroll(&metadata).is_err());
 }
@@ -37,6 +41,8 @@ fn test_myth_requires_tags() {
         scroll_type: ScrollType::Myth,
         emotion_signature: EmotionSignature::default(),
         tags: vec![],
+        last_modified: None,
+        file_path: None,
     };
     assert!(validate_scroll(&metadata).is_err());
 }
