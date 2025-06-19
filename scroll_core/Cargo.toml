@@ -46,6 +46,7 @@ tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
 crossbeam-channel = "0.5"
 crossbeam = "0.8"
+rustyline = "13"
 
 [lib]
 name = "scroll_core"
@@ -72,6 +73,8 @@ quickcheck = "1"
 quickcheck_macros = "1"
 cargo-fuzz = "0.12"
 tempfile = "3"
+assert_cmd = "2"
+predicates = "3"
 
 
 [features]

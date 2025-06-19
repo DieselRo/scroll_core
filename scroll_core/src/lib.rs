@@ -8,6 +8,7 @@ pub mod artifact;
 pub mod artifacts;
 pub mod cache_manager;
 pub mod chat;
+pub mod cli;
 pub mod construct_ai;
 pub mod constructs;
 pub mod core;
