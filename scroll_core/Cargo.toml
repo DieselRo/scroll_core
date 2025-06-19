@@ -41,6 +41,8 @@ sea-orm-migration = "0.12"
 
 tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
+crossbeam-channel = "0.5"
+crossbeam = "0.8"
 
 [lib]
 name = "scroll_core"
@@ -67,5 +69,5 @@ wiremock = "0.6"
 
 [features]
 metrics = ["dep:metrics", "dep:metrics-exporter-prometheus"]
-cargo-deny = "0.18.3"
+cargo-deny = []
 
