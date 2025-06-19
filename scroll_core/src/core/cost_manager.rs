@@ -3,9 +3,21 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-
 use crate::invocation::invocation::Invocation;
 use crate::scroll::Scroll;
+
+#[cfg(test)]
+use std::cell::RefCell;
+
+#[cfg(test)]
+thread_local! {
+    static TEST_DECISION: RefCell<Option<CostDecision>> = RefCell::new(None);
+}
+
+#[cfg(test)]
+pub fn set_test_decision(decision: Option<CostDecision>) {
+    TEST_DECISION.with(|d| *d.borrow_mut() = decision);
+}
 
 #[derive(Debug, Clone)]
 pub enum CostDecision {
@@ -80,6 +92,33 @@ impl CostManager {
     }
 
     pub fn assess(_invocation: &Invocation, scrolls: &[Scroll]) -> InvocationCost {
+        #[cfg(test)]
+        if let Some(decision) = TEST_DECISION.with(|d| d.borrow().clone()) {
+            return InvocationCost {
+                context: ContextCost {
+                    token_estimate: 0,
+                    context_span: 0,
+                    relevance_score: 0.0,
+                },
+                system: SystemCost {
+                    cpu_cycles: 0.0,
+                    memory_used_mb: 0.0,
+                    io_ops: 0,
+                    scrolls_touched: 0,
+                },
+                decision,
+                cost_profile: CostProfile {
+                    system_pressure: 0.0,
+                    token_pressure: 0.0,
+                    symbolic_origin: None,
+                },
+                rejection_origin: None,
+                hesitation_signal: None,
+                poetic_rejection: None,
+                symbolic_echo: None,
+                emotion_tension: None,
+            };
+        }
         let token_estimate = scrolls.iter().map(|s| s.markdown_body.len() / 4).sum();
         let relevance_score = 0.75; // Placeholder — consider future ContextScorer
 
