@@ -32,6 +32,8 @@ pub fn describe_status(status: ScrollStatus) -> &'static str {
         ScrollStatus::Sealed => "Closed—its truth hidden, but preserved.",
         ScrollStatus::Archived => "Laid to rest in the Vault of Threads.",
         ScrollStatus::Latent => "Suspended—awaiting catalyst or consequence.",
+        ScrollStatus::MythicValidated => "Forged in myth and verified.",
+        ScrollStatus::Deprecated => "Outdated—kept only for reference.",
     }
 }
 

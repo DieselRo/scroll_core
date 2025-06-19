@@ -69,6 +69,8 @@ impl EpisodicWriterJob {
             scroll_type: ScrollType::Echo,
             emotion_signature: EmotionSignature::reflective(),
             tags: tags.to_vec(),
+            archetype: None,
+            quorum_required: false,
             last_modified: Some(now),
             file_path: Some(file_path.to_string_lossy().into()),
         };
@@ -78,6 +80,9 @@ impl EpisodicWriterJob {
             title: metadata.title.clone(),
             scroll_type: ScrollType::Echo,
             yaml_metadata: metadata,
+            tags: Vec::new(),
+            archetype: None,
+            quorum_required: false,
             markdown_body: summary.to_string(),
             invocation_phrase: String::new(),
             sigil: String::new(),

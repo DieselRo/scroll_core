@@ -109,10 +109,16 @@ impl ScrollWriter {
                 title: title_clone,
                 scroll_type: scroll_type_clone,
                 emotion_signature: emotion.clone(),
-                tags,
+                tags: tags.clone(),
+                archetype: None,
+                quorum_required: false,
                 last_modified: Some(now),
                 file_path: None,
             },
+
+            tags: tags.clone(),
+            archetype: None,
+            quorum_required: false,
 
             markdown_body: String::new(),
             invocation_phrase: String::new(),

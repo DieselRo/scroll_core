@@ -42,7 +42,7 @@ use anyhow::Result;
 
 pub use state_manager::{describe_status, is_valid_transition, transition, try_transition};
 
-pub const SCROLL_CORE_VERSION: &str = "0.1.0";
+pub const SCROLL_CORE_VERSION: &str = "0.2.0";
 pub const SCROLL_CORE_INVOCATION: &str = "Let structure echo symbol.";
 
 /// Initializes the Scroll Core system and loads the scroll archive.
