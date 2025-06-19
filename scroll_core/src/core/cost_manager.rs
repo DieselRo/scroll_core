@@ -107,9 +107,16 @@ impl CostManager {
         InvocationCost {
             context,
             system,
-            decision,
-            rejection_origin: Some(RejectionOrigin::System),
-            hesitation_signal: Some("The archive paused, uncertain.".to_string()),
+            decision: decision.clone(),
+            rejection_origin: if matches!(decision, CostDecision::Reject(_)) {
+                Some(RejectionOrigin::System)
+            } else {
+                None
+            },
+            hesitation_signal: match decision {
+                CostDecision::Allow => None,
+                _ => Some("The archive paused, uncertain.".to_string()),
+            },
             poetic_rejection: Some("A whisper lost in the tide of memory.".to_string()),
             symbolic_echo: Some("The loom remained still.".to_string()),
             emotion_tension: Some(0.82),
