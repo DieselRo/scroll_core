@@ -8,4 +8,6 @@ pub enum ArchiveError {
     MissingModel,
     #[error("embedding failed: {0}")]
     EmbeddingFailure(String),
+    #[error("io error: {0}")]
+    Io(#[from] std::io::Error),
 }

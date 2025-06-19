@@ -11,6 +11,7 @@ use scroll_core::chat::chat_dispatcher::ChatDispatcher;
 use scroll_core::cli::{chat::run_chat, chat_db::ChatDb};
 use scroll_core::{
     archive::archive_memory::InMemoryArchive,
+    archive::initialize::ensure_archive_dir,
     core::{
         construct_registry::ConstructRegistry,
         context_frame_engine::{ContextFrameEngine, ContextMode},
@@ -57,6 +58,9 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     if let Some(Commands::Chat { construct, stream }) = &cli.command {
+        let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR")
+            .unwrap_or_else(|_| "scrolls".into());
+        ensure_archive_dir(Path::new(&archive_dir))?;
         let (scrolls, _cache) = initialize_scroll_core()?;
         let archive = InMemoryArchive::new(scrolls.clone());
         let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
