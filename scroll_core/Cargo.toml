@@ -40,7 +40,7 @@ sea-orm = { version = "0.12", features = [
     "with-json"
 ] }
 
-sea-orm-migration = "0.12"
+sea-orm-migration = "1.1"
 
 tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
