@@ -13,8 +13,7 @@ use uuid::Uuid;
 use crate::core::cost_manager::{CostDecision, CostManager};
 use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
 use crate::invocation::named_construct::{NamedConstruct, PulseSensitive};
-use crate::trigger_loom::config::{SymbolicRhythm, TriggerLoopConfig};
-use crate::trigger_loom::loom::evaluate_construct;
+use crate::trigger_loom::config::TriggerLoopConfig;
 
 const MAX_AGENT_DEPTH: u32 = 5;
 

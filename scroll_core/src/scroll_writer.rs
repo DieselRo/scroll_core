@@ -1,23 +1,19 @@
 // scroll_writer.rs – Hand of the Archive
 //===========================================
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
-use std::fs::{File};
+use chrono::Utc;
+use serde_yaml;
+use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use uuid::Uuid;
-use serde_yaml;
-use chrono::Utc;
 
-
-use crate::scroll::{ScrollOrigin, Scroll};
-use crate::schema::{ScrollStatus, ScrollType, EmotionSignature, YamlMetadata};
-use crate::parser::parse_scroll_from_file;
-use crate::validator::validate_scroll;
 use crate::artifact::WritableArtifact;
-
-
+use crate::parser::parse_scroll_from_file;
+use crate::schema::{EmotionSignature, ScrollStatus, ScrollType, YamlMetadata};
+use crate::scroll::{Scroll, ScrollOrigin};
+use crate::validator::validate_scroll;
 
 /// Patch structure for updating existing scroll fields.
 pub struct ScrollPatch {
@@ -32,11 +28,7 @@ impl WritableArtifact for Scroll {
         let yaml = serde_yaml::to_string(&self.yaml_metadata)
             .unwrap_or_else(|_| "error: could not serialize metadata".to_string());
 
-        format!(
-            "---\n{}---\n\n{}",
-            yaml.trim(),
-            self.markdown_body.trim()
-        )
+        format!("---\n{}---\n\n{}", yaml.trim(), self.markdown_body.trim())
     }
 
     fn file_extension(&self) -> &'static str {
@@ -69,21 +61,20 @@ impl ScrollWriter {
         let mut scroll = parse_scroll_from_file(path)?;
 
         if let Some(title) = updates.title {
-               scroll.title = title.clone();
-               scroll.yaml_metadata.title = title;
+            scroll.title = title.clone();
+            scroll.yaml_metadata.title = title;
         }
 
         if let Some(body) = updates.markdown_body {
-               scroll.markdown_body = body;
+            scroll.markdown_body = body;
         }
 
         if let Some(tags) = updates.tags {
-               scroll.yaml_metadata.tags = tags;
-        
+            scroll.yaml_metadata.tags = tags;
         }
 
         if let Some(sigil) = updates.sigil {
-               scroll.sigil = sigil;
+            scroll.sigil = sigil;
         }
 
         let now = chrono::Utc::now();
@@ -101,40 +92,38 @@ impl ScrollWriter {
 
     /// Creates a draft scroll from symbolic input.
     pub fn generate_draft(
-    title: String,
-    scroll_type: ScrollType,
-    emotion: EmotionSignature,
-    tags: Vec<String>,
-) -> Scroll {
-    let now = Utc::now();
-    let title_clone = title.clone();
-    let scroll_type_clone = scroll_type.clone();
+        title: String,
+        scroll_type: ScrollType,
+        emotion: EmotionSignature,
+        tags: Vec<String>,
+    ) -> Scroll {
+        let now = Utc::now();
+        let title_clone = title.clone();
+        let scroll_type_clone = scroll_type.clone();
 
-    Scroll {
-        id: Uuid::new_v4(),
-        title,
-        scroll_type,
-        yaml_metadata: YamlMetadata {
-            title: title_clone,
-            scroll_type: scroll_type_clone,
-            emotion_signature: emotion.clone(),
-            tags,
-            last_modified: Some(now),
-  
-        },
+        Scroll {
+            id: Uuid::new_v4(),
+            title,
+            scroll_type,
+            yaml_metadata: YamlMetadata {
+                title: title_clone,
+                scroll_type: scroll_type_clone,
+                emotion_signature: emotion.clone(),
+                tags,
+                last_modified: Some(now),
+            },
 
-        markdown_body: String::new(),
-        invocation_phrase: String::new(),
-        sigil: String::new(),
-        status: ScrollStatus::Draft,
-        emotion_signature: emotion,
-        linked_scrolls: vec![],
-        origin: ScrollOrigin {
-           created: now,
-           authored_by: None,
-           last_modified: now,
-
-        },
-    }
-  }
+            markdown_body: String::new(),
+            invocation_phrase: String::new(),
+            sigil: String::new(),
+            status: ScrollStatus::Draft,
+            emotion_signature: emotion,
+            linked_scrolls: vec![],
+            origin: ScrollOrigin {
+                created: now,
+                authored_by: None,
+                last_modified: now,
+            },
         }
+    }
+}

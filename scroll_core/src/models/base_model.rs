@@ -1,5 +1,5 @@
 // src/models/base_model.rs
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LLMResponseContent {

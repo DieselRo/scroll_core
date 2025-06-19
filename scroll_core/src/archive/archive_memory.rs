@@ -1,14 +1,12 @@
 // archive_memory.rs – Archive Memory Trait and Initial Implementation
 //=======================================================================
-#![allow(dead_code)]
 #![allow(unused_imports)]
-
 
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use crate::scroll::Scroll;
 use crate::schema::EmotionSignature;
+use crate::scroll::Scroll;
 
 /// Defines access methods for interacting with the Archive's scroll memory.
 pub trait ArchiveMemory {
@@ -37,9 +35,7 @@ impl InMemoryArchive {
     pub fn query_by_tags(&self, tags: &[String]) -> Vec<Scroll> {
         self.scrolls
             .values()
-            .filter(|scroll| {
-                scroll.yaml_metadata.tags.iter().any(|t| tags.contains(t))
-            })
+            .filter(|scroll| scroll.yaml_metadata.tags.iter().any(|t| tags.contains(t)))
             .cloned()
             .collect()
     }
@@ -61,15 +57,11 @@ impl InMemoryArchive {
     pub fn query_by_links(&self, id: &Uuid) -> Vec<Scroll> {
         self.scrolls
             .values()
-            .filter(|scroll| {
-                scroll.linked_scrolls.iter().any(|link| &link.target == id)
-            })
+            .filter(|scroll| scroll.linked_scrolls.iter().any(|link| &link.target == id))
             .cloned()
             .collect()
     }
 }
-
-    
 
 impl ArchiveMemory for InMemoryArchive {
     fn get_all_scrolls(&self) -> Vec<&Scroll> {

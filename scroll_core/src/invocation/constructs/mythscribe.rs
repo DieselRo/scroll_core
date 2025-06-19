@@ -28,16 +28,19 @@ impl NamedConstruct for Mythscribe {
             InvocationMode::Read => self.reflect_on_scroll(&context),
             InvocationMode::Modify => self.perform_scroll_action(&context),
             InvocationMode::Validate => self.reflect_on_scroll(&context),
-            InvocationMode::Custom(_) | InvocationMode::Transition => {
-                ConstructResult::Refusal { reason: "Unsupported mode".into(), echo: None }
-            }
+            InvocationMode::Custom(_) | InvocationMode::Transition => ConstructResult::Refusal {
+                reason: "Unsupported mode".into(),
+                echo: None,
+            },
         };
 
         let out = match result {
             ConstructResult::Insight { text } => InvocationResult::Success(text),
             ConstructResult::ScrollDraft { content, .. } => InvocationResult::Success(content),
             ConstructResult::ModifiedScroll(s) => InvocationResult::ModifiedScroll(s),
-            ConstructResult::Refusal { reason, echo } => InvocationResult::Failure(echo.unwrap_or(reason)),
+            ConstructResult::Refusal { reason, echo } => {
+                InvocationResult::Failure(echo.unwrap_or(reason))
+            }
         };
         Ok(out)
     }

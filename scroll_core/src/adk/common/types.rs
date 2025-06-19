@@ -21,13 +21,13 @@ pub enum PartType {
 pub struct Part {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub text: Option<String>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub inline_data: Option<InlineData>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub function_call: Option<FunctionCall>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub function_response: Option<FunctionResponse>,
 }
@@ -38,7 +38,7 @@ pub struct Part {
 pub struct Content {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
-    
+
     pub parts: Vec<Part>,
 }
 

@@ -4,7 +4,7 @@
 
 use crate::chat::chat_router::ChatRouter;
 use crate::chat::chat_session::{ChatMessage, ChatSession};
-use crate::construct_ai::{ConstructContext, ConstructResult};
+use crate::construct_ai::ConstructResult;
 use crate::invocation::aelren::AelrenHerald;
 use crate::invocation::invocation_manager::InvocationManager;
 use crate::schema::EmotionSignature;

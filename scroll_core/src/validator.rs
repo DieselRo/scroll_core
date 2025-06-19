@@ -2,7 +2,7 @@
 // src/validator.rs
 // ===============================
 
-use crate::schema::{YamlMetadata, ScrollType};
+use crate::schema::{ScrollType, YamlMetadata};
 
 pub fn validate_scroll(metadata: &YamlMetadata) -> Result<(), String> {
     if metadata.title.trim().is_empty() {

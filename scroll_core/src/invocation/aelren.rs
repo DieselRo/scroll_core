@@ -1,9 +1,9 @@
-use crate::core::ConstructRegistry;
-use crate::construct_ai::{ConstructResult, ConstructContext};
+use crate::construct_ai::{ConstructContext, ConstructResult};
 use crate::core::context_frame_engine::ContextFrameEngine;
-use crate::scroll::Scroll;
+use crate::core::ConstructRegistry;
+use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
 use crate::invocation::ledger;
-use crate::invocation::invocation::{Invocation, InvocationTier, InvocationMode};
+use crate::scroll::Scroll;
 use chrono::Utc;
 use uuid::Uuid;
 
@@ -21,19 +21,22 @@ pub struct AelrenHerald<'a> {
 
 impl<'a> AelrenHerald<'a> {
     pub fn new(frame_engine: ContextFrameEngine<'a>, registry_snapshot: Vec<String>) -> Self {
-        Self { frame_engine, registry_snapshot }
+        Self {
+            frame_engine,
+            registry_snapshot,
+        }
     }
 
     pub fn frame_invocation(&self, triggering_scroll: &Scroll) -> AelrenFrameResult {
         let context = self.frame_engine.build_context(triggering_scroll);
-    
+
         let suggested = self.suggest_construct(&context);
         let echo = if suggested.is_none() {
             Some("The Archive listens, but none may answer yet.".into())
         } else {
             None
         };
-    
+
         let invocation = Invocation {
             id: Uuid::new_v4(),
             phrase: "Symbolic reflection".into(),
@@ -44,11 +47,11 @@ impl<'a> AelrenHerald<'a> {
             resonance_required: false,
             timestamp: Utc::now(),
         };
-    
+
         if let Err(e) = ledger::log_invocation("logs/aelren.log", &invocation) {
             eprintln!("⚠️ Failed to log symbolic invocation: {}", e);
         }
-    
+
         AelrenFrameResult {
             framed_context: context,
             suggested_construct: suggested,
@@ -71,7 +74,7 @@ impl<'a> AelrenHerald<'a> {
         registry: &ConstructRegistry,
     ) -> ConstructResult {
         let framed = self.frame_invocation(triggering_scroll);
-    
+
         if let Some(name) = framed.suggested_construct {
             registry.invoke(&name, &framed.framed_context)
         } else if let Some(echo) = framed.invocation_echo {

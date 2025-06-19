@@ -11,16 +11,16 @@ use std::collections::HashMap;
 pub struct RunConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub streaming_mode: Option<StreamingMode>,
-    
+
     #[serde(default)]
     pub support_cfc: bool,
-    
+
     #[serde(default)]
     pub save_input_blobs_as_artifacts: bool,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub response_modalities: Option<Vec<String>>,
-    
+
     #[serde(skip_serializing_if = "HashMap::is_empty", default)]
     pub model_overrides: HashMap<String, String>,
 }

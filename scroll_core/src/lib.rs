@@ -68,7 +68,6 @@ pub fn teardown_scroll_core() {
 
 /// Validates scroll core environment state (placeholder).
 pub fn validate_scroll_environment() -> bool {
-
     use std::env;
     use std::fs;
 

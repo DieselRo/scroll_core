@@ -1,5 +1,4 @@
 use scroll_core::archive::archive_memory::InMemoryArchive;
-use scroll_core::construct_ai::ConstructAI;
 use scroll_core::core::construct_registry::ConstructRegistry;
 use scroll_core::core::context_frame_engine::{ContextFrameEngine, ContextMode};
 use scroll_core::invocation::aelren::AelrenHerald;
@@ -9,7 +8,6 @@ use scroll_core::system::cli_orchestrator::run_cli;
 use scroll_core::{initialize_scroll_core, teardown_scroll_core};
 
 use dotenvy::dotenv;
-use std::env;
 
 fn main() {
     dotenv().ok();

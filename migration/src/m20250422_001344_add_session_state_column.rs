@@ -1,5 +1,5 @@
 use sea_orm_migration::prelude::*;
-use sea_query::{Value, SimpleExpr};
+use sea_query::{SimpleExpr, Value};
 use serde_json;
 
 #[derive(DeriveMigrationName)]

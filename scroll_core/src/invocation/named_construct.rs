@@ -1,7 +1,6 @@
 // ===============================
 // src/invocation/named_construct.rs
 // ===============================
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
 use crate::invocation::invocation::{Invocation, InvocationResult};

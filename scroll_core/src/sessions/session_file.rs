@@ -3,13 +3,11 @@
 // File-based utilities to persist sessions and scroll events.
 // ===================================================
 
-use std::fs::{File};
+use std::fs::File;
 use std::io::{BufReader, BufWriter};
-use std::path::Path;
 
-use serde_json;
 use crate::sessions::session::ScrollSession;
-use crate::sessions::session_service::SessionService;
+use serde_json;
 
 use crate::events::ScrollEvent;
 

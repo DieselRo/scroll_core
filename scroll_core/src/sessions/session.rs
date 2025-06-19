@@ -6,9 +6,8 @@
 
 use crate::events::scroll_event::ScrollEvent;
 use crate::sessions::state::State;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScrollSession {

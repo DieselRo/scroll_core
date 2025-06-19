@@ -3,11 +3,11 @@
 //==========================
 
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 use crate::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
-use crate::scroll::Scroll;
 use crate::schema::EmotionSignature;
+use crate::scroll::Scroll;
 
 pub struct ConstructRegistry {
     constructs: HashMap<String, Arc<dyn ConstructAI + Send + Sync>>, // thread-safe
@@ -24,7 +24,8 @@ impl ConstructRegistry {
     where
         T: ConstructAI + Send + Sync + 'static,
     {
-        self.constructs.insert(name.to_string(), Arc::new(construct));
+        self.constructs
+            .insert(name.to_string(), Arc::new(construct));
     }
 
     pub fn invoke(&self, name: &str, context: &ConstructContext) -> ConstructResult {

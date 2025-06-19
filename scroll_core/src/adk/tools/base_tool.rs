@@ -14,13 +14,13 @@ use crate::adk::common::types::FunctionDeclaration;
 pub trait BaseTool: Send + Sync {
     /// Get the tool's name
     fn name(&self) -> &str;
-    
+
     /// Get the tool's description
     fn description(&self) -> &str;
-    
+
     /// Get the tool's function declaration
     fn declaration(&self) -> FunctionDeclaration;
-    
+
     /// Execute the tool with provided arguments
     async fn execute(
         &self,

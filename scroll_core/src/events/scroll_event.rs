@@ -4,9 +4,9 @@
 // captured during invocation. Used in session timelines.
 // ===================================================
 
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::Utc;
 
 use crate::constructs::construct_metadata::ConstructName;
 use crate::memory::memory_result::MemoryDelta;

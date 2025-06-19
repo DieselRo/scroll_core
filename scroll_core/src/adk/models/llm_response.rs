@@ -13,15 +13,15 @@ pub struct LlmResponse {
     /// Response content
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<Content>,
-    
+
     /// Whether this is a partial response (streaming)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub partial: Option<bool>,
-    
+
     /// Error code if an error occurred
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error_code: Option<String>,
-    
+
     /// Error message if an error occurred
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error_message: Option<String>,

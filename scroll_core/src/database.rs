@@ -3,17 +3,15 @@
 // Database connection setup using SeaORM + SQLite
 // ================================================
 
-use dotenvy::from_filename;
 use sea_orm::{Database, DbConn, DbErr};
-use std::path::Path;
 use std::env;
+use std::path::Path;
 
 pub async fn establish_connection() -> Result<DbConn, DbErr> {
     // Manually load from .env just in case
     dotenvy::from_filename("../.env").ok();
 
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     println!("🧭 CARGO_MANIFEST_DIR: {}", env!("CARGO_MANIFEST_DIR"));
 
@@ -24,7 +22,10 @@ pub async fn establish_connection() -> Result<DbConn, DbErr> {
     if let Some(stripped) = database_url.strip_prefix("sqlite:") {
         let cleaned = stripped.trim_start_matches('/');
         println!("🔍 Checking if file exists: {cleaned}");
-        println!("🔍 Absolute path would be: {}", current_dir.join(cleaned).display());
+        println!(
+            "🔍 Absolute path would be: {}",
+            current_dir.join(cleaned).display()
+        );
 
         if Path::new(cleaned).exists() {
             println!("✅ File found.");

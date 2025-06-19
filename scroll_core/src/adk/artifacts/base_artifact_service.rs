@@ -5,7 +5,7 @@
 use async_trait::async_trait;
 
 use crate::adk::common::error::AdkError;
-use crate::adk::common::types::{Content, Part};
+use crate::adk::common::types::Part;
 
 /// Base trait for artifact service implementations
 #[async_trait]
@@ -19,7 +19,7 @@ pub trait BaseArtifactService: Send + Sync {
         filename: &str,
         artifact: Part,
     ) -> Result<String, AdkError>;
-    
+
     /// Get an artifact
     async fn get_artifact(
         &self,
@@ -28,7 +28,7 @@ pub trait BaseArtifactService: Send + Sync {
         session_id: &str,
         filename: &str,
     ) -> Result<Part, AdkError>;
-    
+
     /// Delete an artifact
     async fn delete_artifact(
         &self,
@@ -37,7 +37,7 @@ pub trait BaseArtifactService: Send + Sync {
         session_id: &str,
         filename: &str,
     ) -> Result<(), AdkError>;
-    
+
     /// List artifacts for a session
     async fn list_artifacts(
         &self,

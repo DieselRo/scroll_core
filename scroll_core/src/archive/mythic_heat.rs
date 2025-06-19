@@ -1,23 +1,21 @@
 // mythic_heat.rs – Evaluator of Scroll Significance
 //========================================================
-#![allow(dead_code)]
 #![allow(unused_imports)]
-
 
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
-use crate::schema::EmotionSignature;
 use crate::archive::scroll_access_log::ScrollAccess;
+use crate::schema::EmotionSignature;
 
 /// Represents how "hot" or relevant a scroll is in memory.
 #[derive(Debug, Clone)]
 pub struct MythicHeat {
     pub scroll_id: Uuid,
-    pub emotional_intensity: f32,  // 0.0 to 1.0
+    pub emotional_intensity: f32, // 0.0 to 1.0
     pub access_count: usize,
     pub last_accessed: DateTime<Utc>,
-    pub cost_weight: f32,          // symbolic/technical weight
+    pub cost_weight: f32, // symbolic/technical weight
 }
 
 impl MythicHeat {

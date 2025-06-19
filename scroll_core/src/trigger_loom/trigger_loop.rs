@@ -1,23 +1,14 @@
 // trigger_loop.rs – The Pendulum of the Archive
 
-use std::collections::HashMap;
-use std::thread;
-use std::time::{Duration, Instant};
-
-use crate::trigger_loom::loom::evaluate_construct;
-use crate::invocation::named_construct::NamedConstruct;
-use crate::EmotionSignature;
-use crate::trigger_loom;
-
 #[derive(Debug, Clone)]
 pub enum SymbolicRhythm {
-    Constant(f32),           // Hz
+    Constant(f32), // Hz
     Dawn,
     Dusk,
-    Spiral(u32),             // Recursive step rhythm
+    Spiral(u32), // Recursive step rhythm
     EmotionDriven,
 }
-/* 
+/*
 #[derive(Debug, Clone)]
 pub struct TriggerLoopConfig {
     pub rhythm: SymbolicRhythm,

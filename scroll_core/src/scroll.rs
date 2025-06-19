@@ -1,11 +1,11 @@
 // scroll.rs
 
-use uuid::Uuid;
-use std::fmt;
 use chrono::{DateTime, Utc};
 use log::info;
+use std::fmt;
+use uuid::Uuid;
 
-use crate::schema::{ScrollType, ScrollStatus, YamlMetadata, EmotionSignature};
+use crate::schema::{EmotionSignature, ScrollStatus, ScrollType, YamlMetadata};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ScrollOrigin {
@@ -78,13 +78,19 @@ impl Scroll {
     pub fn seal(&mut self) {
         self.status = ScrollStatus::Sealed;
         self.origin.last_modified = Utc::now();
-        info!("Scroll '{}' sealed at {:?}", self.title, self.origin.last_modified);
+        info!(
+            "Scroll '{}' sealed at {:?}",
+            self.title, self.origin.last_modified
+        );
     }
 
     pub fn awaken(&mut self) {
         self.status = ScrollStatus::Emergent;
         self.origin.last_modified = Utc::now();
-        info!("Scroll '{}' awakened at {:?}", self.title, self.origin.last_modified);
+        info!(
+            "Scroll '{}' awakened at {:?}",
+            self.title, self.origin.last_modified
+        );
     }
 
     pub fn link_to(&mut self, other: &Scroll, link_type: ScrollLinkType) {
@@ -93,11 +99,16 @@ impl Scroll {
             link_type: link_type.clone(),
         });
         self.origin.last_modified = Utc::now();
-        info!("Scroll '{}' linked to '{}' as {:?}.", self.title, other.title, link_type);
+        info!(
+            "Scroll '{}' linked to '{}' as {:?}.",
+            self.title, other.title, link_type
+        );
     }
 
     pub fn is_linked_to(&self, other_id: &Uuid) -> bool {
-        self.linked_scrolls.iter().any(|link| &link.target == other_id)
+        self.linked_scrolls
+            .iter()
+            .any(|link| &link.target == other_id)
     }
 
     pub fn is_symbolically_valid(&self) -> bool {
@@ -112,7 +123,10 @@ impl Scroll {
     }
 
     pub fn echo_emotion_symbolic(&self) -> String {
-        format!("📜 {} ∴ 🔮 {} ✦ {}", self.title, self.emotion_signature.tone, self.emotion_signature.resonance)
+        format!(
+            "📜 {} ∴ 🔮 {} ✦ {}",
+            self.title, self.emotion_signature.tone, self.emotion_signature.resonance
+        )
     }
 
     pub fn validate(&self) -> Result<(), String> {
@@ -132,7 +146,10 @@ impl Scroll {
             self.title,
             self.status,
             self.emotion_signature,
-            self.origin.authored_by.as_deref().unwrap_or("an Unknown Voice")
+            self.origin
+                .authored_by
+                .as_deref()
+                .unwrap_or("an Unknown Voice")
         )
     }
 }
@@ -152,12 +169,10 @@ impl fmt::Display for Scroll {
             self.origin.last_modified
         )
     }
-} 
-
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ScrollDraft {
     pub title: String,
     pub content: String,
 }
-

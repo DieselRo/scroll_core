@@ -1,6 +1,5 @@
 // cost_manager.rs – The Core Weave
 //====================================
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
 use crate::invocation::invocation::Invocation;

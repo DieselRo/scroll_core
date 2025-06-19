@@ -1,12 +1,11 @@
 //    archive_loader.rs
 //======================================
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
-use std::fs;
-use std::path::Path;
 use crate::parser;
 use crate::scroll::Scroll;
+use std::fs;
+use std::path::Path;
 
 fn is_markdown_file(path: &Path) -> bool {
     path.extension()
@@ -36,12 +35,15 @@ pub fn load_scrolls_from_directory<P: AsRef<Path>>(archive_path: P) -> Result<Ve
                 Err(e) => {
                     eprintln!("⚠️ Failed to parse scroll {}: {}", path.display(), e);
                     failed_count += 1;
-                },
+                }
             }
         }
     }
 
-    println!("📚 Loaded {} scroll(s) from the Archive.", loaded_scrolls.len());
+    println!(
+        "📚 Loaded {} scroll(s) from the Archive.",
+        loaded_scrolls.len()
+    );
 
     if failed_count == 0 {
         println!("🌙 All scrolls passed the veil without harm.");

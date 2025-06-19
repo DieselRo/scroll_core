@@ -1,11 +1,13 @@
 use chrono::{Duration, Utc};
 use scroll_core::archive::initialize::load_with_cache;
-use scroll_core::cache_manager::CacheManager;
-use scroll_core::{Scroll, ScrollStatus, ScrollType, YamlMetadata, EmotionSignature, ScrollOrigin};
 use scroll_core::archive::scroll_access_log::ScrollAccess;
-use scroll_core::core::cost_manager::{InvocationCost, CostDecision, CostProfile, ContextCost, SystemCost};
-use uuid::Uuid;
+use scroll_core::cache_manager::CacheManager;
+use scroll_core::core::cost_manager::{
+    ContextCost, CostDecision, CostProfile, InvocationCost, SystemCost,
+};
+use scroll_core::{EmotionSignature, Scroll, ScrollOrigin, ScrollStatus, ScrollType, YamlMetadata};
 use std::path::Path;
+use uuid::Uuid;
 
 fn dummy_scroll(intensity: f32) -> Scroll {
     Scroll {
@@ -15,7 +17,12 @@ fn dummy_scroll(intensity: f32) -> Scroll {
         yaml_metadata: YamlMetadata {
             title: "Test".into(),
             scroll_type: ScrollType::Canon,
-            emotion_signature: EmotionSignature { tone: "calm".into(), emphasis: 0.5, resonance: "gentle".into(), intensity: Some(intensity) },
+            emotion_signature: EmotionSignature {
+                tone: "calm".into(),
+                emphasis: 0.5,
+                resonance: "gentle".into(),
+                intensity: Some(intensity),
+            },
             tags: vec![],
             last_modified: None,
         },
@@ -23,18 +30,40 @@ fn dummy_scroll(intensity: f32) -> Scroll {
         invocation_phrase: "Invoke".into(),
         sigil: "🔧".into(),
         status: ScrollStatus::Draft,
-        emotion_signature: EmotionSignature { tone: "calm".into(), emphasis: 0.5, resonance: "gentle".into(), intensity: Some(intensity) },
+        emotion_signature: EmotionSignature {
+            tone: "calm".into(),
+            emphasis: 0.5,
+            resonance: "gentle".into(),
+            intensity: Some(intensity),
+        },
         linked_scrolls: vec![],
-        origin: ScrollOrigin { created: Utc::now(), authored_by: None, last_modified: Utc::now() },
+        origin: ScrollOrigin {
+            created: Utc::now(),
+            authored_by: None,
+            last_modified: Utc::now(),
+        },
     }
 }
 
 fn zero_cost() -> InvocationCost {
     InvocationCost {
-        context: ContextCost { token_estimate: 0, context_span: 0, relevance_score: 0.0 },
-        system: SystemCost { cpu_cycles: 0.0, memory_used_mb: 0.0, io_ops: 0, scrolls_touched: 0 },
+        context: ContextCost {
+            token_estimate: 0,
+            context_span: 0,
+            relevance_score: 0.0,
+        },
+        system: SystemCost {
+            cpu_cycles: 0.0,
+            memory_used_mb: 0.0,
+            io_ops: 0,
+            scrolls_touched: 0,
+        },
         decision: CostDecision::Allow,
-        cost_profile: CostProfile { system_pressure: 0.0, token_pressure: 0.0, symbolic_origin: None },
+        cost_profile: CostProfile {
+            system_pressure: 0.0,
+            token_pressure: 0.0,
+            symbolic_origin: None,
+        },
         rejection_origin: None,
         hesitation_signal: None,
         poetic_rejection: None,
@@ -57,8 +86,10 @@ fn test_cache_eviction_to_max_size() {
     let now = Utc::now();
     let mut first_id = Uuid::nil();
     for i in 0..55 {
-        let mut scroll = dummy_scroll(i as f32);
-        if i == 0 { first_id = scroll.id; }
+        let scroll = dummy_scroll(i as f32);
+        if i == 0 {
+            first_id = scroll.id;
+        }
         let access = ScrollAccess {
             first_accessed: now - Duration::seconds(100 - i as i64),
             last_accessed: now - Duration::seconds(100 - i as i64),
