@@ -12,8 +12,6 @@ use chrono::Utc;
 use uuid::Uuid;
 
 use crate::Scroll;
-#[cfg(feature = "metrics")]
-use metrics::{histogram, increment_counter};
 use tracing::info_span;
 use tracing_subscriber::EnvFilter;
 
@@ -72,12 +70,15 @@ impl InvocationManager {
         let timer = std::time::Instant::now();
 
         #[cfg(feature = "metrics")]
-        increment_counter!("construct_invocations_total", "construct" => name);
+        {
+            let labels = [("construct", name.to_string())];
+            metrics::counter!("construct_invocations_total", &labels).increment(1);
+        }
 
         let result = self.registry.invoke(name, context);
 
         #[cfg(feature = "metrics")]
-        histogram!("construct_duration_ms", timer.elapsed().as_millis() as f64);
+        metrics::histogram!("construct_duration_ms").record(timer.elapsed().as_millis() as f64);
 
         result
     }

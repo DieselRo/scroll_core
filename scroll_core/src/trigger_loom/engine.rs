@@ -115,6 +115,6 @@ impl TriggerLoopEngine {
         info!("{}", summary.to_string());
 
         #[cfg(feature = "metrics")]
-        histogram!("tick_duration_ms", tick_start.elapsed().as_millis() as f64);
+        histogram!("tick_duration_ms").record(tick_start.elapsed().as_millis() as f64);
     }
 }

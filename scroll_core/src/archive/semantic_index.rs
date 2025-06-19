@@ -1,6 +1,9 @@
+use log::info;
 use std::collections::HashSet;
 use uuid::Uuid;
-use log::info;
+
+#[cfg(feature = "metrics")]
+use metrics::histogram;
 
 use crate::scroll::Scroll;
 
@@ -11,19 +14,51 @@ pub struct SemanticIndex {
 impl SemanticIndex {
     pub fn build(scrolls: &[Scroll]) -> Self {
         info!("Generating semantic vectors for {} scrolls", scrolls.len());
+
+        #[cfg(feature = "metrics")]
+        let build_timer = std::time::Instant::now();
+
         let vectors = scrolls
             .iter()
             .map(|s| {
+                #[cfg(feature = "metrics")]
+                let embed_timer = std::time::Instant::now();
+
                 let first_lines = s
                     .markdown_body
                     .lines()
                     .take(3)
                     .collect::<Vec<_>>()
                     .join(" ");
-                let text = format!("{} {} {}", s.title, s.yaml_metadata.tags.join(" "), first_lines);
-                (s.id, tokenize(&text))
+                let text = format!(
+                    "{} {} {}",
+                    s.title,
+                    s.yaml_metadata.tags.join(" "),
+                    first_lines
+                );
+                let result = (s.id, tokenize(&text));
+
+                #[cfg(feature = "metrics")]
+                histogram!("scroll_embed_time_seconds").record(embed_timer.elapsed().as_secs_f64());
+
+                result
             })
-            .collect();
+            .collect::<Vec<_>>();
+
+        #[cfg(feature = "metrics")]
+        {
+            histogram!("vector_index_update_time_seconds")
+                .record(build_timer.elapsed().as_secs_f64());
+            let mut bytes: usize = std::mem::size_of_val(&vectors);
+            for (_, tokens) in &vectors {
+                bytes += std::mem::size_of_val(tokens);
+                for t in tokens {
+                    bytes += t.len();
+                }
+            }
+            histogram!("vector_index_memory_bytes").record(bytes as f64);
+        }
+
         info!("Vector generation complete");
         Self { vectors }
     }
@@ -52,5 +87,9 @@ fn tokenize(text: &str) -> HashSet<String> {
 fn jaccard_similarity(a: &HashSet<String>, b: &HashSet<String>) -> f32 {
     let intersection = a.intersection(b).count() as f32;
     let union = a.union(b).count() as f32;
-    if union == 0.0 { 0.0 } else { intersection / union }
+    if union == 0.0 {
+        0.0
+    } else {
+        intersection / union
+    }
 }
