@@ -2,9 +2,6 @@
 // construct_ai.rs – Dreaming Constructs
 //==========================================
 
-
-
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
 use crate::schema::EmotionSignature;
@@ -28,10 +25,18 @@ pub struct ConstructContext {
 
 #[derive(Debug, Clone)]
 pub enum ConstructResult {
-    Insight { text: String },
-    ScrollDraft { title: String, content: String },
+    Insight {
+        text: String,
+    },
+    ScrollDraft {
+        title: String,
+        content: String,
+    },
     ModifiedScroll(Scroll),
-    Refusal { reason: String, echo: Option<String> },
+    Refusal {
+        reason: String,
+        echo: Option<String>,
+    },
 }
 
 pub struct ConstructInsight {

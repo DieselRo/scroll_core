@@ -12,7 +12,7 @@ pub struct EventActions {
     /// Transfer to agent action
     #[serde(skip_serializing_if = "Option::is_none")]
     pub transfer_to_agent: Option<TransferToAgentAction>,
-    
+
     /// Custom action data
     #[serde(skip_serializing_if = "HashMap::is_empty", default)]
     pub custom: HashMap<String, serde_json::Value>,
@@ -24,7 +24,7 @@ pub struct EventActions {
 pub struct TransferToAgentAction {
     /// Name of the agent to transfer to
     pub agent_name: String,
-    
+
     /// Additional context or data to pass to the agent
     #[serde(skip_serializing_if = "Option::is_none")]
     pub context: Option<serde_json::Value>,

@@ -9,31 +9,31 @@ use std::fmt;
 pub enum AdkError {
     /// Invalid request parameters
     InvalidRequest(String),
-    
+
     /// Error from the LLM model
     ModelError(String),
-    
+
     /// Session-related error
     SessionError(String),
-    
+
     /// Database error
     Database(String),
-    
+
     /// I/O error
     Io(std::io::Error),
-    
+
     /// Serialization/deserialization error
     Serialization(String),
-    
+
     /// Tool execution error
     ToolExecution(String),
-    
+
     /// Authorization error
     Auth(String),
-    
+
     /// Not found error
     NotFound(String),
-    
+
     /// Generic error
     Other(String),
 }

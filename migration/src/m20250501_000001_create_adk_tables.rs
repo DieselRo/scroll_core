@@ -85,7 +85,12 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Sessions::CreateTime).double().not_null())
                     .col(ColumnDef::new(Sessions::UpdateTime).double().not_null())
                     .col(ColumnDef::new(Sessions::Status).string().not_null())
-                    .primary_key(Index::create().col(Sessions::AppName).col(Sessions::UserId).col(Sessions::Id))
+                    .primary_key(
+                        Index::create()
+                            .col(Sessions::AppName)
+                            .col(Sessions::UserId)
+                            .col(Sessions::Id),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -114,9 +119,15 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_events_sessions")
-                            .from(Events::Table, (Events::AppName, Events::UserId, Events::SessionId))
-                            .to(Sessions::Table, (Sessions::AppName, Sessions::UserId, Sessions::Id))
-                            .on_delete(ForeignKeyAction::Cascade)
+                            .from(
+                                Events::Table,
+                                (Events::AppName, Events::UserId, Events::SessionId),
+                            )
+                            .to(
+                                Sessions::Table,
+                                (Sessions::AppName, Sessions::UserId, Sessions::Id),
+                            )
+                            .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
             )
@@ -144,7 +155,11 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(UserStates::UserId).string().not_null())
                     .col(ColumnDef::new(UserStates::State).json().not_null())
                     .col(ColumnDef::new(UserStates::UpdateTime).double().not_null())
-                    .primary_key(Index::create().col(UserStates::AppName).col(UserStates::UserId))
+                    .primary_key(
+                        Index::create()
+                            .col(UserStates::AppName)
+                            .col(UserStates::UserId),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -162,18 +177,26 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Artifacts::MimeType).string().not_null())
                     .col(ColumnDef::new(Artifacts::Data).binary().not_null())
                     .col(ColumnDef::new(Artifacts::CreateTime).double().not_null())
-                    .primary_key(Index::create()
-                        .col(Artifacts::AppName)
-                        .col(Artifacts::UserId)
-                        .col(Artifacts::SessionId)
-                        .col(Artifacts::Filename)
-                        .col(Artifacts::Version))
+                    .primary_key(
+                        Index::create()
+                            .col(Artifacts::AppName)
+                            .col(Artifacts::UserId)
+                            .col(Artifacts::SessionId)
+                            .col(Artifacts::Filename)
+                            .col(Artifacts::Version),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_artifacts_sessions")
-                            .from(Artifacts::Table, (Artifacts::AppName, Artifacts::UserId, Artifacts::SessionId))
-                            .to(Sessions::Table, (Sessions::AppName, Sessions::UserId, Sessions::Id))
-                            .on_delete(ForeignKeyAction::Cascade)
+                            .from(
+                                Artifacts::Table,
+                                (Artifacts::AppName, Artifacts::UserId, Artifacts::SessionId),
+                            )
+                            .to(
+                                Sessions::Table,
+                                (Sessions::AppName, Sessions::UserId, Sessions::Id),
+                            )
+                            .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
             )

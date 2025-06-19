@@ -1,15 +1,11 @@
 // ===============================
 // src/schema.rs
 // ===============================
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
-
-use serde::{Serialize, Deserialize};
-use uuid::Uuid;
+use serde::{Deserialize, Serialize};
 use std::fmt;
-
-
+use uuid::Uuid;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ScrollType {
@@ -61,49 +57,97 @@ pub struct EmotionSignature {
 
 impl EmotionSignature {
     pub fn neutral() -> Self {
-        Self { tone: "neutral".into(), emphasis: 0.0, resonance: "balanced".into(), intensity: Some(0.0) }
+        Self {
+            tone: "neutral".into(),
+            emphasis: 0.0,
+            resonance: "balanced".into(),
+            intensity: Some(0.0),
+        }
     }
 
     pub fn reflective() -> Self {
-        Self { tone: "calm".into(), emphasis: 0.4, resonance: "deep".into(), intensity: Some(0.2) }
+        Self {
+            tone: "calm".into(),
+            emphasis: 0.4,
+            resonance: "deep".into(),
+            intensity: Some(0.2),
+        }
     }
 
     pub fn curious() -> Self {
-        Self { tone: "inquiring".into(), emphasis: 0.6, resonance: "seeking".into(), intensity: Some(0.5) }
+        Self {
+            tone: "inquiring".into(),
+            emphasis: 0.6,
+            resonance: "seeking".into(),
+            intensity: Some(0.5),
+        }
     }
 
     pub fn urgent() -> Self {
-        Self { tone: "alert".into(), emphasis: 0.8, resonance: "pressured".into(), intensity: Some(0.9) }
+        Self {
+            tone: "alert".into(),
+            emphasis: 0.8,
+            resonance: "pressured".into(),
+            intensity: Some(0.9),
+        }
     }
 
     pub fn mythic() -> Self {
-        Self { tone: "eternal".into(), emphasis: 0.9, resonance: "resonant".into(), intensity: Some(0.6) }
+        Self {
+            tone: "eternal".into(),
+            emphasis: 0.9,
+            resonance: "resonant".into(),
+            intensity: Some(0.6),
+        }
     }
 
     pub fn solemn() -> Self {
-        Self { tone: "somber".into(), emphasis: 0.5, resonance: "grave".into(), intensity: Some(0.4) }
+        Self {
+            tone: "somber".into(),
+            emphasis: 0.5,
+            resonance: "grave".into(),
+            intensity: Some(0.4),
+        }
     }
 
     pub fn reverent() -> Self {
-        Self { tone: "humble".into(), emphasis: 0.3, resonance: "sacred".into(), intensity: Some(0.2) }
+        Self {
+            tone: "humble".into(),
+            emphasis: 0.3,
+            resonance: "sacred".into(),
+            intensity: Some(0.2),
+        }
     }
 
     pub fn inspired() -> Self {
-        Self { tone: "bright".into(), emphasis: 0.7, resonance: "soaring".into(), intensity: Some(0.7) }
+        Self {
+            tone: "bright".into(),
+            emphasis: 0.7,
+            resonance: "soaring".into(),
+            intensity: Some(0.7),
+        }
     }
 
     pub fn frenzied() -> Self {
-        Self { tone: "chaotic".into(), emphasis: 1.0, resonance: "unstable".into(), intensity: Some(1.0) }
+        Self {
+            tone: "chaotic".into(),
+            emphasis: 1.0,
+            resonance: "unstable".into(),
+            intensity: Some(1.0),
+        }
     }
 
     pub fn ancient() -> Self {
-        Self { tone: "silent".into(), emphasis: 0.2, resonance: "echoic".into(), intensity: Some(0.1) }
+        Self {
+            tone: "silent".into(),
+            emphasis: 0.2,
+            resonance: "echoic".into(),
+            intensity: Some(0.1),
+        }
     }
 
     pub fn is_empty(&self) -> bool {
-        self.tone.is_empty()
-            && self.resonance.is_empty()
-            && self.intensity.unwrap_or(0.0) == 0.0
+        self.tone.is_empty() && self.resonance.is_empty() && self.intensity.unwrap_or(0.0) == 0.0
     }
 }
 
@@ -115,10 +159,15 @@ impl Default for EmotionSignature {
 
 impl fmt::Display for EmotionSignature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} // {} ({:.2})", self.tone, self.resonance, self.intensity.unwrap_or(0.0))
+        write!(
+            f,
+            "{} // {} ({:.2})",
+            self.tone,
+            self.resonance,
+            self.intensity.unwrap_or(0.0)
+        )
     }
 }
-
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct YamlMetadata {
@@ -129,4 +178,3 @@ pub struct YamlMetadata {
     #[serde(default)]
     pub last_modified: Option<chrono::DateTime<chrono::Utc>>,
 }
-

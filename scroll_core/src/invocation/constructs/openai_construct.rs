@@ -3,11 +3,9 @@
 //====================================
 
 use crate::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
-use reqwest::blocking::Client;
 use dotenvy::dotenv;
+use reqwest::blocking::Client;
 use std::env;
-
-
 
 // === OpenAI Client & Config ===
 #[derive(Debug, Clone)]
@@ -21,8 +19,8 @@ pub struct OpenAIClient {
 impl OpenAIClient {
     pub fn new_from_env() -> Self {
         dotenv().ok();
-        let api_key = env::var("OPENAI_API_KEY")
-            .expect("OPENAI_API_KEY must be set in .env or environment");
+        let api_key =
+            env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set in .env or environment");
 
         Self {
             api_key,
@@ -66,7 +64,10 @@ pub struct Mythscribe {
 
 impl Mythscribe {
     pub fn new(client: OpenAIClient, system_prompt: String) -> Self {
-        Self { client, system_prompt }
+        Self {
+            client,
+            system_prompt,
+        }
     }
 }
 
@@ -84,9 +85,7 @@ impl ConstructAI for Mythscribe {
         for scroll in &context.scrolls {
             prompt_sections.push(format!(
                 "Title: {}\nTags: {:?}\nBody:\n{}\n---\n",
-                scroll.title,
-                scroll.yaml_metadata.tags,
-                scroll.markdown_body,
+                scroll.title, scroll.yaml_metadata.tags, scroll.markdown_body,
             ));
         }
 

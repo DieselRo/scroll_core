@@ -2,11 +2,11 @@
 //     src/invocation/invocation_manager.rs
 //==========================================
 
-use crate::construct_ai::ConstructResult;
-use crate::Scroll;
-use crate::core::ConstructRegistry;
 use crate::construct_ai::ConstructContext;
+use crate::construct_ai::ConstructResult;
+use crate::core::ConstructRegistry;
 use crate::invocation::aelren::AelrenHerald;
+use crate::Scroll;
 
 pub struct InvocationManager {
     pub registry: ConstructRegistry,
@@ -28,7 +28,10 @@ impl InvocationManager {
         depth: usize,
     ) -> ConstructResult {
         if depth > self.max_chain_depth {
-            return ConstructResult::Refusal { reason: "Max invocation depth exceeded".into(), echo: None };
+            return ConstructResult::Refusal {
+                reason: "Max invocation depth exceeded".into(),
+                echo: None,
+            };
         }
 
         self.registry.invoke(name, context)
@@ -43,11 +46,7 @@ impl InvocationManager {
     }
 
     // Optional future batch support
-    pub fn invoke_batch(
-        &self,
-        name: &str,
-        contexts: &[ConstructContext],
-    ) -> Vec<ConstructResult> {
+    pub fn invoke_batch(&self, name: &str, contexts: &[ConstructContext]) -> Vec<ConstructResult> {
         contexts
             .iter()
             .map(|ctx| self.invoke_by_name(name, ctx, 0))

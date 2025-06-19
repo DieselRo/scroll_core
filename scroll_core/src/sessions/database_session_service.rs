@@ -3,23 +3,18 @@
 // SeaORM-backed implementation of SessionService trait
 // ======================================================
 
-use async_trait::async_trait;
-use sea_orm::{DatabaseConnection, EntityTrait, Set, ActiveModelTrait, ColumnTrait, QueryFilter};
-use crate::sessions::session::ScrollSession;
-use crate::sessions::state::State;
 use crate::events::scroll_event::ScrollEvent;
+use crate::sessions::session::ScrollSession;
 use crate::sessions::session_service::{
-    GetSessionConfig,
-    ListEventsResponse,
-    ListSessionsResponse,
-    SessionService,
+    GetSessionConfig, ListEventsResponse, ListSessionsResponse, SessionService,
 };
-use crate::sessions::error::SessionError;
+use crate::sessions::state::State;
+use async_trait::async_trait;
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
 
-use crate::models::{scroll_session, scroll_event};
-use std::collections::HashMap;
-use uuid::Uuid;
+use crate::models::{scroll_event, scroll_session};
 use serde_json;
+use std::collections::HashMap;
 
 pub struct DatabaseSessionService {
     pub conn: DatabaseConnection,
@@ -121,9 +116,7 @@ impl SessionService for DatabaseSessionService {
         _app_name: &str,
         _user_id: &str,
     ) -> Result<ListSessionsResponse, Box<dyn std::error::Error>> {
-        let sessions = scroll_session::Entity::find()
-            .all(&self.conn)
-            .await?;
+        let sessions = scroll_session::Entity::find().all(&self.conn).await?;
 
         Ok(ListSessionsResponse {
             sessions: Vec::new(),

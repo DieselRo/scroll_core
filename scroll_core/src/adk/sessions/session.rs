@@ -2,7 +2,7 @@
 // src/adk/sessions/session.rs
 // ==================================
 
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -22,27 +22,27 @@ pub enum SessionStatus {
 pub struct Session {
     /// Unique identifier for this session
     pub id: String,
-    
+
     /// Application name
     pub app_name: String,
-    
+
     /// User identifier
     pub user_id: String,
-    
+
     /// Session state - arbitrary key-value data
     #[serde(default)]
     pub state: HashMap<String, serde_json::Value>,
-    
+
     /// Events in this session
     #[serde(default)]
     pub events: Vec<Event>,
-    
+
     /// Timestamp of session creation
     pub create_time: f64,
-    
+
     /// Timestamp of last update
     pub last_update_time: f64,
-    
+
     /// Session status
     #[serde(default = "default_session_status")]
     pub status: SessionStatus,
@@ -62,7 +62,7 @@ impl Session {
     ) -> Self {
         let now = Utc::now();
         let timestamp = now.timestamp_millis() as f64 / 1000.0;
-        
+
         Self {
             id,
             app_name,
@@ -74,26 +74,26 @@ impl Session {
             status: SessionStatus::Active,
         }
     }
-    
+
     /// Add an event to the session
     pub fn add_event(&mut self, event: Event) {
         let now = Utc::now();
         self.last_update_time = now.timestamp_millis() as f64 / 1000.0;
         self.events.push(event);
     }
-    
+
     /// Close the session
     pub fn close(&mut self) {
         let now = Utc::now();
         self.last_update_time = now.timestamp_millis() as f64 / 1000.0;
         self.status = SessionStatus::Closed;
     }
-    
+
     /// Get a value from session state
     pub fn get_state_value(&self, key: &str) -> Option<&serde_json::Value> {
         self.state.get(key)
     }
-    
+
     /// Set a value in session state
     pub fn set_state_value(&mut self, key: String, value: serde_json::Value) {
         let now = Utc::now();

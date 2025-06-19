@@ -18,7 +18,8 @@ pub type AsyncToolFn = Arc<
     dyn for<'a> Fn(
             HashMap<String, serde_json::Value>,
             ToolContext<'a>,
-        ) -> Pin<Box<dyn Future<Output = Result<serde_json::Value, AdkError>> + Send + 'a>>
+        )
+            -> Pin<Box<dyn Future<Output = Result<serde_json::Value, AdkError>> + Send + 'a>>
         + Send
         + Sync,
 >;
@@ -27,13 +28,13 @@ pub type AsyncToolFn = Arc<
 pub struct FunctionTool {
     /// Tool name
     name: String,
-    
+
     /// Tool description
     description: String,
-    
+
     /// Function declaration (parameters schema)
     declaration: FunctionDeclaration,
-    
+
     /// Async function to execute
     function: AsyncToolFn,
 }
@@ -66,15 +67,15 @@ impl BaseTool for FunctionTool {
     fn name(&self) -> &str {
         &self.name
     }
-    
+
     fn description(&self) -> &str {
         &self.description
     }
-    
+
     fn declaration(&self) -> FunctionDeclaration {
         self.declaration.clone()
     }
-    
+
     async fn execute(
         &self,
         args: HashMap<String, serde_json::Value>,

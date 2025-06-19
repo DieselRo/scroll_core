@@ -37,36 +37,36 @@ impl BaseSessionService for InMemorySessionService {
         state: Option<HashMap<String, serde_json::Value>>,
         session_id: Option<&str>,
     ) -> Result<Session, AdkError> {
-        let id = session_id.map(|s| s.to_string()).unwrap_or_else(|| Uuid::new_v4().to_string());
-        
-        let session = Session::new(
-            id,
-            app_name.to_string(),
-            user_id.to_string(),
-            state,
-        );
-        
-        let mut sessions = self.sessions.lock().map_err(|e| AdkError::Other(e.to_string()))?;
-        
+        let id = session_id
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| Uuid::new_v4().to_string());
+
+        let session = Session::new(id, app_name.to_string(), user_id.to_string(), state);
+
+        let mut sessions = self
+            .sessions
+            .lock()
+            .map_err(|e| AdkError::Other(e.to_string()))?;
+
         // Ensure app entry exists
         if !sessions.contains_key(app_name) {
             sessions.insert(app_name.to_string(), HashMap::new());
         }
-        
+
         // Ensure user entry exists
         let app_sessions = sessions.get_mut(app_name).unwrap();
         if !app_sessions.contains_key(user_id) {
             app_sessions.insert(user_id.to_string(), HashMap::new());
         }
-        
+
         // Store session
         let user_sessions = app_sessions.get_mut(user_id).unwrap();
         let session_id = session.id.clone();
         user_sessions.insert(session_id.clone(), session.clone());
-        
+
         Ok(session)
     }
-    
+
     async fn get_session(
         &self,
         app_name: &str,
@@ -74,15 +74,18 @@ impl BaseSessionService for InMemorySessionService {
         session_id: &str,
         config: Option<GetSessionConfig>,
     ) -> Result<Option<Session>, AdkError> {
-        let sessions = self.sessions.lock().map_err(|e| AdkError::Other(e.to_string()))?;
-        
+        let sessions = self
+            .sessions
+            .lock()
+            .map_err(|e| AdkError::Other(e.to_string()))?;
+
         // Retrieve session
         let session = sessions
             .get(app_name)
             .and_then(|app_sessions| app_sessions.get(user_id))
             .and_then(|user_sessions| user_sessions.get(session_id))
             .cloned();
-        
+
         // Apply config filter if provided
         if let Some(mut session) = session {
             if let Some(config) = config {
@@ -100,14 +103,17 @@ impl BaseSessionService for InMemorySessionService {
             Ok(None)
         }
     }
-    
+
     async fn list_sessions(
         &self,
         app_name: &str,
         user_id: &str,
     ) -> Result<ListSessionsResponse, AdkError> {
-        let sessions = self.sessions.lock().map_err(|e| AdkError::Other(e.to_string()))?;
-        
+        let sessions = self
+            .sessions
+            .lock()
+            .map_err(|e| AdkError::Other(e.to_string()))?;
+
         let summaries = sessions
             .get(app_name)
             .and_then(|app_sessions| app_sessions.get(user_id))
@@ -125,38 +131,43 @@ impl BaseSessionService for InMemorySessionService {
                     .collect()
             })
             .unwrap_or_default();
-        
+
         Ok(ListSessionsResponse {
             sessions: summaries,
             next_page_token: None,
         })
     }
-    
+
     async fn delete_session(
         &self,
         app_name: &str,
         user_id: &str,
         session_id: &str,
     ) -> Result<(), AdkError> {
-        let mut sessions = self.sessions.lock().map_err(|e| AdkError::Other(e.to_string()))?;
-        
+        let mut sessions = self
+            .sessions
+            .lock()
+            .map_err(|e| AdkError::Other(e.to_string()))?;
+
         if let Some(app_sessions) = sessions.get_mut(app_name) {
             if let Some(user_sessions) = app_sessions.get_mut(user_id) {
                 user_sessions.remove(session_id);
                 return Ok(());
             }
         }
-        
-        Err(AdkError::NotFound(format!("Session not found: {}", session_id)))
+
+        Err(AdkError::NotFound(format!(
+            "Session not found: {}",
+            session_id
+        )))
     }
-    
-    async fn append_event(
-        &self,
-        session: &mut Session,
-        event: Event,
-    ) -> Result<Event, AdkError> {
-        let mut sessions = self.sessions.lock().map_err(|e| AdkError::Other(e.to_string()))?;
-        
+
+    async fn append_event(&self, session: &mut Session, event: Event) -> Result<Event, AdkError> {
+        let mut sessions = self
+            .sessions
+            .lock()
+            .map_err(|e| AdkError::Other(e.to_string()))?;
+
         if let Some(app_sessions) = sessions.get_mut(&session.app_name) {
             if let Some(user_sessions) = app_sessions.get_mut(&session.user_id) {
                 if let Some(stored_session) = user_sessions.get_mut(&session.id) {
@@ -166,17 +177,23 @@ impl BaseSessionService for InMemorySessionService {
                 }
             }
         }
-        
-        Err(AdkError::NotFound(format!("Session not found: {}", session.id)))
+
+        Err(AdkError::NotFound(format!(
+            "Session not found: {}",
+            session.id
+        )))
     }
-    
+
     async fn update_session_state(
         &self,
         session: &mut Session,
         state: HashMap<String, serde_json::Value>,
     ) -> Result<(), AdkError> {
-        let mut sessions = self.sessions.lock().map_err(|e| AdkError::Other(e.to_string()))?;
-        
+        let mut sessions = self
+            .sessions
+            .lock()
+            .map_err(|e| AdkError::Other(e.to_string()))?;
+
         if let Some(app_sessions) = sessions.get_mut(&session.app_name) {
             if let Some(user_sessions) = app_sessions.get_mut(&session.user_id) {
                 if let Some(stored_session) = user_sessions.get_mut(&session.id) {
@@ -188,16 +205,19 @@ impl BaseSessionService for InMemorySessionService {
                 }
             }
         }
-        
-        Err(AdkError::NotFound(format!("Session not found: {}", session.id)))
+
+        Err(AdkError::NotFound(format!(
+            "Session not found: {}",
+            session.id
+        )))
     }
-    
-    async fn close_session(
-        &self,
-        session: &mut Session,
-    ) -> Result<(), AdkError> {
-        let mut sessions = self.sessions.lock().map_err(|e| AdkError::Other(e.to_string()))?;
-        
+
+    async fn close_session(&self, session: &mut Session) -> Result<(), AdkError> {
+        let mut sessions = self
+            .sessions
+            .lock()
+            .map_err(|e| AdkError::Other(e.to_string()))?;
+
         if let Some(app_sessions) = sessions.get_mut(&session.app_name) {
             if let Some(user_sessions) = app_sessions.get_mut(&session.user_id) {
                 if let Some(stored_session) = user_sessions.get_mut(&session.id) {
@@ -207,7 +227,10 @@ impl BaseSessionService for InMemorySessionService {
                 }
             }
         }
-        
-        Err(AdkError::NotFound(format!("Session not found: {}", session.id)))
+
+        Err(AdkError::NotFound(format!(
+            "Session not found: {}",
+            session.id
+        )))
     }
 }

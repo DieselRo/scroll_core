@@ -1,14 +1,13 @@
 // ===============================
 // src/state_manager.rs
 // ===============================
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
 use chrono::Utc;
 use log::info;
 
-use crate::scroll::Scroll;
 use crate::schema::ScrollStatus;
+use crate::scroll::Scroll;
 
 pub fn transition(scroll: &mut Scroll, new_status: ScrollStatus) {
     let old_status = scroll.status.clone();
@@ -57,7 +56,10 @@ pub fn try_transition(scroll: &mut Scroll, next_status: ScrollStatus) -> Result<
         ));
     }
 
-    if matches!((&scroll.status, &next_status), (ScrollStatus::Draft, ScrollStatus::Active)) {
+    if matches!(
+        (&scroll.status, &next_status),
+        (ScrollStatus::Draft, ScrollStatus::Active)
+    ) {
         scroll.validate()?;
     }
 

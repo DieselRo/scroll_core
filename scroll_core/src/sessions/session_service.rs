@@ -5,8 +5,8 @@
 // =======================================================
 
 use crate::sessions::session::ScrollSession;
-use std::collections::HashMap;
 use async_trait::async_trait;
+use std::collections::HashMap;
 
 use crate::events::scroll_event::ScrollEvent;
 
@@ -75,8 +75,5 @@ pub trait SessionService {
         event: ScrollEvent,
     ) -> Result<ScrollEvent, Box<dyn Error>>;
 
-    async fn close_session(
-        &self,
-        session: &mut ScrollSession,
-    ) -> Result<(), Box<dyn Error>>;
+    async fn close_session(&self, session: &mut ScrollSession) -> Result<(), Box<dyn Error>>;
 }

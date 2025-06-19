@@ -1,14 +1,12 @@
 // scroll_access_log.rs – Tracker of Memory Breath
 //==================================================
-#![allow(dead_code)]
 #![allow(unused_imports)]
 
-
-use std::collections::HashMap;
 use chrono::{DateTime, Utc};
-use uuid::Uuid;
-use serde_json;
 use serde::Serialize;
+use serde_json;
+use std::collections::HashMap;
+use uuid::Uuid;
 
 /// Tracks how often and recently a scroll has been accessed.
 #[derive(Debug, Clone, Serialize)]

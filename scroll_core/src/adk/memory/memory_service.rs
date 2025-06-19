@@ -13,7 +13,7 @@ use crate::adk::sessions::session::Session;
 pub trait BaseMemoryService: Send + Sync {
     /// Add a session to memory
     async fn add_session_to_memory(&self, session: Session) -> Result<(), AdkError>;
-    
+
     /// Retrieve memory for a user in an app
     async fn retrieve_memory(
         &self,
@@ -21,7 +21,7 @@ pub trait BaseMemoryService: Send + Sync {
         user_id: &str,
         query: &str,
     ) -> Result<Vec<MemoryEntry>, AdkError>;
-    
+
     /// Retrieve session from memory
     async fn retrieve_session(
         &self,
@@ -37,13 +37,13 @@ pub trait BaseMemoryService: Send + Sync {
 pub struct MemoryEntry {
     /// Unique identifier for this memory entry
     pub id: String,
-    
+
     /// The session this memory entry belongs to
     pub session_id: String,
-    
+
     /// The content of this memory entry
     pub content: String,
-    
+
     /// Relevance score (0.0 to 1.0)
     pub relevance: f64,
 }

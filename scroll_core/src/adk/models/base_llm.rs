@@ -15,10 +15,12 @@ use crate::adk::models::llm_response::LlmResponse;
 pub trait BaseLlm: Send + Sync {
     /// Get the model name/identifier
     fn model(&self) -> &str;
-    
+
     /// Get the supported models
-    fn supported_models() -> Vec<String> where Self: Sized;
-    
+    fn supported_models() -> Vec<String>
+    where
+        Self: Sized;
+
     /// Generate content from the LLM
     async fn generate_content<'a>(
         &'a self,

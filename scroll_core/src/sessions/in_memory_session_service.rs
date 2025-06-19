@@ -1,12 +1,14 @@
-use crate::sessions::session::ScrollSession;
-use crate::sessions::session_service::{GetSessionConfig, ListEventsResponse, ListSessionsResponse, SessionService};
 use crate::events::scroll_event::ScrollEvent;
+use crate::sessions::session::ScrollSession;
+use crate::sessions::session_service::{
+    GetSessionConfig, ListEventsResponse, ListSessionsResponse, SessionService,
+};
 
-use std::collections::HashMap;
 use async_trait::async_trait;
-use std::sync::{Arc, Mutex};
 use chrono::Utc;
+use std::collections::HashMap;
 use std::error::Error;
+use std::sync::{Arc, Mutex};
 
 /// An in-memory session service for lightweight runtime usage and testing.
 pub struct InMemorySessionService {
@@ -37,7 +39,10 @@ impl SessionService for InMemorySessionService {
             user_id.to_string(),
             state.unwrap_or_default(),
         );
-        self.store.lock().unwrap().insert(id.clone(), session.clone());
+        self.store
+            .lock()
+            .unwrap()
+            .insert(id.clone(), session.clone());
         Ok(session)
     }
 
@@ -127,7 +132,6 @@ impl SessionService for InMemorySessionService {
 mod tests {
     use super::*;
     use crate::events::scroll_event::ScrollEvent;
-    use std::collections::HashMap;
 
     fn dummy_event() -> ScrollEvent {
         ScrollEvent::new(
@@ -160,7 +164,10 @@ mod tests {
 
         assert_eq!(appended.content.unwrap().text, "Hello, world!");
         assert_eq!(session.events.len(), 1);
-        assert_eq!(session.events[0].content.as_ref().unwrap().text, "Hello, world!");
+        assert_eq!(
+            session.events[0].content.as_ref().unwrap().text,
+            "Hello, world!"
+        );
     }
 
     #[tokio::test]
@@ -223,7 +230,11 @@ mod tests {
             .append_event(&mut session, event.clone())
             .await
             .unwrap();
-        let _ = service.store.lock().unwrap().insert(session.id.clone(), session);
+        let _ = service
+            .store
+            .lock()
+            .unwrap()
+            .insert(session.id.clone(), session);
 
         let listed = service
             .list_events("app", "user", &event.id.to_string())

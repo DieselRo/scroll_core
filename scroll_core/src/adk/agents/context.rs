@@ -13,41 +13,40 @@ use crate::adk::common::types::Content;
 use crate::adk::memory::memory_service::BaseMemoryService;
 use crate::adk::sessions::base_session_service::BaseSessionService;
 use crate::adk::sessions::session::Session;
-use crate::adk::tools::base_tool::BaseTool;
 
 /// Context for agent invocation
 #[derive(Clone)]
 pub struct InvocationContext {
     /// Optional artifact service
     pub artifact_service: Option<Arc<dyn BaseArtifactService>>,
-    
+
     /// Session service
     pub session_service: Arc<dyn BaseSessionService>,
-    
+
     /// Optional memory service
     pub memory_service: Option<Arc<dyn BaseMemoryService>>,
-    
+
     /// Unique invocation ID
     pub invocation_id: String,
-    
+
     /// Optional branch ID for multi-branch conversations
     pub branch: Option<String>,
-    
+
     /// The agent being invoked
     pub agent: Arc<dyn BaseAgent>,
-    
+
     /// Optional user content that triggered this invocation
     pub user_content: Option<Content>,
-    
+
     /// The session this invocation belongs to
     pub session: Session,
-    
+
     /// Whether to end the invocation after this run
     pub end_invocation: bool,
-    
+
     /// Run configuration
     pub run_config: RunConfig,
-    
+
     /// Active streaming tools
     pub active_streaming_tools: HashMap<String, HashMap<String, String>>,
 }
@@ -89,7 +88,7 @@ pub fn new_invocation_context_id() -> String {
 pub struct ToolContext<'a> {
     /// The invocation context this tool execution belongs to
     pub invocation_context: &'a InvocationContext,
-    
+
     /// Tool execution ID
     pub execution_id: String,
 }

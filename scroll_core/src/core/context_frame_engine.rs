@@ -4,13 +4,10 @@
 //
 //=========================================
 
-
-
-use crate::construct_ai::ConstructContext;
-use crate::scroll::Scroll;
 use crate::archive::archive_memory::InMemoryArchive;
 use crate::archive::scroll_access_log::ScrollAccessLog;
-use crate::schema::{ScrollType, ScrollStatus, YamlMetadata, EmotionSignature};
+use crate::construct_ai::ConstructContext;
+use crate::scroll::Scroll;
 
 pub enum ContextMode {
     Narrow,
@@ -42,13 +39,17 @@ impl<'a> ContextFrameEngine<'a> {
 
     pub fn build_context(&self, triggering_scroll: &Scroll) -> ConstructContext {
         let mut scrolls = vec![triggering_scroll.clone()];
-    
+
         let related = match self.mode {
-            ContextMode::Narrow => self.archive.query_by_tags(&triggering_scroll.yaml_metadata.tags),
-            ContextMode::Broad => self.archive.query_by_emotion(triggering_scroll.emotion_signature.clone()),
+            ContextMode::Narrow => self
+                .archive
+                .query_by_tags(&triggering_scroll.yaml_metadata.tags),
+            ContextMode::Broad => self
+                .archive
+                .query_by_emotion(triggering_scroll.emotion_signature.clone()),
             ContextMode::Echo => self.archive.query_by_links(&triggering_scroll.id),
         };
-    
+
         for s in related {
             if scrolls.len() >= self.max_scrolls {
                 break;
@@ -57,7 +58,7 @@ impl<'a> ContextFrameEngine<'a> {
                 scrolls.push(s);
             }
         }
-    
+
         ConstructContext {
             scrolls,
             emotion_signature: triggering_scroll.emotion_signature.clone(),

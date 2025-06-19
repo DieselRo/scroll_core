@@ -1,5 +1,5 @@
 // migration/src/main.rs
-use migration::{Migrator};
+use migration::Migrator;
 use sea_orm_migration::cli::run_cli;
 
 // Add this:

@@ -4,17 +4,13 @@
 // persistent and temporary (non-committed) deltas.
 // ===================================================
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 
 /// State holds the full session state: both committed and delta.
 /// APP:   Global or app-wide state (prefix: app:)
 /// USER:  Per-user memory context (prefix: user:)
 /// TEMP:  Ephemeral scratchpad (prefix: temp:)
-
-
-
-
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct State {
@@ -37,10 +33,7 @@ impl State {
     }
 
     pub fn from_parts(base: HashMap<String, String>, delta: HashMap<String, String>) -> Self {
-        Self {
-            value: base,
-            delta,
-        }
+        Self { value: base, delta }
     }
 
     pub fn get(&self, key: &str) -> Option<&String> {
@@ -49,7 +42,7 @@ impl State {
 
     pub fn set(&mut self, key: &str, val: &str) {
         self.delta.insert(key.to_string(), val.to_string());
-self.value.insert(key.to_string(), val.to_string());
+        self.value.insert(key.to_string(), val.to_string());
     }
 
     pub fn update(&mut self, updates: HashMap<String, String>) {

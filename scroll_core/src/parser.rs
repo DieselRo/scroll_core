@@ -1,9 +1,7 @@
 // ===============================
 // src/parser.rs
 // ===============================
-#![allow(dead_code)]
 #![allow(unused_imports)]
-
 
 use std::fs;
 use std::path::Path;
@@ -12,8 +10,8 @@ use uuid::Uuid;
 
 use crate::schema::{ScrollStatus, YamlMetadata};
 
-use crate::validator::validate_scroll;
 use crate::scroll::{Scroll, ScrollOrigin};
+use crate::validator::validate_scroll;
 
 pub fn parse_scroll_from_file<P: AsRef<Path>>(path: P) -> Result<Scroll, String> {
     let contents = fs::read_to_string(&path).map_err(|e| e.to_string())?;

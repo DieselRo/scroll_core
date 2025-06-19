@@ -2,10 +2,10 @@
 // src/constructs/validator_construct.rs
 // ===============================
 
-use crate::invocation::invocation::{Invocation, InvocationResult, InvocationMode};
+use crate::invocation::invocation::{Invocation, InvocationMode, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
-use crate::validator::validate_scroll;
 use crate::scroll::Scroll;
+use crate::validator::validate_scroll;
 
 pub struct Validator;
 
@@ -14,7 +14,11 @@ impl NamedConstruct for Validator {
         "Validator"
     }
 
-    fn perform(&self, invocation: &Invocation, scroll: Option<Scroll>) -> Result<InvocationResult, String> {
+    fn perform(
+        &self,
+        invocation: &Invocation,
+        scroll: Option<Scroll>,
+    ) -> Result<InvocationResult, String> {
         match invocation.mode {
             InvocationMode::Validate => {
                 if let Some(scroll) = scroll {
