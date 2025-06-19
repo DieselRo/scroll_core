@@ -4,7 +4,7 @@
 
 use crate::construct_ai::ConstructContext;
 use crate::construct_ai::ConstructResult;
-use crate::core::cost_manager::CostManager;
+use crate::core::cost_manager::{CostManager, InvocationCost};
 use crate::core::ConstructRegistry;
 use crate::invocation::aelren::AelrenHerald;
 use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
@@ -55,7 +55,10 @@ impl InvocationManager {
             resonance_required: false,
             timestamp: Utc::now(),
         };
-        let cost = CostManager::assess(&invocation, &context.scrolls);
+        let cost = CostManager::assess(&invocation, &context.scrolls).unwrap_or_else(|e| {
+            eprintln!("metric error: {e:?}");
+            InvocationCost::default()
+        });
         let system_pressure = cost.cost_profile.system_pressure;
         let token_pressure = cost.cost_profile.token_pressure;
         let _span = info_span!(

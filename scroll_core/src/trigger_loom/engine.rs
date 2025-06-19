@@ -10,7 +10,7 @@ use chrono::Utc;
 use log::info;
 use uuid::Uuid;
 
-use crate::core::cost_manager::{CostDecision, CostManager};
+use crate::core::cost_manager::{CostDecision, CostManager, InvocationCost};
 use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
 use crate::invocation::named_construct::{NamedConstruct, PulseSensitive};
 use crate::trigger_loom::config::TriggerLoopConfig;
@@ -76,7 +76,10 @@ impl TriggerLoopEngine {
                         resonance_required: false,
                         timestamp: Utc::now(),
                     };
-                    let cost = CostManager::assess(&invocation, &[]);
+                    let cost = CostManager::assess(&invocation, &[]).unwrap_or_else(|e| {
+                        eprintln!("metric error: {e:?}");
+                        InvocationCost::default()
+                    });
                     match cost.decision {
                         CostDecision::Allow => {
                             let _ = construct.perform(&invocation, None);
