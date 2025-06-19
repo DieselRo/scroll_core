@@ -7,6 +7,8 @@ use uuid::Uuid;
 
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
+use crate::archive::semantic_index::SemanticIndex;
+use log::info;
 
 /// Defines access methods for interacting with the Archive's scroll memory.
 pub trait ArchiveMemory {
@@ -14,11 +16,13 @@ pub trait ArchiveMemory {
     fn get_scroll_by_id(&self, id: Uuid) -> Option<&Scroll>;
     fn get_scrolls_by_tag(&self, tag: &str) -> Vec<&Scroll>;
     fn count(&self) -> usize;
+    fn query_semantic(&self, input: &str, k: usize) -> Vec<(Scroll, f32)>;
 }
 
 /// Simple Phase 1 implementation that holds all scrolls in memory.
 pub struct InMemoryArchive {
     scrolls: HashMap<Uuid, Scroll>,
+    semantic_index: Option<SemanticIndex>,
 }
 
 impl InMemoryArchive {
@@ -26,6 +30,7 @@ impl InMemoryArchive {
         let scrolls_map = scrolls.into_iter().map(|s| (s.id, s)).collect();
         Self {
             scrolls: scrolls_map,
+            semantic_index: None,
         }
     }
 }
@@ -61,6 +66,26 @@ impl InMemoryArchive {
             .cloned()
             .collect()
     }
+
+    /// Build semantic vector index for all scrolls.
+    pub fn build_semantic_index(&mut self) {
+        let scrolls: Vec<Scroll> = self.scrolls.values().cloned().collect();
+        let index = SemanticIndex::build(&scrolls);
+        self.semantic_index = Some(index);
+    }
+
+    /// Query scrolls using semantic similarity of title and tags.
+    pub fn query_semantic(&self, input: &str, k: usize) -> Vec<(Scroll, f32)> {
+        if let Some(idx) = &self.semantic_index {
+            idx.query(input, k)
+                .into_iter()
+                .filter_map(|(id, score)| self.scrolls.get(&id).cloned().map(|s| (s, score)))
+                .collect()
+        } else {
+            info!("Semantic index not built; returning empty results");
+            Vec::new()
+        }
+    }
 }
 
 impl ArchiveMemory for InMemoryArchive {
@@ -81,6 +106,10 @@ impl ArchiveMemory for InMemoryArchive {
 
     fn count(&self) -> usize {
         self.scrolls.len()
+    }
+
+    fn query_semantic(&self, input: &str, k: usize) -> Vec<(Scroll, f32)> {
+        InMemoryArchive::query_semantic(self, input, k)
     }
 }
 
