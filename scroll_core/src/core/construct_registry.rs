@@ -6,17 +6,20 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use crate::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
+use crate::orchestra::{Bus, OrchestratedConstruct};
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 
 pub struct ConstructRegistry {
     constructs: HashMap<String, Arc<dyn ConstructAI + Send + Sync>>, // thread-safe
+    bus: Bus,
 }
 
 impl ConstructRegistry {
     pub fn new() -> Self {
         Self {
             constructs: HashMap::new(),
+            bus: Bus::new(),
         }
     }
 
@@ -24,6 +27,15 @@ impl ConstructRegistry {
     where
         T: ConstructAI + Send + Sync + 'static,
     {
+        self.constructs
+            .insert(name.to_string(), Arc::new(construct));
+    }
+
+    pub fn insert_orchestrated<T>(&mut self, name: &str, mut construct: T)
+    where
+        T: ConstructAI + OrchestratedConstruct + Send + Sync + 'static,
+    {
+        construct.attach_bus(self.bus.clone());
         self.constructs
             .insert(name.to_string(), Arc::new(construct));
     }

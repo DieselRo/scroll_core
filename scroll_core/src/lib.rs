@@ -16,6 +16,7 @@ pub mod events;
 pub mod invocation;
 pub mod memory;
 pub mod models;
+pub mod orchestra;
 pub mod parser;
 pub mod runner;
 pub mod schema;
