@@ -24,6 +24,8 @@ pub mod scroll_writer;
 pub mod sessions;
 pub mod state_manager;
 pub mod system;
+#[cfg(feature = "metrics")]
+pub mod telemetry;
 pub mod tools;
 pub mod trigger_loom;
 pub mod validator;

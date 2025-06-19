@@ -17,6 +17,9 @@ use crate::trigger_loom::config::TriggerLoopConfig;
 
 const MAX_AGENT_DEPTH: u32 = 5;
 
+#[cfg(feature = "metrics")]
+use metrics::histogram;
+
 pub struct TriggerLoopEngine {
     config: TriggerLoopConfig,
     tick_counter: u64,
@@ -48,6 +51,9 @@ impl TriggerLoopEngine {
 
     pub fn tick_once(&mut self, constructs: &mut [Box<dyn NamedConstruct>]) {
         self.tick_counter += 1;
+
+        #[cfg(feature = "metrics")]
+        let tick_start = Instant::now();
 
         let start = Instant::now();
         let mut fired_count = 0usize;
@@ -107,5 +113,8 @@ impl TriggerLoopEngine {
             "duration_ms": duration
         });
         info!("{}", summary.to_string());
+
+        #[cfg(feature = "metrics")]
+        histogram!("tick_duration_ms", tick_start.elapsed().as_millis() as f64);
     }
 }
