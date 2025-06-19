@@ -4,6 +4,28 @@
 
 #![allow(unused_imports)]
 
+//! Tools for building "Construct" AI personalities.
+//!
+//! A construct is an autonomous agent that can analyze and draft `Scroll`s.
+//! Implement the [`ConstructAI`] trait on your type to plug it into the
+//! Scroll Core runtime.
+//!
+//! ```rust,no_run
+//! use scroll_core::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
+//!
+//! struct Historian;
+//!
+//! impl ConstructAI for Historian {
+//!     fn reflect_on_scroll(&self, ctx: &ConstructContext) -> ConstructResult {
+//!         // inspect ctx.scrolls and return an insight
+//!         ConstructResult::Refusal { reason: String::from("todo"), echo: None }
+//!     }
+//!     fn suggest_scroll(&self, _ctx: &ConstructContext) -> ConstructResult { todo!() }
+//!     fn perform_scroll_action(&self, _ctx: &ConstructContext) -> ConstructResult { todo!() }
+//!     fn name(&self) -> &str { "historian" }
+//! }
+//! ```
+
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 use uuid::Uuid;
