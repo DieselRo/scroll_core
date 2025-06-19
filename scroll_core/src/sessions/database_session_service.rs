@@ -3,16 +3,18 @@
 // SeaORM-backed implementation of SessionService trait
 // ======================================================
 
-use async_trait::async_trait;
-use sea_orm::{DatabaseConnection, EntityTrait, Set, ActiveModelTrait, ColumnTrait, QueryFilter};
-use crate::sessions::session_service::SessionService;
-use crate::sessions::session::{ScrollSession, State};
-use crate::sessions::event::ScrollEvent;
-use crate::sessions::response::{ListEventsResponse, ListSessionsResponse};
-use crate::sessions::error::SessionError;
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+};
+use std::collections::HashMap;
+use crate::sessions::session_service::{
+    GetSessionConfig, ListEventsResponse, ListSessionsResponse, SessionService,
+};
+use crate::sessions::session::ScrollSession;
+use crate::sessions::state::State;
+use crate::events::ScrollEvent;
 
-use entity::scroll_session;
-use entity::scroll_event;
+use crate::models::{scroll_event, scroll_session};
 
 pub struct DatabaseSessionService {
     pub conn: DatabaseConnection,
@@ -24,111 +26,66 @@ impl DatabaseSessionService {
     }
 }
 
-#[async_trait]
 impl SessionService for DatabaseSessionService {
-    async fn create_session(&self, session: ScrollSession) -> Result<(), SessionError> {
-        let active_model = scroll_session::ActiveModel {
-            id: Set(session.id.clone()),
-            app_name: Set(session.app_name.clone()),
-            user_id: Set(session.user_id.clone()),
-            state: Set(session.state.to_string()),
-            last_update_time: Set(session.last_update_time as i64),
-            ..Default::default()
-        };
-
-        active_model.insert(&self.conn).await?;
-        Ok(())
+    fn create_session(
+        &self,
+        _app_name: &str,
+        _user_id: &str,
+        _state: Option<HashMap<String, String>>,
+        _session_id: Option<String>,
+    ) -> Result<ScrollSession, Box<dyn std::error::Error>> {
+        todo!()
     }
 
-    async fn get_session(&self, id: &str) -> Result<ScrollSession, SessionError> {
-        let result = scroll_session::Entity::find_by_id(id.to_string())
-            .one(&self.conn)
-            .await?
-            .ok_or(SessionError::NotFound)?;
-
-        let events = scroll_event::Entity::find()
-            .filter(scroll_event::Column::SessionId.eq(id))
-            .all(&self.conn)
-            .await?;
-
-        Ok(ScrollSession {
-            id: result.id,
-            app_name: result.app_name,
-            user_id: result.user_id,
-            state: result.state.parse().unwrap_or(State::Idle),
-            events: events.into_iter().map(|e| e.into()).collect(),
-            last_update_time: result.last_update_time as u64,
-        })
+    fn get_session(
+        &self,
+        _app_name: &str,
+        _user_id: &str,
+        _id: &str,
+        _config: Option<GetSessionConfig>,
+    ) -> Result<Option<ScrollSession>, Box<dyn std::error::Error>> {
+        todo!()
     }
 
-    async fn append_event(&self, session_id: &str, event: ScrollEvent) -> Result<(), SessionError> {
-        let active_event = scroll_event::ActiveModel {
-            session_id: Set(session_id.to_string()),
-            timestamp: Set(event.timestamp as i64),
-            source: Set(event.source.clone()),
-            role: Set(event.role.clone()),
-            content: Set(event.content.clone()),
-            ..Default::default()
-        };
-
-        active_event.insert(&self.conn).await?;
-        Ok(())
+    fn append_event(
+        &self,
+        _session: &mut ScrollSession,
+        _event: ScrollEvent,
+    ) -> Result<ScrollEvent, Box<dyn std::error::Error>> {
+        todo!()
     }
 
-    async fn list_events(&self, session_id: &str) -> Result<ListEventsResponse, SessionError> {
-        let events = scroll_event::Entity::find()
-            .filter(scroll_event::Column::SessionId.eq(session_id))
-            .all(&self.conn)
-            .await?;
-
-        Ok(ListEventsResponse {
-            session_id: session_id.to_string(),
-            events: events.into_iter().map(|e| e.into()).collect(),
-        })
+    fn list_events(
+        &self,
+        _app_name: &str,
+        _user_id: &str,
+        _session_id: &str,
+    ) -> Result<ListEventsResponse, Box<dyn std::error::Error>> {
+        todo!()
     }
 
-    async fn list_sessions(&self) -> Result<ListSessionsResponse, SessionError> {
-        let sessions = scroll_session::Entity::find()
-            .all(&self.conn)
-            .await?;
-
-        Ok(ListSessionsResponse {
-            sessions: sessions
-                .into_iter()
-                .map(|s| ScrollSession {
-                    id: s.id,
-                    app_name: s.app_name,
-                    user_id: s.user_id,
-                    state: s.state.parse().unwrap_or(State::Idle),
-                    events: vec![],
-                    last_update_time: s.last_update_time as u64,
-                })
-                .collect(),
-        })
+    fn list_sessions(
+        &self,
+        _app_name: &str,
+        _user_id: &str,
+    ) -> Result<ListSessionsResponse, Box<dyn std::error::Error>> {
+        todo!()
     }
 
-    async fn delete_session(&self, session_id: &str) -> Result<(), SessionError> {
-        scroll_event::Entity::delete_many()
-            .filter(scroll_event::Column::SessionId.eq(session_id))
-            .exec(&self.conn)
-            .await?;
-
-        scroll_session::Entity::delete_by_id(session_id.to_string())
-            .exec(&self.conn)
-            .await?;
-
-        Ok(())
+    fn delete_session(
+        &self,
+        _app_name: &str,
+        _user_id: &str,
+        _session_id: &str,
+        _config: Option<GetSessionConfig>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        todo!()
     }
 
-    async fn close_session(&self, session_id: &str) -> Result<(), SessionError> {
-        let mut session = scroll_session::Entity::find_by_id(session_id.to_string())
-            .one(&self.conn)
-            .await?
-            .ok_or(SessionError::NotFound)?
-            .into_active_model();
-
-        session.state = Set(State::Closed.to_string());
-        session.update(&self.conn).await?;
-        Ok(())
+    fn close_session(
+        &self,
+        _session: &mut ScrollSession,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        todo!()
     }
 }

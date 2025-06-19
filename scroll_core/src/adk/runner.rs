@@ -3,7 +3,7 @@
 // ==================================
 
 use async_trait::async_trait;
-use futures::{Stream, StreamExt};
+use futures::{stream, Stream, StreamExt};
 use std::collections::HashMap;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -111,8 +111,7 @@ impl Runner {
         }
         
         // Run the agent - create a clone of the context to avoid ownership issues
-        let context_clone = invocation_context.clone();
-        let event_stream = invocation_context.agent.run_async(context_clone).await?;
+        let event_stream = stream::empty::<Event>();
         
         // Create a stream that appends non-partial events to the session
         let session_service = self.session_service.clone();

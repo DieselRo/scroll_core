@@ -5,7 +5,8 @@
 // ===================================================
 
 use crate::events::scroll_event::ScrollEvent;
-use crate::sessions::state::State;
+// Re-export state type for convenience
+pub use crate::sessions::state::State;
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
