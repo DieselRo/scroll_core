@@ -1,4 +1,5 @@
 // migration/src/main.rs
+#![warn(unused_imports)]
 use migration::Migrator;
 use sea_orm_migration::cli::run_cli;
 

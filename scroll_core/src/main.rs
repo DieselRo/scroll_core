@@ -2,6 +2,8 @@
 //! Run normally:  `cargo run`
 //! Demo mode:     `cargo run -- --demo examples/multi_agent.yaml`
 
+#![warn(unused_imports)]
+
 use anyhow::Result;
 use std::path::Path;
 
