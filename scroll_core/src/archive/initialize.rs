@@ -1,12 +1,25 @@
+use std::fs;
 use std::path::Path;
 
 use crate::archive::archive_loader::load_scrolls_from_directory;
+use crate::archive::error::ArchiveError;
 use crate::archive::scroll_access_log::ScrollAccess;
 use crate::cache_manager::CacheManager;
 use crate::core::cost_manager::{
     ContextCost, CostDecision, CostProfile, InvocationCost, SystemCost,
 };
 use crate::scroll::Scroll;
+
+/// Ensures the archive directory exists, creating it and a `.gitkeep` file if
+/// needed.
+pub fn ensure_archive_dir(path: &Path) -> Result<(), ArchiveError> {
+    if !path.exists() {
+        fs::create_dir_all(path).map_err(ArchiveError::Io)?;
+        let keep = path.join(".gitkeep");
+        fs::write(keep, "").map_err(ArchiveError::Io)?;
+    }
+    Ok(())
+}
 
 /// Loads the archive from the given path and seeds a cache with the scrolls.
 /// The cache size is set to match the number of loaded scrolls.

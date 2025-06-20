@@ -33,27 +33,27 @@ impl<'a> ConstructInvoker<'a> {
             let result = match mode {
                 InvocationMode::Read => {
                     let insight = construct.reflect_on_scroll(&scroll);
-                    InvocationResult::Success(insight.summary)
+                    InvocationResult::Success(insight.summary.into_boxed_str())
                 },
                 InvocationMode::Modify => {
                     match construct.perform_scroll_action(&mut scroll) {
-                        Ok(updated) => InvocationResult::ModifiedScroll(updated),
-                        Err(reason) => InvocationResult::Failure(format!("{} failed: {}", name, reason))
+                        Ok(updated) => InvocationResult::ModifiedScroll(Box::new(updated)),
+                        Err(reason) => InvocationResult::Failure(format!("{} failed: {}", name, reason).into_boxed_str())
                     }
                 },
                 InvocationMode::Validate => {
                     let insight = construct.reflect_on_scroll(&scroll);
                     if insight.symbolic_echo.is_some() {
-                        InvocationResult::Success(insight.summary)
+                        InvocationResult::Success(insight.summary.into_boxed_str())
                     } else {
-                        InvocationResult::Failure("Validation failed or unclear.".into())
+                        InvocationResult::Failure(Box::from("Validation failed or unclear."))
                     }
                 },
                 InvocationMode::Custom(task) => {
-                    InvocationResult::Success(format!("{} received a custom task: {}", name, task))
+                    InvocationResult::Success(format!("{} received a custom task: {}", name, task).into_boxed_str())
                 },
                 InvocationMode::Transition => {
-                    InvocationResult::Success("Transition mode not yet implemented.".into())
+                    InvocationResult::Success(Box::from("Transition mode not yet implemented."))
                 },
             };
 
@@ -62,7 +62,7 @@ impl<'a> ConstructInvoker<'a> {
 
             result
         } else {
-            InvocationResult::Failure(format!("No Construct named '{}' found.", name))
+            InvocationResult::Failure(format!("No Construct named '{}' found.", name).into_boxed_str())
         }
     }
 }

@@ -76,3 +76,9 @@ impl ConstructRegistry {
         self.bus.clone()
     }
 }
+
+impl Default for ConstructRegistry {
+    fn default() -> Self {
+        Self::new()
+    }
+}

@@ -1,0 +1,16 @@
+name: Enable Auto Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  enable:
+    if: startsWith(github.head_ref, 'feat/') || startsWith(github.head_ref, 'fix/') || startsWith(github.head_ref, 'chore/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/enable-auto-merge@v3
+        with:
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

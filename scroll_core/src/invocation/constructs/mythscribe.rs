@@ -1,8 +1,8 @@
 // src/invocation/constructs/mythscribe.rs
 use crate::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
 use crate::invocation::constructs::openai_construct::Mythscribe;
-use crate::invocation::invocation::{Invocation, InvocationMode, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationMode, InvocationResult};
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 
@@ -35,11 +35,13 @@ impl NamedConstruct for Mythscribe {
         };
 
         let out = match result {
-            ConstructResult::Insight { text } => InvocationResult::Success(text),
-            ConstructResult::ScrollDraft { content, .. } => InvocationResult::Success(content),
+            ConstructResult::Insight { text } => InvocationResult::Success(text.into_boxed_str()),
+            ConstructResult::ScrollDraft { content, .. } => {
+                InvocationResult::Success(content.into_boxed_str())
+            }
             ConstructResult::ModifiedScroll(s) => InvocationResult::ModifiedScroll(s),
             ConstructResult::Refusal { reason, echo } => {
-                InvocationResult::Failure(echo.unwrap_or(reason))
+                InvocationResult::Failure(echo.unwrap_or(reason).into_boxed_str())
             }
         };
         Ok(out)

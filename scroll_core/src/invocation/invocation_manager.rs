@@ -4,18 +4,15 @@
 
 use crate::construct_ai::ConstructContext;
 use crate::construct_ai::ConstructResult;
-use crate::core::cost_manager::CostManager;
+use crate::core::cost_manager::{CostManager, InvocationCost};
 use crate::core::ConstructRegistry;
 use crate::invocation::aelren::AelrenHerald;
-use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
+use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use chrono::Utc;
 use uuid::Uuid;
 
 use crate::Scroll;
-#[cfg(feature = "metrics")]
-use metrics::{histogram, increment_counter};
 use tracing::info_span;
-use tracing_subscriber::EnvFilter;
 
 pub struct InvocationManager {
     pub registry: ConstructRegistry,
@@ -57,7 +54,10 @@ impl InvocationManager {
             resonance_required: false,
             timestamp: Utc::now(),
         };
-        let cost = CostManager::assess(&invocation, &context.scrolls);
+        let cost = CostManager::assess(&invocation, &context.scrolls).unwrap_or_else(|e| {
+            eprintln!("metric error: {e:?}");
+            InvocationCost::default()
+        });
         let system_pressure = cost.cost_profile.system_pressure;
         let token_pressure = cost.cost_profile.token_pressure;
         let _span = info_span!(
@@ -72,12 +72,15 @@ impl InvocationManager {
         let timer = std::time::Instant::now();
 
         #[cfg(feature = "metrics")]
-        increment_counter!("construct_invocations_total", "construct" => name);
+        {
+            let labels = [("construct", name.to_string())];
+            metrics::counter!("construct_invocations_total", &labels).increment(1);
+        }
 
         let result = self.registry.invoke(name, context);
 
         #[cfg(feature = "metrics")]
-        histogram!("construct_duration_ms", timer.elapsed().as_millis() as f64);
+        metrics::histogram!("construct_duration_ms").record(timer.elapsed().as_millis() as f64);
 
         result
     }

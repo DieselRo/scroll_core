@@ -2,8 +2,8 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
-use scroll_core::invocation::invocation::{Invocation, InvocationResult};
 use scroll_core::invocation::named_construct::NamedConstruct;
+use scroll_core::invocation::types::{Invocation, InvocationResult};
 use scroll_core::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use uuid::Uuid;
 
@@ -78,7 +78,7 @@ impl OrchestratedConstruct for Sink {
 
 #[test]
 fn test_whispering_bus() {
-    let mut bus = Bus::new();
+    let bus = Bus::new();
     let mut echo = Echo::default();
     let mut sink = Sink {
         received: Arc::new(Mutex::new(Vec::new())),
@@ -99,8 +99,13 @@ fn test_whispering_bus() {
             emotion_signature: scroll_core::EmotionSignature::default(),
             last_modified: None,
             tags: vec![],
+            archetype: None,
+            quorum_required: false,
             file_path: None,
         },
+        tags: vec![],
+        archetype: None,
+        quorum_required: false,
         markdown_body: String::new(),
         invocation_phrase: String::new(),
         sigil: String::new(),
@@ -118,8 +123,8 @@ fn test_whispering_bus() {
         phrase: "run".into(),
         invoker: "test".into(),
         invoked: "echo".into(),
-        tier: scroll_core::invocation::invocation::InvocationTier::True,
-        mode: scroll_core::invocation::invocation::InvocationMode::Read,
+        tier: scroll_core::invocation::types::InvocationTier::True,
+        mode: scroll_core::invocation::types::InvocationMode::Read,
         resonance_required: false,
         timestamp: chrono::Utc::now(),
     };

@@ -1,16 +1,18 @@
 [package]
 name = "scroll_core"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 default-run = "scroll_core"
 
 [dependencies]
+anyhow = "1"
+clap   = { version = "4.5", features = ["derive"] }
 uuid = { version = "1", features = ["v4", "serde"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 serde_json = "1.0"
 regex = "1"
-pulldown-cmark = "0.9"
+pulldown-cmark = "0.13"
 chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
 reqwest = { version = "0.12", features = ["blocking", "json", "rustls-tls"], default-features = false }
@@ -38,12 +40,13 @@ sea-orm = { version = "1.0", features = [
     "with-json"
 ] }
 
-sea-orm-migration = "0.12"
+sea-orm-migration = "1.1"
 
 tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
 crossbeam-channel = "0.5"
 crossbeam = "0.8"
+rustyline = "13"
 
 [lib]
 name = "scroll_core"
@@ -70,6 +73,8 @@ quickcheck = "1"
 quickcheck_macros = "1"
 cargo-fuzz = "0.12"
 tempfile = "3"
+assert_cmd = "2"
+predicates = "3"
 
 
 [features]

@@ -1,9 +1,8 @@
 // ===============================
 // src/ledger.rs
 // ===============================
-#![allow(unused_imports)]
 
-use crate::invocation::invocation::Invocation;
+use crate::invocation::types::Invocation;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;

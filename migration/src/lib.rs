@@ -1,4 +1,5 @@
 // migration/src/lib.rs
+#![warn(unused_imports)]
 
 pub use sea_orm_migration::prelude::*;
 

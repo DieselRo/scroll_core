@@ -1,6 +1,5 @@
 // scroll_writer.rs – Hand of the Archive
 //===========================================
-#![allow(unused_imports)]
 
 use chrono::Utc;
 use serde_yaml;
@@ -58,7 +57,7 @@ impl ScrollWriter {
 
     /// Applies patch and updates an existing scroll.
     pub fn update_scroll(_id: Uuid, updates: ScrollPatch, path: &Path) -> Result<(), String> {
-        let mut scroll = parse_scroll_from_file(path)?;
+        let mut scroll = parse_scroll_from_file(path).map_err(|e| e.to_string())?;
 
         if let Some(title) = updates.title {
             scroll.title = title.clone();
@@ -109,10 +108,16 @@ impl ScrollWriter {
                 title: title_clone,
                 scroll_type: scroll_type_clone,
                 emotion_signature: emotion.clone(),
-                tags,
+                tags: tags.clone(),
+                archetype: None,
+                quorum_required: false,
                 last_modified: Some(now),
                 file_path: None,
             },
+
+            tags: tags.clone(),
+            archetype: None,
+            quorum_required: false,
 
             markdown_body: String::new(),
             invocation_phrase: String::new(),

@@ -10,9 +10,9 @@ use chrono::Utc;
 use log::info;
 use uuid::Uuid;
 
-use crate::core::cost_manager::{CostDecision, CostManager};
-use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
-use crate::invocation::named_construct::{NamedConstruct, PulseSensitive};
+use crate::core::cost_manager::{CostDecision, CostManager, InvocationCost};
+use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::trigger_loom::config::TriggerLoopConfig;
 
 const MAX_AGENT_DEPTH: u32 = 5;
@@ -76,7 +76,10 @@ impl TriggerLoopEngine {
                         resonance_required: false,
                         timestamp: Utc::now(),
                     };
-                    let cost = CostManager::assess(&invocation, &[]);
+                    let cost = CostManager::assess(&invocation, &[]).unwrap_or_else(|e| {
+                        eprintln!("metric error: {e:?}");
+                        InvocationCost::default()
+                    });
                     match cost.decision {
                         CostDecision::Allow => {
                             let _ = construct.perform(&invocation, None);
@@ -112,9 +115,9 @@ impl TriggerLoopEngine {
             "skipped": skipped,
             "duration_ms": duration
         });
-        info!("{}", summary.to_string());
+        info!("{}", summary);
 
         #[cfg(feature = "metrics")]
-        histogram!("tick_duration_ms", tick_start.elapsed().as_millis() as f64);
+        histogram!("tick_duration_ms").record(tick_start.elapsed().as_millis() as f64);
     }
 }

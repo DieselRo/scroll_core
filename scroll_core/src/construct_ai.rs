@@ -2,8 +2,6 @@
 // construct_ai.rs – Dreaming Constructs
 //==========================================
 
-#![allow(unused_imports)]
-
 //! Tools for building "Construct" AI personalities.
 //!
 //! A construct is an autonomous agent that can analyze and draft `Scroll`s.
@@ -54,7 +52,7 @@ pub enum ConstructResult {
         title: String,
         content: String,
     },
-    ModifiedScroll(Scroll),
+    ModifiedScroll(Box<Scroll>),
     Refusal {
         reason: String,
         echo: Option<String>,

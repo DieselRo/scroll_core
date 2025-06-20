@@ -1,0 +1,9 @@
+# === RavenScroll demo – a scroll that needs file validation ===
+---
+title:  "The Ballad of Threads"
+tags:   ["demo", "validator", "file"]
+type:   Lore
+file_path: "./examples/ballad.txt"   # <— FileReader target
+---
+
+Please verify my front-matter and the file I reference!

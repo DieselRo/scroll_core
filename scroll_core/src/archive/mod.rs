@@ -14,6 +14,8 @@
 
 pub mod archive_loader;
 pub mod archive_memory;
+pub mod error;
 pub mod initialize;
 pub mod mythic_heat;
 pub mod scroll_access_log;
+pub mod semantic_index;

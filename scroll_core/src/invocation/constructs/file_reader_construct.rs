@@ -1,5 +1,5 @@
-use crate::invocation::invocation::{Invocation, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationResult};
 use crate::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use serde_json::json;
 use std::thread;
@@ -21,7 +21,7 @@ impl NamedConstruct for FileReader {
         _invocation: &Invocation,
         _scroll: Option<crate::Scroll>,
     ) -> Result<InvocationResult, String> {
-        Ok(InvocationResult::Success("ready".into()))
+        Ok(InvocationResult::Success(Box::from("ready")))
     }
 }
 

@@ -2,8 +2,8 @@
 // src/constructs/validator_construct.rs
 // ===============================
 
-use crate::invocation::invocation::{Invocation, InvocationMode, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationMode, InvocationResult};
 use crate::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use crate::scroll::Scroll;
 use crate::validator::validate_scroll;
@@ -31,7 +31,7 @@ impl NamedConstruct for Validator {
             InvocationMode::Validate => {
                 if let Some(scroll) = scroll {
                     validate_scroll(&scroll.yaml_metadata)?;
-                    Ok(InvocationResult::Success("Validation passed.".into()))
+                    Ok(InvocationResult::Success(Box::from("Validation passed.")))
                 } else {
                     Err("No scroll provided to validate.".into())
                 }

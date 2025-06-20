@@ -14,14 +14,22 @@ use crate::adk::sessions::session::{ListSessionsResponse, Session, SessionSummar
 use crate::adk::sessions::state::GetSessionConfig;
 
 /// In-memory implementation of session service
+type SessionMap = HashMap<String, HashMap<String, HashMap<String, Session>>>;
+
 pub struct InMemorySessionService {
     // Sessions stored by app_name -> user_id -> session_id
-    sessions: Arc<Mutex<HashMap<String, HashMap<String, HashMap<String, Session>>>>>,
+    sessions: Arc<Mutex<SessionMap>>,
 }
 
 impl InMemorySessionService {
     /// Create a new in-memory session service
     pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl Default for InMemorySessionService {
+    fn default() -> Self {
         Self {
             sessions: Arc::new(Mutex::new(HashMap::new())),
         }
