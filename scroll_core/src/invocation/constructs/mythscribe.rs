@@ -6,6 +6,12 @@ use crate::invocation::types::{Invocation, InvocationMode, InvocationResult};
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 
+impl Mythscribe {
+    fn poetic_analyze(&self, input: &str) -> String {
+        format!("{}? A curious verse indeed.", input)
+    }
+}
+
 impl NamedConstruct for Mythscribe {
     fn name(&self) -> &str {
         "mythscribe"
@@ -16,7 +22,17 @@ impl NamedConstruct for Mythscribe {
         invocation: &Invocation,
         scroll: Option<Scroll>,
     ) -> Result<InvocationResult, String> {
-        let scroll = scroll.ok_or("No scroll provided")?;
+        let scroll = match scroll {
+            Some(s) => s,
+            None => {
+                if !invocation.phrase.trim().is_empty() {
+                    let text = self.poetic_analyze(&invocation.phrase);
+                    return Ok(InvocationResult::Success(text.into_boxed_str()));
+                } else {
+                    return Err("No scroll provided".into());
+                }
+            }
+        };
         let context = ConstructContext {
             scrolls: vec![scroll.clone()],
             emotion_signature: EmotionSignature::neutral(),
