@@ -1,11 +1,9 @@
 // ===============================
 // src/schema.rs
 // ===============================
-#![allow(unused_imports)]
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use uuid::Uuid;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ScrollType {

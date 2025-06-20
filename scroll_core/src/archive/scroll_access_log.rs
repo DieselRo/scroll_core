@@ -1,6 +1,5 @@
 // scroll_access_log.rs – Tracker of Memory Breath
 //==================================================
-#![allow(unused_imports)]
 
 use chrono::{DateTime, Utc};
 use serde::Serialize;

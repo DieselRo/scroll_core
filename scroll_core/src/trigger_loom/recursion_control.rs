@@ -6,7 +6,7 @@ use std::fs::{read_to_string, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
 
-use crate::invocation::invocation_core::{Invocation, InvocationTier};
+use crate::invocation::types::{Invocation, InvocationTier};
 
 fn trace_file() -> PathBuf {
     std::env::temp_dir().join("recursion_trace.log")

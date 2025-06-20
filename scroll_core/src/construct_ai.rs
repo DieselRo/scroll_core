@@ -2,8 +2,6 @@
 // construct_ai.rs – Dreaming Constructs
 //==========================================
 
-#![allow(unused_imports)]
-
 //! Tools for building "Construct" AI personalities.
 //!
 //! A construct is an autonomous agent that can analyze and draft `Scroll`s.

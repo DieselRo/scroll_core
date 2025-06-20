@@ -39,7 +39,7 @@ fn make_scroll(title: &str, tags: &[&str], body: &str) -> Scroll {
 
 #[test]
 fn test_semantic_query_returns_relevant_scroll() {
-    let mut logger = Logger::start();
+    let logger = Logger::start();
     let s1 = make_scroll(
         "Rust Guide",
         &["rust", "code"],

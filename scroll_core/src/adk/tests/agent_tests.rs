@@ -67,6 +67,7 @@ mod tests {
     }
 
     // A mock LLM that can transfer to another agent
+    #[allow(dead_code)]
     struct TransferLlm;
 
     #[async_trait]

@@ -40,7 +40,7 @@ fn make_scroll(title: &str, tags: &[&str], body: &str) -> Scroll {
 
 #[test]
 fn test_context_engine_semantic_recall() {
-    let mut logger = Logger::start();
+    let logger = Logger::start();
     let s1 = make_scroll("Rust Guide", &["rust", "code"], "Learn Rust.");
     let s2 = make_scroll("Cooking Tips", &["cook"], "How to cook pasta.");
     let mut archive = InMemoryArchive::new(vec![s1.clone(), s2]);
