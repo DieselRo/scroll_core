@@ -1,5 +1,6 @@
 // migration/src/main.rs
 #![warn(unused_imports)]
+#[cfg(feature = "cli")]
 use migration::Migrator;
 #[cfg(feature = "cli")]
 use sea_orm_migration::cli::run_cli;

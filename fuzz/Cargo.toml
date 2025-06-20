@@ -19,3 +19,7 @@ path = "fuzz_targets/scroll_parser.rs"
 test = false
 doc = false
 bench = false
+required-features = ["fuzzing"]
+
+[features]
+fuzzing = []
