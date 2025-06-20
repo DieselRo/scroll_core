@@ -1,5 +1,5 @@
-use crate::invocation::types::{Invocation, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationResult};
 use crate::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use serde_json::json;
 use std::thread;

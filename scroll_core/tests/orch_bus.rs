@@ -2,8 +2,8 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
-use scroll_core::invocation::types::{Invocation, InvocationResult};
 use scroll_core::invocation::named_construct::NamedConstruct;
+use scroll_core::invocation::types::{Invocation, InvocationResult};
 use scroll_core::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use uuid::Uuid;
 

@@ -2,8 +2,8 @@
 // src/trigger_loom/loom.rs
 // ===============================
 
-use crate::invocation::types::Invocation;
 use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::Invocation;
 use crate::trigger_loom::emotional_state::EmotionalState;
 use crate::trigger_loom::glyph_matcher::{match_glyph, GlyphMatchResult};
 
