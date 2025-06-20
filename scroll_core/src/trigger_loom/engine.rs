@@ -11,8 +11,8 @@ use log::info;
 use uuid::Uuid;
 
 use crate::core::cost_manager::{CostDecision, CostManager, InvocationCost};
-use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::trigger_loom::config::TriggerLoopConfig;
 
 const MAX_AGENT_DEPTH: u32 = 5;

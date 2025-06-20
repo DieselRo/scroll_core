@@ -2,8 +2,8 @@
 // src/constructs/validator_construct.rs
 // ===============================
 
-use crate::invocation::types::{Invocation, InvocationMode, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationMode, InvocationResult};
 use crate::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use crate::scroll::Scroll;
 use crate::validator::validate_scroll;
