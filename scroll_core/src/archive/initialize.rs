@@ -1,9 +1,9 @@
-use std::path::Path;
 use std::fs;
+use std::path::Path;
 
 use crate::archive::archive_loader::load_scrolls_from_directory;
-use crate::archive::scroll_access_log::ScrollAccess;
 use crate::archive::error::ArchiveError;
+use crate::archive::scroll_access_log::ScrollAccess;
 use crate::cache_manager::CacheManager;
 use crate::core::cost_manager::{
     ContextCost, CostDecision, CostProfile, InvocationCost, SystemCost,

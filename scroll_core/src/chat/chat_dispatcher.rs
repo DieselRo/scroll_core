@@ -5,6 +5,7 @@
 use crate::chat::chat_router::ChatRouter;
 use crate::chat::chat_session::{ChatMessage, ChatSession};
 use crate::construct_ai::ConstructResult;
+use crate::core::context_frame_engine::ContextFrameEngine;
 use crate::invocation::aelren::AelrenHerald;
 use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
 use crate::invocation::invocation_manager::InvocationManager;
@@ -12,7 +13,6 @@ use crate::orchestra::AgentMessage;
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 use crate::trigger_loom::emotional_state::EmotionalState;
-use crate::core::context_frame_engine::ContextFrameEngine;
 use chrono::Utc;
 use log::info;
 use uuid::Uuid;
