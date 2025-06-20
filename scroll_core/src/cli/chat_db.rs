@@ -9,7 +9,8 @@ pub struct ChatDb {
 
 impl ChatDb {
     pub async fn open(path: &str) -> Result<Self, sqlx::Error> {
-        let pool = SqlitePool::connect(&format!("sqlite://{}", path)).await?;
+        let prefix = if path.starts_with('/') { "sqlite://" } else { "sqlite:" };
+        let pool = SqlitePool::connect(&format!("{}{}?mode=rwc", prefix, path)).await?;
         sqlx::query(
             "CREATE TABLE IF NOT EXISTS scroll_sessions (id TEXT PRIMARY KEY, created_at REAL);",
         )

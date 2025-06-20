@@ -57,7 +57,8 @@ pub fn initialize_scroll_core() -> Result<(Vec<Scroll>, CacheManager)> {
     use log::info;
     use std::path::Path;
 
-    let archive_path = Path::new("scrolls/");
+    let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
+    let archive_path = Path::new(&archive_dir);
 
     info!("🌀 Scroll Core v{} initializing...", SCROLL_CORE_VERSION);
     println!("🌀 Scroll Core v{} initializing...", SCROLL_CORE_VERSION);
@@ -87,7 +88,8 @@ pub fn validate_scroll_environment() -> bool {
         return false;
     }
 
-    match fs::read_dir("scrolls/") {
+    let archive_dir = env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
+    match fs::read_dir(&archive_dir) {
         Ok(mut entries) => entries.next().is_some(),
         Err(_) => false,
     }
