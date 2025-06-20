@@ -1,7 +1,7 @@
 // src/invocation/constructs/mythscribe.rs
 use crate::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
 use crate::invocation::constructs::openai_construct::Mythscribe;
-use crate::invocation::invocation::{Invocation, InvocationMode, InvocationResult};
+use crate::invocation::invocation_core::{Invocation, InvocationMode, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;

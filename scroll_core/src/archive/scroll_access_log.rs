@@ -32,6 +32,12 @@ impl ScrollAccess {
     }
 }
 
+impl Default for ScrollAccess {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Central memory for tracking scroll access patterns.
 pub struct ScrollAccessLog {
     log: HashMap<Uuid, ScrollAccess>,
@@ -49,7 +55,7 @@ impl ScrollAccessLog {
         self.log
             .entry(scroll_id)
             .and_modify(|entry| entry.record_access())
-            .or_insert_with(ScrollAccess::new);
+            .or_default();
     }
 
     /// Retrieves access info if it exists.
@@ -72,5 +78,11 @@ impl ScrollAccessLog {
     /// Exports the access log as a pretty JSON string.
     pub fn export_log(&self) -> String {
         serde_json::to_string_pretty(&self.log).unwrap_or_else(|_| "{}".to_string())
+    }
+}
+
+impl Default for ScrollAccessLog {
+    fn default() -> Self {
+        Self::new()
     }
 }

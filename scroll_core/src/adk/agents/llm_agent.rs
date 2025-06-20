@@ -169,6 +169,7 @@ impl LlmAgent {
     }
 
     /// Execute a tool
+    #[allow(dead_code)]
     async fn execute_tool(
         &self,
         function_call: FunctionCall,
@@ -190,6 +191,7 @@ impl LlmAgent {
     }
 
     /// Handle agent transfer if requested
+    #[allow(dead_code)]
     fn handle_agent_transfer(&self, event: &mut Event) -> Option<String> {
         // Check for transfer_to_agent action
         if let Some(transfer) = &event.actions.transfer_to_agent {
@@ -233,11 +235,11 @@ impl BaseAgent for LlmAgent {
         };
 
         // Stream flag based on run config
-        let stream = match context.run_config.streaming_mode {
-            Some(crate::adk::common::config::StreamingMode::BlockWaitNone) => false,
-            Some(crate::adk::common::config::StreamingMode::BlockWaitAll) => false,
-            _ => true,
-        };
+        let stream = !matches!(
+            context.run_config.streaming_mode,
+            Some(crate::adk::common::config::StreamingMode::BlockWaitNone)
+                | Some(crate::adk::common::config::StreamingMode::BlockWaitAll)
+        );
 
         // Call the LLM
         let response_stream = self.model.generate_content(request, stream).await?;

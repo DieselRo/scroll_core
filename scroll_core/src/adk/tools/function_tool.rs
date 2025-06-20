@@ -89,7 +89,7 @@ impl BaseTool for FunctionTool {
 #[macro_export]
 macro_rules! function_tool {
     ($name:expr, $description:expr, $parameters:expr, $function:expr) => {
-        crate::adk::tools::function_tool::FunctionTool::new(
+        $crate::adk::tools::function_tool::FunctionTool::new(
             $name.to_string(),
             $description.to_string(),
             $parameters,

@@ -7,7 +7,7 @@ use crate::chat::chat_session::{ChatMessage, ChatSession};
 use crate::construct_ai::ConstructResult;
 use crate::core::context_frame_engine::ContextFrameEngine;
 use crate::invocation::aelren::AelrenHerald;
-use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
+use crate::invocation::invocation_core::{Invocation, InvocationMode, InvocationTier};
 use crate::invocation::invocation_manager::InvocationManager;
 use crate::orchestra::AgentMessage;
 use crate::schema::EmotionSignature;
@@ -47,7 +47,7 @@ impl ChatDispatcher {
             let rx = bus.subscribe("dispatcher");
 
             info!("enqueue to={}", agent);
-            let invocation = Invocation {
+            let _invocation = Invocation {
                 id: Uuid::new_v4(),
                 phrase: user_input.to_string(),
                 invoker: "dispatcher".into(),
@@ -96,7 +96,7 @@ impl ChatDispatcher {
             };
             session.messages.push(assistant_msg.clone());
             mood.update_from_message(&assistant_msg);
-            return assistant_msg;
+            assistant_msg
         } else {
             let target = session
                 .target_construct

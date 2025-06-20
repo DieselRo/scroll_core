@@ -52,7 +52,6 @@ pub const SCROLL_CORE_VERSION: &str = "0.2.0";
 pub const SCROLL_CORE_INVOCATION: &str = "Let structure echo symbol.";
 
 /// Initializes the Scroll Core system and loads the scroll archive.
-
 pub fn initialize_scroll_core() -> Result<(Vec<Scroll>, CacheManager)> {
     use crate::archive::initialize::load_with_cache;
     use log::info;

@@ -32,7 +32,7 @@ impl BaseLlm for MockLlm {
 
     async fn generate_content<'a>(
         &'a self,
-        request: LlmRequest,
+        _request: LlmRequest,
         _stream: bool,
     ) -> Result<Pin<Box<dyn Stream<Item = LlmResponse> + Send + 'a>>, AdkError> {
         let content = Content {

@@ -71,7 +71,7 @@ impl SessionService for DatabaseSessionService {
             None => return Ok(None),
         };
 
-        let events = scroll_event::Entity::find()
+        let _events = scroll_event::Entity::find()
             .filter(scroll_event::Column::SessionId.eq(id))
             .all(&self.conn)
             .await?;
@@ -100,7 +100,7 @@ impl SessionService for DatabaseSessionService {
         _user_id: &str,
         session_id: &str,
     ) -> Result<ListEventsResponse, Box<dyn std::error::Error>> {
-        let events = scroll_event::Entity::find()
+        let _events = scroll_event::Entity::find()
             .filter(scroll_event::Column::SessionId.eq(session_id))
             .all(&self.conn)
             .await?;
@@ -116,7 +116,7 @@ impl SessionService for DatabaseSessionService {
         _app_name: &str,
         _user_id: &str,
     ) -> Result<ListSessionsResponse, Box<dyn std::error::Error>> {
-        let sessions = scroll_session::Entity::find().all(&self.conn).await?;
+        let _sessions = scroll_session::Entity::find().all(&self.conn).await?;
 
         Ok(ListSessionsResponse {
             sessions: Vec::new(),

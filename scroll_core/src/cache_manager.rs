@@ -51,7 +51,7 @@ impl CacheManager {
         let mut scored: Vec<_> = self
             .heat_scores
             .iter()
-            .map(|(id, heat)| (id.clone(), heat.score()))
+            .map(|(id, heat)| (*id, heat.score()))
             .collect();
         scored.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
 
