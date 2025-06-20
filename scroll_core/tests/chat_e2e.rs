@@ -1,3 +1,4 @@
+#![allow(clippy::needless_borrow)]
 use scroll_core::archive::archive_memory::InMemoryArchive;
 use scroll_core::archive::initialize::load_with_cache;
 use scroll_core::archive::scroll_access_log::ScrollAccessLog;

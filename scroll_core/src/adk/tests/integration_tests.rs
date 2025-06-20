@@ -1,3 +1,5 @@
+#![allow(clippy::redundant_pattern_matching)]
+#![allow(clippy::len_zero)]
 // ==================================
 // src/adk/tests/integration_tests.rs
 // ==================================
