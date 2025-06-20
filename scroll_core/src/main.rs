@@ -46,8 +46,16 @@ enum Commands {
     /// Start an interactive chat with a Construct
     Chat {
         construct: String,
-        #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
+        #[arg(
+            long = "stream",
+            action = clap::ArgAction::SetTrue,
+            default_value_t = true,
+            help = "Enable streaming output (default)",
+            conflicts_with = "no_stream"
+        )]
         stream: bool,
+        #[arg(long = "no-stream", action = clap::ArgAction::SetFalse, default_value_t = true)]
+        no_stream: bool,
     },
 }
 
@@ -59,7 +67,12 @@ fn main() -> Result<()> {
 
     let cli = Cli::parse();
 
-    if let Some(Commands::Chat { construct, stream }) = &cli.command {
+    if let Some(Commands::Chat {
+        construct,
+        stream,
+        no_stream,
+    }) = &cli.command
+    {
         let archive_dir =
             std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
         ensure_archive_dir(Path::new(&archive_dir))?;
@@ -86,7 +99,8 @@ fn main() -> Result<()> {
         let rt = tokio::runtime::Runtime::new()?;
         let db_path = std::env::var("CHAT_DB_PATH").unwrap_or_else(|_| "scroll_core.db".into());
         let db = rt.block_on(ChatDb::open(&db_path))?;
-        run_chat(&manager, &aelren, &scrolls, construct, *stream, &db)?;
+        let stream_enabled = *stream && *no_stream;
+        run_chat(&manager, &aelren, &scrolls, construct, stream_enabled, &db)?;
         teardown_scroll_core();
         return Ok(());
     }

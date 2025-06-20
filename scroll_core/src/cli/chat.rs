@@ -31,7 +31,10 @@ pub fn run_chat(
             Err(e) => return Err(e.into()),
         };
         let trimmed = line.trim();
-        if trimmed.eq_ignore_ascii_case("exit") || trimmed == "/exit" {
+        if trimmed.eq_ignore_ascii_case("exit")
+            || trimmed.eq_ignore_ascii_case("quit")
+            || trimmed == "/exit"
+        {
             break;
         }
         let _ = rl.add_history_entry(trimmed);
