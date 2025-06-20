@@ -1,3 +1,4 @@
+#![allow(clippy::field_reassign_with_default)]
 // ==================================
 // src/adk/tests/agent_tests.rs
 // ==================================

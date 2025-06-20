@@ -2,15 +2,18 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches: [ master ]
   pull_request:
 
 jobs:
-  check:
+  ci:
     if: |
       !contains(github.event.head_commit.message, '[ci skip]') &&
       !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[ci skip]') || contains(github.event.pull_request.body, '[ci skip]')))
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
@@ -18,13 +21,40 @@ jobs:
           toolchain: stable
           override: true
           components: rustfmt, clippy
-      - name: cargo check
-        run: cargo check --all --tests
+      - name: Determine Rust version
+        id: rust-version
+        run: echo "version=$(rustc --version)" >> "$GITHUB_OUTPUT"
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ steps.rust-version.outputs.version }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-registry-
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ steps.rust-version.outputs.version }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-git-
+      - name: Cache target dir
+        uses: actions/cache@v3
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ steps.rust-version.outputs.version }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-target-
       - name: cargo fmt
         run: cargo fmt -- --check
       - name: cargo clippy
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: Install cargo-udeps
+        run: cargo install cargo-udeps --locked
+      - name: cargo udeps
+        run: cargo udeps --workspace --all-targets
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --locked
+      - name: cargo deny
+        run: cargo deny check
       - name: cargo test
-        run: cargo test --all
+        run: cargo test --workspace
       - name: cargo build release
         run: cargo build --workspace --release

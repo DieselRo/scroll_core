@@ -1,3 +1,4 @@
+#![allow(clippy::missing_const_for_thread_local)]
 // cost_manager.rs – The Core Weave
 //====================================
 
