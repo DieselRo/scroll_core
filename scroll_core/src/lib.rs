@@ -1,6 +1,7 @@
 // ===============================
 // src/lib.rs
 // ===============================
+#![warn(unused_imports)]
 
 pub mod adk; // Agent Development Kit integration
 pub mod archive;

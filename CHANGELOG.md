@@ -9,3 +9,7 @@
 ## [0.2.1] - 2025-06-19
 ### Removed
 - Removed episodic_writer module (superseded by stream_writer).
+
+## [0.2.2] - Unreleased
+### Changed
+- Renamed `context_frame_engine` module to `context_manager`.

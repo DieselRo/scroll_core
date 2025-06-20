@@ -1,4 +1,5 @@
 #![no_main]
+#![warn(unused_imports)]
 use libfuzzer_sys::fuzz_target;
 use scroll_core::parser::parse_scroll;
 
