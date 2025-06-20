@@ -30,7 +30,10 @@ Disable streaming:
 cargo run -- chat mythscribe --stream=false
 ```
 
-Chat history is stored in `scroll_core.db`.
+Chat history is stored in a SQLite database. By default this is
+`scroll_core.db`, but you can override the location with the `CHAT_DB_PATH`
+environment variable. The path will automatically be prefixed with
+`sqlite://` when the database is opened.
 
 The archive directory defaults to `./scrolls`. Override this with the
 `SCROLL_CORE_ARCHIVE_DIR` environment variable. The chat CLI will create the

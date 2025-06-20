@@ -58,8 +58,8 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     if let Some(Commands::Chat { construct, stream }) = &cli.command {
-        let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR")
-            .unwrap_or_else(|_| "scrolls".into());
+        let archive_dir =
+            std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
         ensure_archive_dir(Path::new(&archive_dir))?;
         let (scrolls, _cache) = initialize_scroll_core()?;
         let archive = InMemoryArchive::new(scrolls.clone());
@@ -82,7 +82,8 @@ fn main() -> Result<()> {
         let manager = InvocationManager::new(registry);
         let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
         let rt = tokio::runtime::Runtime::new()?;
-        let db = rt.block_on(ChatDb::open("scroll_core.db"))?;
+        let db_path = std::env::var("CHAT_DB_PATH").unwrap_or_else(|_| "scroll_core.db".into());
+        let db = rt.block_on(ChatDb::open(&db_path))?;
         run_chat(&manager, &aelren, &scrolls, construct, *stream, &db)?;
         teardown_scroll_core();
         return Ok(());
