@@ -62,12 +62,71 @@ pub struct ScrollBuilder {
 }
 
 impl ScrollBuilder {
+    pub fn new(title: impl Into<String>) -> Self {
+        let title = title.into();
+        Self {
+            title: title.clone(),
+            scroll_type: ScrollType::Canon,
+            yaml_metadata: YamlMetadata {
+                title,
+                scroll_type: ScrollType::Canon,
+                emotion_signature: EmotionSignature::neutral(),
+                tags: vec![],
+                archetype: None,
+                quorum_required: false,
+                last_modified: None,
+                file_path: None,
+            },
+            tags: vec![],
+            archetype: None,
+            quorum_required: false,
+            markdown_body: String::new(),
+            invocation_phrase: String::new(),
+            sigil: String::new(),
+            emotion_signature: EmotionSignature::neutral(),
+            authored_by: None,
+        }
+    }
+
+    pub fn tags(mut self, tags: &[&str]) -> Self {
+        let collected: Vec<String> = tags.iter().map(|t| t.to_string()).collect();
+        self.tags = collected.clone();
+        self.yaml_metadata.tags = collected;
+        self
+    }
+
+    pub fn body(mut self, body: impl Into<String>) -> Self {
+        self.markdown_body = body.into();
+        self
+    }
+
+    pub fn invocation_phrase(mut self, phrase: impl Into<String>) -> Self {
+        self.invocation_phrase = phrase.into();
+        self
+    }
+
+    pub fn sigil(mut self, sigil: impl Into<String>) -> Self {
+        self.sigil = sigil.into();
+        self
+    }
+
+    pub fn last_modified(mut self, dt: DateTime<Utc>) -> Self {
+        self.yaml_metadata.last_modified = Some(dt);
+        self
+    }
+
     pub fn build(self) -> Scroll {
-        Scroll::new(self)
+        let mut scroll = Scroll::new(self);
+        scroll.status = ScrollStatus::Draft;
+        scroll
     }
 }
 
 impl Scroll {
+    pub fn builder(title: impl Into<String>) -> ScrollBuilder {
+        ScrollBuilder::new(title)
+    }
+
     pub fn new(params: ScrollBuilder) -> Self {
         let now = Utc::now();
         Scroll {
