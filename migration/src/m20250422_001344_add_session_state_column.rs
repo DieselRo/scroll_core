@@ -1,4 +1,5 @@
 use sea_orm_migration::prelude::*;
+use serde_json::json;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -12,9 +13,9 @@ impl MigrationTrait for Migration {
                     .table(Alias::new("scroll_sessions"))
                     .add_column(
                         ColumnDef::new(Alias::new("state"))
-                            .string()
+                            .json()
                             .not_null()
-                            .default("{}"),
+                            .default(Expr::value(json!({}))),
                     )
                     .to_owned(),
             )
