@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
-use scroll_core::invocation::invocation::{Invocation, InvocationResult};
+use scroll_core::invocation::invocation_core::{Invocation, InvocationResult};
 use scroll_core::invocation::named_construct::NamedConstruct;
 use scroll_core::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use uuid::Uuid;
@@ -123,8 +123,8 @@ fn test_whispering_bus() {
         phrase: "run".into(),
         invoker: "test".into(),
         invoked: "echo".into(),
-        tier: scroll_core::invocation::invocation::InvocationTier::True,
-        mode: scroll_core::invocation::invocation::InvocationMode::Read,
+        tier: scroll_core::invocation::invocation_core::InvocationTier::True,
+        mode: scroll_core::invocation::invocation_core::InvocationMode::Read,
         resonance_required: false,
         timestamp: chrono::Utc::now(),
     };

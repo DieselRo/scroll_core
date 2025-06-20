@@ -47,38 +47,46 @@ pub struct Scroll {
     pub origin: ScrollOrigin,
 }
 
+pub struct ScrollBuilder {
+    pub title: String,
+    pub scroll_type: ScrollType,
+    pub yaml_metadata: YamlMetadata,
+    pub tags: Vec<String>,
+    pub archetype: Option<String>,
+    pub quorum_required: bool,
+    pub markdown_body: String,
+    pub invocation_phrase: String,
+    pub sigil: String,
+    pub emotion_signature: EmotionSignature,
+    pub authored_by: Option<String>,
+}
+
+impl ScrollBuilder {
+    pub fn build(self) -> Scroll {
+        Scroll::new(self)
+    }
+}
+
 impl Scroll {
-    pub fn new(
-        title: String,
-        scroll_type: ScrollType,
-        yaml_metadata: YamlMetadata,
-        tags: Vec<String>,
-        archetype: Option<String>,
-        quorum_required: bool,
-        markdown_body: String,
-        invocation_phrase: String,
-        sigil: String,
-        emotion_signature: EmotionSignature,
-        authored_by: Option<String>,
-    ) -> Self {
+    pub fn new(params: ScrollBuilder) -> Self {
         let now = Utc::now();
         Scroll {
             id: Uuid::new_v4(),
-            title,
-            scroll_type,
-            yaml_metadata,
-            tags,
-            archetype,
-            quorum_required,
-            markdown_body,
-            invocation_phrase,
-            sigil,
+            title: params.title,
+            scroll_type: params.scroll_type,
+            yaml_metadata: params.yaml_metadata,
+            tags: params.tags,
+            archetype: params.archetype,
+            quorum_required: params.quorum_required,
+            markdown_body: params.markdown_body,
+            invocation_phrase: params.invocation_phrase,
+            sigil: params.sigil,
             status: ScrollStatus::Latent,
-            emotion_signature,
+            emotion_signature: params.emotion_signature,
             linked_scrolls: Vec::new(),
             origin: ScrollOrigin {
                 created: now,
-                authored_by,
+                authored_by: params.authored_by,
                 last_modified: now,
             },
         }

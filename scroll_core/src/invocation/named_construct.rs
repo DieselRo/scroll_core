@@ -3,7 +3,7 @@
 // ===============================
 #![allow(unused_imports)]
 
-use crate::invocation::invocation::{Invocation, InvocationResult};
+use crate::invocation::invocation_core::{Invocation, InvocationResult};
 use crate::scroll::Scroll;
 
 pub trait PulseSensitive {

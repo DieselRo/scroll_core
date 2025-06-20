@@ -40,7 +40,7 @@ impl TriggerLoopConfig {
             }
             SymbolicRhythm::Dawn => {
                 let hour = now.with_timezone(&Local).hour();
-                if hour >= 22 || hour < 6 {
+                if !(6..=21).contains(&hour) {
                     0.0
                 } else {
                     1.0

@@ -39,6 +39,6 @@ pub struct Invocation {
 #[derive(Debug, Clone)]
 pub enum InvocationResult {
     Success(String),
-    ModifiedScroll(crate::Scroll),
+    ModifiedScroll(Box<crate::Scroll>),
     Failure(String),
 }

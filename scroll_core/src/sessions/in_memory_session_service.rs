@@ -11,15 +11,14 @@ use std::error::Error;
 use std::sync::{Arc, Mutex};
 
 /// An in-memory session service for lightweight runtime usage and testing.
+#[derive(Default)]
 pub struct InMemorySessionService {
     pub store: Arc<Mutex<HashMap<String, ScrollSession>>>,
 }
 
 impl InMemorySessionService {
     pub fn new() -> Self {
-        Self {
-            store: Arc::new(Mutex::new(HashMap::new())),
-        }
+        Self::default()
     }
 }
 

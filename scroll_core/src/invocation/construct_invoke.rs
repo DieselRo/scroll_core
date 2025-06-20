@@ -37,7 +37,7 @@ impl<'a> ConstructInvoker<'a> {
                 },
                 InvocationMode::Modify => {
                     match construct.perform_scroll_action(&mut scroll) {
-                        Ok(updated) => InvocationResult::ModifiedScroll(updated),
+                        Ok(updated) => InvocationResult::ModifiedScroll(Box::new(updated)),
                         Err(reason) => InvocationResult::Failure(format!("{} failed: {}", name, reason))
                     }
                 },

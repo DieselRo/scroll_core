@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::adk::common::types::Content;
 
 /// Response from an LLM
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct LlmResponse {
     /// Response content
@@ -25,15 +25,4 @@ pub struct LlmResponse {
     /// Error message if an error occurred
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error_message: Option<String>,
-}
-
-impl Default for LlmResponse {
-    fn default() -> Self {
-        Self {
-            content: None,
-            partial: None,
-            error_code: None,
-            error_message: None,
-        }
-    }
 }

@@ -11,8 +11,8 @@ use log::info;
 use uuid::Uuid;
 
 use crate::core::cost_manager::{CostDecision, CostManager, InvocationCost};
-use crate::invocation::invocation::{Invocation, InvocationMode, InvocationTier};
-use crate::invocation::named_construct::{NamedConstruct, PulseSensitive};
+use crate::invocation::invocation_core::{Invocation, InvocationMode, InvocationTier};
+use crate::invocation::named_construct::NamedConstruct;
 use crate::trigger_loom::config::TriggerLoopConfig;
 
 const MAX_AGENT_DEPTH: u32 = 5;
@@ -115,7 +115,7 @@ impl TriggerLoopEngine {
             "skipped": skipped,
             "duration_ms": duration
         });
-        info!("{}", summary.to_string());
+        info!("{}", summary);
 
         #[cfg(feature = "metrics")]
         histogram!("tick_duration_ms").record(tick_start.elapsed().as_millis() as f64);

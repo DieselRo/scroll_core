@@ -1,4 +1,4 @@
-use crate::invocation::invocation::{Invocation, InvocationResult};
+use crate::invocation::invocation_core::{Invocation, InvocationResult};
 use crate::invocation::named_construct::NamedConstruct;
 use crate::orchestra::{AgentMessage, Bus, OrchestratedConstruct};
 use serde_json::json;

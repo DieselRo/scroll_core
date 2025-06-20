@@ -3,7 +3,7 @@
 #![allow(unused_imports)]
 
 use crate::errors::MetricError;
-use crate::invocation::invocation::Invocation;
+use crate::invocation::invocation_core::Invocation;
 use crate::metrics::clamp_finite;
 use crate::scroll::Scroll;
 use chrono::Utc;

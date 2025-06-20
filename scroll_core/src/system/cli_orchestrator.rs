@@ -24,7 +24,7 @@ pub enum Command {
 }
 
 pub fn parse_command(input: &str) -> Command {
-    let parts: Vec<&str> = input.trim().split_whitespace().collect();
+    let parts: Vec<&str> = input.split_whitespace().collect();
     match parts.as_slice() {
         ["snapshot"] => Command::Snapshot,
         ["invoke", name] => Command::Invoke(name.to_string()),

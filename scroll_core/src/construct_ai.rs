@@ -54,7 +54,7 @@ pub enum ConstructResult {
         title: String,
         content: String,
     },
-    ModifiedScroll(Scroll),
+    ModifiedScroll(Box<Scroll>),
     Refusal {
         reason: String,
         echo: Option<String>,
