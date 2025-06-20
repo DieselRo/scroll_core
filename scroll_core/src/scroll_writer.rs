@@ -1,6 +1,5 @@
 // scroll_writer.rs – Hand of the Archive
 //===========================================
-#![allow(unused_imports)]
 
 use chrono::Utc;
 use serde_yaml;

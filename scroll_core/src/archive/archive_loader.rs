@@ -1,6 +1,5 @@
 //    archive_loader.rs
 //======================================
-#![allow(unused_imports)]
 
 use crate::parser;
 use crate::scroll::Scroll;

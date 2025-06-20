@@ -1,6 +1,5 @@
 // archive_memory.rs – Archive Memory Trait and Initial Implementation
 //=======================================================================
-#![allow(unused_imports)]
 
 use std::collections::HashMap;
 use uuid::Uuid;

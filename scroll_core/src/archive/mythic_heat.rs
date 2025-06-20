@@ -1,6 +1,5 @@
 // mythic_heat.rs – Evaluator of Scroll Significance
 //========================================================
-#![allow(unused_imports)]
 
 use chrono::{DateTime, Utc};
 use uuid::Uuid;

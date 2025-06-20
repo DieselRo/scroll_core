@@ -1,7 +1,6 @@
 // ===============================
 // src/invocation.rs
 // ===============================
-#![allow(unused_imports)]
 
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
@@ -38,7 +37,7 @@ pub struct Invocation {
 
 #[derive(Debug, Clone)]
 pub enum InvocationResult {
-    Success(String),
+    Success(Box<str>),
     ModifiedScroll(Box<crate::Scroll>),
-    Failure(String),
+    Failure(Box<str>),
 }

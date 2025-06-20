@@ -1,7 +1,6 @@
 // ===============================
 // src/parser.rs
 // ===============================
-#![allow(unused_imports)]
 
 use std::fs;
 use std::path::Path;

@@ -13,3 +13,5 @@
 ## [0.2.2] - Unreleased
 ### Changed
 - Renamed `context_frame_engine` module to `context_manager`.
+- Renamed `invocation_core` to `invocation` and `runner_core` to `runner`.
+- Added `ScrollBuilder` and refactored public API.

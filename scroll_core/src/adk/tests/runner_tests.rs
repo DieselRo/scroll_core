@@ -22,9 +22,8 @@ mod tests {
     use crate::adk::models::llm_response::LlmResponse;
     use crate::adk::runner::in_memory::new_in_memory_runner;
 
-    use crate::adk::sessions::base_session_service::BaseSessionService;
-
     // A mock LLM that always returns a fixed response
+    #[allow(dead_code)]
     struct MockLlm;
 
     #[async_trait]

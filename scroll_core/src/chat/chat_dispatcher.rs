@@ -7,7 +7,7 @@ use crate::chat::chat_session::{ChatMessage, ChatSession};
 use crate::construct_ai::ConstructResult;
 use crate::core::context_frame_engine::ContextFrameEngine;
 use crate::invocation::aelren::AelrenHerald;
-use crate::invocation::invocation_core::{Invocation, InvocationMode, InvocationTier};
+use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::invocation::invocation_manager::InvocationManager;
 use crate::orchestra::AgentMessage;
 use crate::schema::EmotionSignature;

@@ -1,7 +1,6 @@
 // ===============================
 // src/state_manager.rs
 // ===============================
-#![allow(unused_imports)]
 
 use chrono::Utc;
 use log::info;
