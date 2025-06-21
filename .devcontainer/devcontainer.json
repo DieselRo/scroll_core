@@ -1,0 +1,9 @@
+{
+    "name": "scroll_core",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "workspaceFolder": "/workspaces/scroll_core",
+    "onCreateCommand": "if [ ! -d /workspaces/scroll_core/.git ]; then git clone https://github.com/DieselRo/scroll_core /workspaces/scroll_core; fi",
+    "postCreateCommand": "bash /workspaces/scroll_core/.devcontainer/setup.sh && cargo test --workspace --locked --no-run"
+}
