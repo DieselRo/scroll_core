@@ -26,3 +26,7 @@ jobs:
         run: cargo install cargo-deny --locked
       - name: Run cargo deny
         run: cargo deny check
+      - name: Generate module map
+        run: |
+          git config --global core.autocrlf false
+          cargo xtask gen-map --check

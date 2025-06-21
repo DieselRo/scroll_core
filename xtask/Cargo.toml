@@ -1,0 +1,16 @@
+[package]
+name = "xtask"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = "1"
+walkdir = "2"
+syn = { version = "2", features = ["full"] }
+
+[[bin]]
+name = "gen-map"
+path = "src/bin/gen_map.rs"

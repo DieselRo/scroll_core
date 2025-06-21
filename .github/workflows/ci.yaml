@@ -58,6 +58,10 @@ jobs:
         run: cargo install cargo-deny --locked
       - name: cargo deny
         run: cargo deny check
+      - name: Generate module map
+        run: |
+          git config --global core.autocrlf false
+          cargo xtask gen-map --check
       - name: cargo test
         run: cargo test --workspace -- --nocapture
       - name: cargo build release
