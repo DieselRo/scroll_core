@@ -62,6 +62,8 @@ enum Commands {
 fn main() -> Result<()> {
     dotenv().ok();
 
+    scroll_core::init_tracing()?;
+
     #[cfg(feature = "metrics")]
     scroll_core::telemetry::init();
 
