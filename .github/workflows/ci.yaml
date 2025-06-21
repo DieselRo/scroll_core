@@ -21,6 +21,10 @@ jobs:
           toolchain: stable
           override: true
           components: rustfmt, clippy
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
       - name: Determine Rust version
         id: rust-version
         run: echo "version=$(rustc --version)" >> "$GITHUB_OUTPUT"
@@ -47,9 +51,9 @@ jobs:
       - name: cargo clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
       - name: Install cargo-udeps
-        run: cargo install cargo-udeps --locked
+        run: cargo +nightly install cargo-udeps --locked
       - name: cargo udeps
-        run: cargo udeps --workspace --all-targets
+        run: cargo +nightly udeps --workspace --all-targets
       - name: Install cargo-deny
         run: cargo install cargo-deny --locked
       - name: cargo deny
