@@ -17,6 +17,9 @@ log = "0.4"
 reqwest = { version = "0.12", features = ["blocking", "json", "rustls-tls"], default-features = false }
 tracing = "0.1"
 tracing-subscriber = { workspace = true }
+ansi_term = "0.12"
+rustyline = "13"
+home = "0.5"
 
 metrics = { version = "0.24", optional = true }
 metrics-exporter-prometheus = { version = "0.17", optional = true, default-features = false, features = ["http-listener"] }
@@ -70,6 +73,7 @@ quickcheck = "1"
 tempfile = "3"
 assert_cmd = "2"
 predicates = "3"
+strip-ansi-escapes = "0.1"
 
 
 [features]
