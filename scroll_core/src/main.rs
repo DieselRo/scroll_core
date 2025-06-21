@@ -49,12 +49,12 @@ enum Commands {
         #[arg(
             long = "stream",
             action = clap::ArgAction::SetTrue,
-            default_value_t = true,
-            help = "Enable streaming output (default)",
+            default_value_t = false,
+            help = "Enable streaming output",
             conflicts_with = "no_stream"
         )]
         stream: bool,
-        #[arg(long = "no-stream", action = clap::ArgAction::SetFalse, default_value_t = true)]
+        #[arg(long = "no-stream", action = clap::ArgAction::SetTrue, default_value_t = false)]
         no_stream: bool,
     },
 }
