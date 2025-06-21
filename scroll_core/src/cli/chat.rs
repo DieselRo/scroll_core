@@ -2,15 +2,18 @@ use crate::chat::chat_dispatcher::ChatDispatcher;
 use crate::chat::chat_session::ChatSession;
 use crate::invocation::aelren::AelrenHerald;
 use crate::invocation::invocation_manager::InvocationManager;
-use crate::trigger_loom::emotional_state::EmotionalState;
 use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
-use chrono::Utc;
-use uuid::Uuid;
+use crate::trigger_loom::emotional_state::EmotionalState;
 use crate::Scroll;
 use anyhow::Result;
-use std::io::{self, BufRead};
-use std::sync::{atomic::{AtomicBool, Ordering}, Arc};
+use chrono::Utc;
 use ctrlc;
+use std::io::{self, BufRead};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
+};
+use uuid::Uuid;
 
 use crate::cli::chat_db::ChatDb;
 use tokio::runtime::Runtime;
@@ -46,7 +49,12 @@ pub fn run_chat(
             break;
         }
 
-        rt.block_on(db.log_event(&session_id, "user", trimmed))?;
+        if let Err(e) = rt.block_on(db.log_event(&session_id, "user", trimmed)) {
+            eprintln!(
+                "Failed to log event for session '{}', role 'user': {e}",
+                session_id
+            );
+        }
         let _invocation = Invocation {
             id: Uuid::new_v4(),
             phrase: trimmed.to_string(),
@@ -57,9 +65,15 @@ pub fn run_chat(
             resonance_required: false,
             timestamp: Utc::now(),
         };
-        let reply = ChatDispatcher::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
+        let reply =
+            ChatDispatcher::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
         println!("{} › {}", target, reply.content);
-        rt.block_on(db.log_event(&session_id, target, &reply.content))?;
+        if let Err(e) = rt.block_on(db.log_event(&session_id, target, &reply.content)) {
+            eprintln!(
+                "Failed to log event for session '{}', target '{}': {e}",
+                session_id, target
+            );
+        }
     }
     Ok(())
 }
