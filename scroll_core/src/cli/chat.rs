@@ -85,6 +85,16 @@ pub fn run_chat(
         };
         let reply =
             ChatDispatcher::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
+        if reply.role == "system" {
+            println!("{}", reply.content);
+            if let Err(e) = rt.block_on(db.log_event(&session_id, "system", &reply.content)) {
+                eprintln!(
+                    "Failed to log event for session '{}', target 'system': {e}",
+                    session_id
+                );
+            }
+            continue;
+        }
         println!("{} › {}", target, reply.content);
         if let Err(e) = rt.block_on(db.log_event(&session_id, target, &reply.content)) {
             eprintln!(
