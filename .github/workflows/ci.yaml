@@ -55,6 +55,6 @@ jobs:
       - name: cargo deny
         run: cargo deny check
       - name: cargo test
-        run: cargo test --workspace
+        run: cargo test --workspace -- --nocapture
       - name: cargo build release
         run: cargo build --workspace --release
