@@ -15,8 +15,8 @@ use crate::scroll::Scroll;
 use crate::trigger_loom::emotional_state::EmotionalState;
 use chrono::Utc;
 use log::info;
-use uuid::Uuid;
 use std::io::BufRead;
+use uuid::Uuid;
 
 pub struct ChatDispatcher;
 
@@ -167,7 +167,8 @@ impl ChatDispatcher {
                     resonance_required: false,
                     timestamp: Utc::now(),
                 };
-                let reply = Self::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
+                let reply =
+                    Self::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
                 println!("{} › {}", target, reply.content);
                 if !stream {
                     continue;
