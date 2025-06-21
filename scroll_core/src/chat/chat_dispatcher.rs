@@ -14,8 +14,11 @@ use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 use crate::trigger_loom::emotional_state::EmotionalState;
 use chrono::Utc;
+use clap::{arg, Command};
 use log::info;
-use std::io::BufRead;
+use std::io::{BufRead, Write};
+use std::process::{Command as ProcessCommand, Stdio};
+use atty::Stream;
 use uuid::Uuid;
 
 pub struct ChatDispatcher;
@@ -24,6 +27,93 @@ impl ChatDispatcher {
     #[allow(deprecated)]
     pub fn new(_manager: &InvocationManager, _engine: &ContextFrameEngine) -> Self {
         ChatDispatcher
+    }
+
+    fn system_msg(text: String) -> ChatMessage {
+        ChatMessage {
+            role: "system".into(),
+            content: text,
+            emotion: None,
+        }
+    }
+
+    fn pager_display(text: &str) -> std::io::Result<()> {
+        if atty::is(Stream::Stdout) {
+            let pager = std::env::var("PAGER").unwrap_or_else(|_| {
+                if cfg!(windows) {
+                    "more".into()
+                } else {
+                    "less".into()
+                }
+            });
+            let mut child = ProcessCommand::new(pager)
+                .stdin(Stdio::piped())
+                .spawn()?;
+            if let Some(stdin) = &mut child.stdin {
+                stdin.write_all(text.as_bytes())?;
+            }
+            let _ = child.wait();
+            Ok(())
+        } else {
+            print!("{}", text);
+            Ok(())
+        }
+    }
+
+    fn handle_command(cmdline: &str, memory: &[Scroll]) -> ChatMessage {
+        let tokens: Vec<&str> = cmdline.trim_start_matches('/')
+            .split_whitespace()
+            .collect();
+        let mut args = vec!["slash"];
+        args.extend(tokens.iter());
+
+        let mut app = Command::new("slash")
+            .disable_help_subcommand(true)
+            .subcommand(Command::new("help"))
+            .subcommand(
+                Command::new("scroll")
+                    .subcommand(Command::new("list"))
+                    .subcommand(Command::new("open").arg(arg!(<idx>)))
+            );
+
+        match app.clone().try_get_matches_from(args) {
+            Ok(m) => {
+                match m.subcommand() {
+                    Some(("help", _)) | None => {
+                        let txt = "Available commands:\n  /help\n  /scroll list\n  /scroll open <idx>\n".to_string();
+                        Self::system_msg(txt)
+                    }
+                    Some(("scroll", sub)) => match sub.subcommand() {
+                        Some(("list", _)) => {
+                            let mut out = String::new();
+                            for (i, s) in memory.iter().enumerate() {
+                                let lines = s.markdown_body.lines().count();
+                                out.push_str(&format!(
+                                    "[{}] {} ({}, lines: {})\n",
+                                    i, s.title, s.scroll_type, lines
+                                ));
+                            }
+                            Self::system_msg(out)
+                        }
+                        Some(("open", subm)) => {
+                            let idx = subm.get_one::<String>("idx").unwrap();
+                            match idx.parse::<usize>() {
+                                Ok(i) if i < memory.len() => {
+                                    if let Err(e) = Self::pager_display(&memory[i].markdown_body) {
+                                        return Self::system_msg(format!("{}", e));
+                                    }
+                                    Self::system_msg(String::new())
+                                }
+                                _ => Self::system_msg("Invalid index".into()),
+                            }
+                        }
+                        _ => Self::system_msg("Unknown scroll command".into()),
+                    },
+                    Some((_, _)) => Self::system_msg("Unknown command".into()),
+                }
+            }
+            Err(e) => Self::system_msg(e.to_string()),
+        }
     }
 
     pub fn dispatch(
@@ -39,8 +129,12 @@ impl ChatDispatcher {
 
         let user_msg = session.messages.last().unwrap();
         mood.update_from_message(user_msg);
+        if user_input.trim_start().starts_with('/') {
+            return Self::handle_command(user_input, memory);
+        }
+
         let target_opt = ChatRouter::route_target(user_msg);
-        let explicit = user_input.contains('@') || user_input.trim_start().starts_with('/');
+        let explicit = user_input.contains('@');
 
         if explicit {
             let agent = target_opt.unwrap_or_else(ChatRouter::default_target);
@@ -169,7 +263,11 @@ impl ChatDispatcher {
                 };
                 let reply =
                     Self::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
-                println!("{} › {}", target, reply.content);
+                if reply.role == "system" {
+                    println!("{}", reply.content);
+                } else {
+                    println!("{} › {}", target, reply.content);
+                }
                 if !stream {
                     continue;
                 }
