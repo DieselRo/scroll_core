@@ -16,6 +16,7 @@ use crate::trigger_loom::emotional_state::EmotionalState;
 use chrono::Utc;
 use log::info;
 use uuid::Uuid;
+use std::io::BufRead;
 
 pub struct ChatDispatcher;
 
@@ -136,6 +137,44 @@ impl ChatDispatcher {
             session.messages.push(assistant_msg.clone());
             mood.update_from_message(&assistant_msg);
             assistant_msg
+        }
+    }
+
+    /// Basic REPL loop that forwards user input to the target Construct.
+    pub fn repl_loop(
+        manager: &InvocationManager,
+        aelren: &AelrenHerald,
+        memory: &[Scroll],
+        target: &str,
+        stream: bool,
+    ) {
+        let mut session = ChatSession::new(Some(target.to_string()), None);
+        let mut mood = EmotionalState::new(Vec::new(), 0.0, None);
+        let stdin = std::io::stdin();
+        for line in stdin.lock().lines() {
+            if let Ok(line) = line {
+                let trimmed = line.trim();
+                if trimmed.eq_ignore_ascii_case("exit") || trimmed.eq_ignore_ascii_case("quit") {
+                    break;
+                }
+                let _invocation = Invocation {
+                    id: Uuid::new_v4(),
+                    phrase: trimmed.to_string(),
+                    invoker: "repl".into(),
+                    invoked: target.to_string(),
+                    tier: InvocationTier::True,
+                    mode: InvocationMode::Read,
+                    resonance_required: false,
+                    timestamp: Utc::now(),
+                };
+                let reply = Self::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
+                println!("{} › {}", target, reply.content);
+                if !stream {
+                    continue;
+                }
+            } else {
+                break;
+            }
         }
     }
 }

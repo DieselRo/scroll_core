@@ -47,6 +47,7 @@ tokio-stream = "0.1"
 crossbeam-channel = "0.5"
 crossbeam = "0.8"
 rustyline = "13"
+ctrlc = "3"
 
 [lib]
 name = "scroll_core"
