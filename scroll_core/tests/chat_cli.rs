@@ -23,6 +23,7 @@ async fn chat_cli_records() {
 
     let mut cmd = Command::cargo_bin("scroll_core").unwrap();
     cmd.env("SCROLL_CORE_USE_MOCK", "1")
+        .env("SCROLL_CI", "1")
         .env("SCROLL_CORE_ARCHIVE_DIR", archive)
         .env("CHAT_DB_PATH", db_path.to_str().unwrap())
         .current_dir(archive)

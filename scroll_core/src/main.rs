@@ -10,7 +10,7 @@ use std::path::Path;
 use clap::{Parser, Subcommand};
 use dotenvy::dotenv;
 use scroll_core::chat::chat_dispatcher::ChatDispatcher;
-use scroll_core::cli::{chat::run_chat, chat_db::ChatDb};
+use scroll_core::cli::{chat::run_chat, chat_db::ChatDb, theme::ThemeKind};
 use scroll_core::{
     archive::archive_memory::InMemoryArchive,
     archive::initialize::ensure_archive_dir,
@@ -56,6 +56,10 @@ enum Commands {
         stream: bool,
         #[arg(long = "no-stream", action = clap::ArgAction::SetTrue, default_value_t = false)]
         no_stream: bool,
+        #[arg(long, default_value = "dark")]
+        theme: ThemeKind,
+        #[arg(long = "no-banner", action = clap::ArgAction::SetTrue, default_value_t = false)]
+        no_banner: bool,
     },
 }
 
@@ -73,6 +77,8 @@ fn main() -> Result<()> {
         construct,
         stream,
         no_stream,
+        theme,
+        no_banner,
     }) = &cli.command
     {
         let archive_dir =
@@ -102,7 +108,17 @@ fn main() -> Result<()> {
         let db_path = std::env::var("CHAT_DB_PATH").unwrap_or_else(|_| "scroll_core.db".into());
         let db = rt.block_on(ChatDb::open(&db_path))?;
         let stream_enabled = *stream && *no_stream;
-        run_chat(&manager, &aelren, &scrolls, construct, stream_enabled, &db)?;
+        let theme_struct = theme.styles();
+        run_chat(
+            &manager,
+            &aelren,
+            &scrolls,
+            construct,
+            stream_enabled,
+            &db,
+            theme_struct,
+            !*no_banner,
+        )?;
         teardown_scroll_core();
         return Ok(());
     }
