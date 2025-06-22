@@ -4,3 +4,16 @@ resolver = "3"
 
 [workspace.dependencies]
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+[workspace.metadata.cargo-udeps.ignore]
+normal = [
+    "pulldown-cmark",
+    "rustyline",
+    "sea-orm-migration",
+    "tokio-stream",
+    "cargo-fuzz",
+    "quickcheck_macros",
+    "strip-ansi-escapes",
+    "trycmd",
+    "walkdir",
+]
