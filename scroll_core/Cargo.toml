@@ -57,10 +57,6 @@ name = "test_db"
 path = "src/bin/test_db.rs"
 
 [[bin]]
-name = "adk_example"
-path = "src/bin/adk_example.rs"
-
-[[bin]]
 name = "run_tests"
 path = "src/bin/run_tests.rs"
 
