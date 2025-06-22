@@ -21,6 +21,7 @@ use home::home_dir;
 use rustyline::{error::ReadlineError, DefaultEditor};
 use tokio::runtime::Runtime;
 
+#[allow(clippy::too_many_arguments)]
 pub fn run_chat(
     manager: &InvocationManager,
     aelren: &AelrenHerald,

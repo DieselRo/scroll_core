@@ -63,7 +63,7 @@ impl ChatDispatcher {
         let mut args = vec!["slash"];
         args.extend(tokens.iter());
 
-        let mut app = Command::new("slash")
+        let app = Command::new("slash")
             .disable_help_subcommand(true)
             .subcommand(Command::new("help"))
             .subcommand(
