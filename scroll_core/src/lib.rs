@@ -3,7 +3,7 @@
 // ===============================
 #![warn(unused_imports)]
 
-pub mod adk; // Agent Development Kit integration
+//pub mod adk; // Agent Development Kit integration
 pub mod archive;
 pub mod artifact;
 pub mod artifacts;
