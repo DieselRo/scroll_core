@@ -62,6 +62,10 @@ jobs:
         run: |
           git config --global core.autocrlf false
           cargo xtask gen-map --check
+      - name: Install cargo-deadlinks
+        run: cargo install cargo-deadlinks --locked
+      - name: Check docs links
+        run: cargo deadlinks --dir docs
       - name: cargo test
         run: cargo test --workspace -- --nocapture
       - name: cargo build release
