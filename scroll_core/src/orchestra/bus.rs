@@ -1,3 +1,6 @@
+//! Lightweight message bus used by constructs to pass AgentMessages.
+//! Channels are registered by name so constructs can discover each other at runtime.
+//! See [Orchestra](../AGENTS.md#invocationmanager) for overall communication flow.
 // src/orchestra/bus.rs
 
 use std::collections::HashMap;

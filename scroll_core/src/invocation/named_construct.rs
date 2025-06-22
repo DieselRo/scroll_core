@@ -1,3 +1,6 @@
+//! Traits that all named constructs implement.
+//! PulseSensitive constructs can activate on timed loops, while NamedConstruct defines the invocation API.
+//! See the directory in [AGENTS](../../AGENTS.md) for implemented constructs.
 // ===============================
 // src/invocation/named_construct.rs
 // ===============================

@@ -15,3 +15,4 @@
 - Renamed `context_frame_engine` module to `context_manager`.
 - Renamed `invocation_core` to `invocation` and `runner_core` to `runner`.
 - Added `ScrollBuilder` and refactored public API.
+- 📝 Documentation: expanded Construct directory; added 25 module doc-comments.

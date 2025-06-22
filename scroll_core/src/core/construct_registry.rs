@@ -1,3 +1,6 @@
+//! Central registry of available constructs and their bus connections.
+//! Used by the InvocationManager to lookup and execute constructs by name.
+//! See [ConstructRegistry](../../AGENTS.md#invocationmanager) for usage.
 //==========================
 //      construct_registry.rs
 //==========================

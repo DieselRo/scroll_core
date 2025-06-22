@@ -1,3 +1,8 @@
+//! Aelren frames an invocation by gathering context and suggesting which construct should answer.
+//! It relies on the ContextFrameEngine and records results to the invocation ledger.
+//! See [AelrenHerald](../../AGENTS.md#aelrenherald) for narrative lore.
+// src/invocation/aelren.rs
+
 use crate::construct_ai::{ConstructContext, ConstructResult};
 use crate::core::context_frame_engine::ContextFrameEngine;
 use crate::core::ConstructRegistry;

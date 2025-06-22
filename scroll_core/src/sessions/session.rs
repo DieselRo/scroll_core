@@ -1,3 +1,6 @@
+//! Defines ScrollSession which stores conversation history and metadata.
+//! Sessions keep a log of events and track the user's active state.
+//! See [Sessions](../../AGENTS.md#contextframeengine) for design rationale.
 // sessions/session.rs
 // ===================================================
 // Defines ScrollSession, a central unit for dialogue

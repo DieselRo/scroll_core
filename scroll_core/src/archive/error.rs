@@ -1,3 +1,7 @@
+//! Error types for archive operations such as loading and embedding.
+//! See [Archive Memory](../../AGENTS.md#scrollwriter) for how these are surfaced.
+// src/archive/error.rs
+
 use thiserror::Error;
 
 #[derive(Debug, Error)]

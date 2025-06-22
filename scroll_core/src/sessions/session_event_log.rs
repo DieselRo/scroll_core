@@ -1,3 +1,6 @@
+//! Logs ScrollEvents to disk for each session.
+//! These logs can be replayed or inspected for debugging dialogue flows.
+//! See [Thiren](../../AGENTS.md#thiren) for planned forensic tooling.
 // src/sessions/session_event_log.rs
 // ===================================================
 // Provides logging of ScrollEvents into session-specific logs.

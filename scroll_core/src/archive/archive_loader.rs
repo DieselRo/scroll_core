@@ -1,3 +1,6 @@
+//! Utility functions for loading scroll files from a directory on startup.
+//! The loader filters for markdown files and returns parsed Scroll structs.
+//! See [ArchiveLoader](../../AGENTS.md#filereader) for related constructs.
 //    archive_loader.rs
 //======================================
 

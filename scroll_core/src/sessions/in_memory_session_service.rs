@@ -1,3 +1,8 @@
+//! Simple in-memory implementation of the SessionService trait.
+//! Useful for tests and ephemeral CLI sessions.
+//! See [Sessions](../../AGENTS.md#contextframeengine) for more context.
+// src/sessions/in_memory_session_service.rs
+
 use crate::events::scroll_event::ScrollEvent;
 use crate::sessions::session::ScrollSession;
 use crate::sessions::session_service::{

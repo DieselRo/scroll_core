@@ -1,3 +1,6 @@
+//! Trait and in-memory implementation for storing scrolls during runtime.
+//! This component provides basic indexing and heat tracking for loaded scrolls.
+//! See [Archive Memory](../../AGENTS.md#scrollwriter) for overview.
 // archive_memory.rs – Archive Memory Trait and Initial Implementation
 //=======================================================================
 

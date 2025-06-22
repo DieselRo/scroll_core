@@ -1,3 +1,8 @@
+//! Mockscribe is a lightweight construct used in tests and examples.
+//! It simply echoes input and helps validate the invocation pipeline.
+//! See [Mockscribe](../../../AGENTS.md#mockscribe) for context.
+// src/invocation/constructs/mockscribe.rs
+
 use crate::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
 
 pub struct Mockscribe;

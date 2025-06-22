@@ -1,3 +1,6 @@
+//! Maintains a log of scroll access times and counts.
+//! Used by the CacheManager and MythicHeat calculators to gauge relevance.
+//! See [Archive Memory](../../AGENTS.md#scrollwriter) for integration points.
 // scroll_access_log.rs – Tracker of Memory Breath
 //==================================================
 

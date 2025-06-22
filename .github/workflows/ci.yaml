@@ -65,7 +65,7 @@ jobs:
       - name: Install cargo-deadlinks
         run: cargo install cargo-deadlinks --locked
       - name: Check docs links
-        run: cargo deadlinks --dir docs
+        run: cargo deadlinks --dir docs --dir scroll_core/src
       - name: cargo test
         run: cargo test --workspace -- --nocapture
       - name: cargo build release

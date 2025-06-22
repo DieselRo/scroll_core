@@ -1,3 +1,7 @@
+//! Mythscribe is the Archive's primary language model construct.
+//! It interprets invocations and produces poetic responses using the OpenAI client.
+//! Mythscribe is typically routed by the InvocationManager after Aelren frames the context.
+//! See [Mythscribe](../../../AGENTS.md#mythscribe) for a high level overview.
 // src/invocation/constructs/mythscribe.rs
 use crate::construct_ai::{ConstructAI, ConstructContext, ConstructResult};
 use crate::invocation::constructs::openai_construct::Mythscribe;

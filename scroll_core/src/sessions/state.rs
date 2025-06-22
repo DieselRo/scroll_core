@@ -1,3 +1,6 @@
+//! Data structures representing session state and pending changes.
+//! State tracks both committed values and temporary deltas between invocations.
+//! See [Sessions](../../AGENTS.md#contextframeengine) for how this interacts with constructs.
 // src/sessions/state.rs
 // ===================================================
 // Defines the session State system, supporting both

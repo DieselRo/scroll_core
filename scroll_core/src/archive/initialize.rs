@@ -1,3 +1,8 @@
+//! Functions to prepare the archive directory and load scrolls on startup.
+//! Initialization computes cost profiles and populates the cache manager.
+//! See [ScrollWriter](../../AGENTS.md#scrollwriter) for write operations.
+// src/archive/initialize.rs
+
 use std::fs;
 use std::path::Path;
 

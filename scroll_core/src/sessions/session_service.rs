@@ -1,3 +1,6 @@
+//! Trait and utilities for persisting ScrollSessions.
+//! Implementations exist for both in-memory and database-backed storage.
+//! See [Sessions](../../AGENTS.md#contextframeengine) for usage.
 // sessions/session_service.rs
 // =======================================================
 // Defines the SessionService trait and core session ops.
