@@ -1,3 +1,7 @@
+//! The Validator construct checks scroll metadata and ensures each entry conforms to schema expectations.
+//! It is typically invoked before other constructs to reject malformed inputs early.
+//! Results are communicated over the orchestrator bus for downstream processing.
+//! See [Validator](../../../AGENTS.md#validator) for more.
 // ===============================
 // src/constructs/validator_construct.rs
 // ===============================

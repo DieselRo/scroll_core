@@ -1,3 +1,6 @@
+//! SeaORM-backed implementation of SessionService for persistent sessions.
+//! Stores conversations in SQLite and mirrors the ADK service interface.
+//! See [Sessions](../../AGENTS.md#contextframeengine) for usage.
 // scroll_core/src/sessions/database_session_service.rs
 // ======================================================
 // SeaORM-backed implementation of SessionService trait

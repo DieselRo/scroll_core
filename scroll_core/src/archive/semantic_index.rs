@@ -1,3 +1,8 @@
+//! Manages embeddings and similarity search for scrolls.
+//! The index allows constructs to retrieve related content based on semantic similarity.
+//! See [Loreweaver](../../AGENTS.md#loreweaver) for narrative use cases.
+// src/archive/semantic_index.rs
+
 use log::info;
 use std::collections::HashSet;
 use uuid::Uuid;

@@ -1,3 +1,6 @@
+//! Entry point for the invocation subsystem.
+//! It exposes all constructs and routing utilities used during a session.
+//! Refer to [InvocationManager](../AGENTS.md#invocationmanager) for the main orchestrator.
 // ===============================
 // src/invocation/mod.rs
 // ===============================

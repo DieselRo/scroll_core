@@ -1,3 +1,6 @@
+//! Runs the interactive CLI and dispatches commands to constructs.
+//! Relies on InvocationManager and AelrenHerald to process user input.
+//! See [TriggerLoom](../AGENTS.md#triggerloom) for scheduled command execution.
 // ===============================
 // src/system/cli_orchestrator.rs
 // ===============================

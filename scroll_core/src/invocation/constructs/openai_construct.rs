@@ -1,3 +1,7 @@
+//! Provides access to OpenAI models for higher level constructs.
+//! This module exposes configuration and a simple blocking client wrapper.
+//! Other constructs, like Mythscribe, depend on it for language generation.
+//! See [OpenAI Client](../../../AGENTS.md#openai-client) for details.
 //===================================
 // src/invocation/constructs/openai_construct.rs
 //====================================

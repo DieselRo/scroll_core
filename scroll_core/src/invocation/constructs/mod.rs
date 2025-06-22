@@ -1,5 +1,11 @@
+pub mod elurien;
 pub mod file_reader_construct;
+pub mod loreweaver;
 pub mod mockscribe;
 pub mod mythscribe;
+pub mod naeros;
 pub mod openai_construct;
+pub mod sirion;
+pub mod thiren;
 pub mod validator_construct;
+pub mod virelya;

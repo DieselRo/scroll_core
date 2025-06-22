@@ -1,3 +1,6 @@
+//! Central dispatcher responsible for routing invocations to constructs.
+//! It consults the AelrenHerald for framing and tracks costs via the CostManager.
+//! See [InvocationManager](../../AGENTS.md#invocationmanager) for the council role.
 //==========================================
 //     src/invocation/invocation_manager.rs
 //==========================================

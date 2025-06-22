@@ -1,3 +1,6 @@
+//! Handles state transitions for Scroll objects and logs each change.
+//! This module ensures timestamps are updated and events are traceable.
+//! See [ScrollWriter](../AGENTS.md#scrollwriter) for persistence.
 // ===============================
 // src/state_manager.rs
 // ===============================

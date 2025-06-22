@@ -1,3 +1,6 @@
+//! Provides a metric for how recently and frequently a scroll has been accessed.
+//! Mythic heat influences cache eviction and overall system awareness.
+//! See [Naeros](../../AGENTS.md#naeros) for planned monitoring constructs.
 // mythic_heat.rs – Evaluator of Scroll Significance
 //========================================================
 

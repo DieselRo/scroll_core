@@ -13,12 +13,12 @@ use crate::orchestra::AgentMessage;
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 use crate::trigger_loom::emotional_state::EmotionalState;
+use atty::Stream;
 use chrono::Utc;
 use clap::{arg, Command};
 use log::info;
 use std::io::{BufRead, Write};
 use std::process::{Command as ProcessCommand, Stdio};
-use atty::Stream;
 use uuid::Uuid;
 
 pub struct ChatDispatcher;
@@ -46,9 +46,7 @@ impl ChatDispatcher {
                     "less".into()
                 }
             });
-            let mut child = ProcessCommand::new(pager)
-                .stdin(Stdio::piped())
-                .spawn()?;
+            let mut child = ProcessCommand::new(pager).stdin(Stdio::piped()).spawn()?;
             if let Some(stdin) = &mut child.stdin {
                 stdin.write_all(text.as_bytes())?;
             }
@@ -61,9 +59,7 @@ impl ChatDispatcher {
     }
 
     fn handle_command(cmdline: &str, memory: &[Scroll]) -> ChatMessage {
-        let tokens: Vec<&str> = cmdline.trim_start_matches('/')
-            .split_whitespace()
-            .collect();
+        let tokens: Vec<&str> = cmdline.trim_start_matches('/').split_whitespace().collect();
         let mut args = vec!["slash"];
         args.extend(tokens.iter());
 
@@ -73,45 +69,45 @@ impl ChatDispatcher {
             .subcommand(
                 Command::new("scroll")
                     .subcommand(Command::new("list"))
-                    .subcommand(Command::new("open").arg(arg!(<idx>)))
+                    .subcommand(Command::new("open").arg(arg!(<idx>))),
             );
 
         match app.clone().try_get_matches_from(args) {
-            Ok(m) => {
-                match m.subcommand() {
-                    Some(("help", _)) | None => {
-                        let txt = "Available commands:\n  /help\n  /scroll list\n  /scroll open <idx>\n".to_string();
-                        Self::system_msg(txt)
-                    }
-                    Some(("scroll", sub)) => match sub.subcommand() {
-                        Some(("list", _)) => {
-                            let mut out = String::new();
-                            for (i, s) in memory.iter().enumerate() {
-                                let lines = s.markdown_body.lines().count();
-                                out.push_str(&format!(
-                                    "[{}] {} ({}, lines: {})\n",
-                                    i, s.title, s.scroll_type, lines
-                                ));
-                            }
-                            Self::system_msg(out)
-                        }
-                        Some(("open", subm)) => {
-                            let idx = subm.get_one::<String>("idx").unwrap();
-                            match idx.parse::<usize>() {
-                                Ok(i) if i < memory.len() => {
-                                    if let Err(e) = Self::pager_display(&memory[i].markdown_body) {
-                                        return Self::system_msg(format!("{}", e));
-                                    }
-                                    Self::system_msg(String::new())
-                                }
-                                _ => Self::system_msg("Invalid index".into()),
-                            }
-                        }
-                        _ => Self::system_msg("Unknown scroll command".into()),
-                    },
-                    Some((_, _)) => Self::system_msg("Unknown command".into()),
+            Ok(m) => match m.subcommand() {
+                Some(("help", _)) | None => {
+                    let txt =
+                        "Available commands:\n  /help\n  /scroll list\n  /scroll open <idx>\n"
+                            .to_string();
+                    Self::system_msg(txt)
                 }
-            }
+                Some(("scroll", sub)) => match sub.subcommand() {
+                    Some(("list", _)) => {
+                        let mut out = String::new();
+                        for (i, s) in memory.iter().enumerate() {
+                            let lines = s.markdown_body.lines().count();
+                            out.push_str(&format!(
+                                "[{}] {} ({}, lines: {})\n",
+                                i, s.title, s.scroll_type, lines
+                            ));
+                        }
+                        Self::system_msg(out)
+                    }
+                    Some(("open", subm)) => {
+                        let idx = subm.get_one::<String>("idx").unwrap();
+                        match idx.parse::<usize>() {
+                            Ok(i) if i < memory.len() => {
+                                if let Err(e) = Self::pager_display(&memory[i].markdown_body) {
+                                    return Self::system_msg(format!("{}", e));
+                                }
+                                Self::system_msg(String::new())
+                            }
+                            _ => Self::system_msg("Invalid index".into()),
+                        }
+                    }
+                    _ => Self::system_msg("Unknown scroll command".into()),
+                },
+                Some((_, _)) => Self::system_msg("Unknown command".into()),
+            },
             Err(e) => Self::system_msg(e.to_string()),
         }
     }

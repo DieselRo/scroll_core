@@ -1,3 +1,8 @@
+//! The FileReader construct loads scroll files from disk for other constructs to operate on.
+//! It streams the file contents over the orchestrator bus to avoid blocking invocation flows.
+//! See [FileReader](../../../AGENTS.md#filereader) for the high level design.
+// src/invocation/constructs/file_reader_construct.rs
+
 use crate::invocation::named_construct::NamedConstruct;
 use crate::invocation::types::{Invocation, InvocationResult};
 use crate::orchestra::{AgentMessage, Bus, OrchestratedConstruct};

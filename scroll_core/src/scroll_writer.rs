@@ -1,3 +1,6 @@
+//! ScrollWriter persists scrolls and updates existing ones in the archive.
+//! It validates input and applies patches while emitting timestamps.
+//! See [ScrollWriter](../AGENTS.md#scrollwriter) for its role.
 // scroll_writer.rs – Hand of the Archive
 //===========================================
 

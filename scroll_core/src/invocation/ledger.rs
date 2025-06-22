@@ -1,3 +1,6 @@
+//! Records invocation activity to a plain text log for later review.
+//! This module is used by the AelrenHerald and InvocationManager to track history.
+//! See [Thiren](../AGENTS.md#thiren) for future audit enhancements.
 // ===============================
 // src/ledger.rs
 // ===============================

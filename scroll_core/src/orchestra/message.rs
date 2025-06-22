@@ -1,3 +1,6 @@
+//! Defines the AgentMessage type used for communication on the bus.
+//! Messages carry payloads and track their lineage for debugging.
+//! See [Orchestra](../AGENTS.md#invocationmanager) for how messages flow.
 // src/orchestra/message.rs
 
 use serde_json::Value;

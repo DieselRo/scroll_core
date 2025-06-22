@@ -1,3 +1,6 @@
+//! Helpers for reading and writing session data to JSON files.
+//! Used by both database migrations and in-memory services for export.
+//! See [Sessions](../../AGENTS.md#contextframeengine) for architecture.
 // sessions/session_file.rs
 // ===================================================
 // File-based utilities to persist sessions and scroll events.

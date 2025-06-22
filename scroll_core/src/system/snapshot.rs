@@ -1,3 +1,6 @@
+//! Utilities for capturing code snapshots during development.
+//! This module is primarily used by maintainers to archive module states.
+//! See [Loreweaver](../AGENTS.md#loreweaver) for potential narrative snapshots.
 // src/system/snapshot.rs
 // ==============================
 
