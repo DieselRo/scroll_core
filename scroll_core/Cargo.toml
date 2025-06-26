@@ -18,7 +18,7 @@ reqwest = { version = "0.12", features = ["blocking", "json", "rustls-tls"], def
 tracing = "0.1"
 tracing-subscriber = { workspace = true }
 ansi_term = "0.12"
-rustyline = "13"
+rustyline = "16"
 home = "0.5"
 atty = "0.2"
 
