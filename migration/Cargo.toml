@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 tokio = { version = "1.38", features = ["full"] }
-sea-orm-migration = { version = "1.1.12", features = ["cli"] }
+sea-orm-migration = { version = "1.1.13", features = ["cli"] }
 async-std = "1.12"
 dotenvy = "0.15"
 serde_json = "1.0"
