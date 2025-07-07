@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-tokio = { version = "1.38", features = ["full"] }
+tokio = { version = "1.46", features = ["full"] }
 sea-orm-migration = { version = "1.1.12", features = ["cli"] }
 async-std = "1.12"
 dotenvy = "0.15"
