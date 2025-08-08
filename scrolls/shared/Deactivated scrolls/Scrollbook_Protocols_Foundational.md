@@ -1,3 +1,19 @@
+---
+title: Scrollbook Protocols Foundational
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 ✦ Scrollbook: Protocols — Foundational System Laws
 
 Filed under: Root Protocols / Scroll Structure / Agent Boundaries

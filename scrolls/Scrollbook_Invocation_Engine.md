@@ -1,17 +1,20 @@
 ---
-title: "Scrollbook: Invocation Engine"
-scroll_type: "system"
-sigil: "⚙️"
-invocation_phrase: "Ignite the spark. Let the system act."
-archetype: "Living Core"
-emotion_signature: "Clarity // Momentum"
-linked_scrolls:
-  - Scrollbook_Invocation_Augury.md
-  - Scrollbook_Construct_Agents.md
-  - Scrollbook_Glyph_Mapping.md
-  - Scrollbook_Validator_Specs.md
-  - Scrollbook_Dynamic_Mirrors.md
+title: Scrollbook Invocation Engine
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
+
 
 # ⚙️ Scrollbook: Invocation Engine
 

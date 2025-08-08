@@ -1,3 +1,19 @@
+---
+title: Reference Automated Scroll Test
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # ✦ Reference Scroll: Automated Scroll Test
 *Filed under: Reference Scrolls / System Integration Test*
 *Inscribed: 2025-03-29 00:49:15 UTC*

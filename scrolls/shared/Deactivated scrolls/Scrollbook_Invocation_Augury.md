@@ -1,17 +1,20 @@
 ---
-title: "Scrollbook: Invocation Augury"
-scroll_type: "protocol"
-sigil: "🜄"
-invocation_phrase: "Speak the name, bind the echo."
-archetype: "Sacred Logic"
-emotion_signature: "Resonance // Power"
-linked_scrolls:
-  - Scrollbook_Characters_Named.md
-  - Scrollbook_Construct_Agents.md
-  - Scrollbook_Glyph_Mapping.md
-  - Scrollbook_Voices_and_Bindings.md
-  - Scrollbook_Dynamic_Mirrors.md
+title: Scrollbook Invocation Augury
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
+
 
 # 🜄 Scrollbook: Invocation Augury
 *Filed under: Protocols of Power | Invocation System Layer*

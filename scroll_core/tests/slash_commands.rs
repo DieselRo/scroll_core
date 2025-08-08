@@ -8,6 +8,7 @@ fn slash_help_lists_commands() {
     let mut cmd = Command::cargo_bin("scroll_core").unwrap();
     cmd.env("SCROLL_CORE_USE_MOCK", "1")
         .env("SCROLL_CI", "1")
+        .env("DATABASE_URL", "sqlite::memory:")
         .env("PAGER", "cat")
         .env("SCROLL_CORE_ARCHIVE_DIR", archive)
         .args(["chat", "mythscribe", "--no-banner"])

@@ -1,3 +1,19 @@
+---
+title: Protocol EchoThreader Resonant Charter
+scroll_type: Protocol
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # ✦ Protocol Scroll: Echo-Threader Resonant Charter
 *Filed under: Protocol Scrolls / Role Extensions*
 *Inscribed: 2025-03-28 UTC*

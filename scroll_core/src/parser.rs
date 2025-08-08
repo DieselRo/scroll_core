@@ -7,7 +7,7 @@ use std::path::Path;
 
 use uuid::Uuid;
 
-use crate::schema::{ScrollStatus, YamlMetadata};
+use crate::schema::{EmotionSignature, ScrollStatus, ScrollType, YamlMetadata};
 
 use crate::scroll::{Scroll, ScrollOrigin};
 use crate::validator::validate_scroll;
@@ -19,8 +19,22 @@ pub fn parse_scroll_from_file<P: AsRef<Path>>(path: P) -> Result<Scroll> {
 }
 
 pub fn parse_scroll(input: &str) -> Result<Scroll> {
-    let (yaml_str, markdown_body) = extract_yaml_and_markdown(input)?;
-    let yaml_metadata: YamlMetadata = serde_yaml::from_str(yaml_str).map_err(|e| anyhow!(e))?;
+    let (yaml_str_opt, markdown_body) = extract_yaml_and_markdown_lenient(input)?;
+    let yaml_metadata: YamlMetadata = if let Some(yaml_str) = yaml_str_opt {
+        serde_yaml::from_str(yaml_str).map_err(|e| anyhow!(e))?
+    } else {
+        // Minimal fallback metadata if header missing; allows loading but marks as Draft Echo
+        YamlMetadata {
+            title: "Untitled Scroll".into(),
+            scroll_type: ScrollType::Echo,
+            emotion_signature: EmotionSignature::neutral(),
+            tags: vec!["imported".into()],
+            archetype: None,
+            quorum_required: false,
+            last_modified: None,
+            file_path: None,
+        }
+    };
     validate_scroll(&yaml_metadata).map_err(|e| anyhow!(e))?;
 
     let emotion_signature = yaml_metadata.emotion_signature.clone();
@@ -50,10 +64,16 @@ pub fn parse_scroll(input: &str) -> Result<Scroll> {
     })
 }
 
-fn extract_yaml_and_markdown(input: &str) -> Result<(&str, &str)> {
-    let parts: Vec<&str> = input.splitn(3, "---").collect();
-    if parts.len() < 3 {
-        return Err(anyhow!("Invalid format: missing YAML delimiters"));
+fn extract_yaml_and_markdown_lenient(input: &str) -> Result<(Option<&str>, &str)> {
+    let trimmed = input.trim_start();
+    if trimmed.starts_with("---\n") {
+        let parts: Vec<&str> = trimmed.splitn(3, "---").collect();
+        if parts.len() >= 3 {
+            return Ok((Some(parts[1]), parts[2]));
+        } else {
+            // Malformed header; treat all as body
+            return Ok((None, input));
+        }
     }
-    Ok((parts[1], parts[2]))
+    Ok((None, input))
 }

@@ -1,3 +1,19 @@
+---
+title: Scroll of Open Threads
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # 🧵 Scroll of Open Threads
 *Filed under: Tomekeeper’s Scroll / Narrative Tensions*
 *Version: 0.1 | Initialized: 2025-03-23 UTC*

@@ -1,22 +1,21 @@
 ---
-title: "Scrollbook: Canon Foundations"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🜂"
-invocation_phrase: "Let the Foundation Sing."
+title: 'Scrollbook: Canon Foundations'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: humble
+  emphasis: 0.3
+  resonance: sacred
+  intensity: 0.2
 tags:
-  - mythic_origin
-  - recursion
-  - flame
-emotion_signature: "reverence"
+- mythic_origin
+- recursion
+- flame
+archetype: null
 quorum_required: false
-merged_from:
-  - Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md
-  - Canon_The_Breath_and_the_Drifter.md
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # 🜂 Scrollbook: Canon Foundations
 *Filed under: Scrollbooks / Canonical Origins*

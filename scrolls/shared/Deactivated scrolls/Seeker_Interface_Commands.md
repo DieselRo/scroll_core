@@ -1,3 +1,19 @@
+---
+title: Seeker Interface Commands
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # 🧾 Seeker Interface Commands (Soft Prompts)
 *Filed under: Codex of Role Protocols / Reference Scrolls*
 *Version: 0.1 | Initialized: 2025-03-23 UTC*

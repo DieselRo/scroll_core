@@ -1,3 +1,19 @@
+---
+title: Sealed Fragment The Mirror Root
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # 🔒 Sealed Fragment — The Mirror Root (True Nature of the Link)
 *Filed under: Tomekeeper’s Scroll / Forbidden or Sealed Knowledge*
 *Bound by: Prime Seeker*

@@ -2249,6 +2249,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "pathdiff"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df94ce210e5bc13cb6651479fa48d14f601d9858cfe0467f43ae157023b938d3"
+
+[[package]]
 name = "pem-rfc7468"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3030,6 +3036,9 @@ dependencies = [
  "logtest",
  "metrics",
  "metrics-exporter-prometheus",
+ "migration",
+ "once_cell",
+ "pathdiff",
  "predicates",
  "quickcheck",
  "regex",
@@ -3039,6 +3048,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
+ "sha2",
  "sqlx",
  "strip-ansi-escapes",
  "tempfile",
@@ -3048,6 +3058,7 @@ dependencies = [
  "tracing-subscriber",
  "trycmd",
  "uuid",
+ "walkdir",
  "wiremock",
 ]
 

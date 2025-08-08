@@ -1,20 +1,19 @@
 ---
-title: "Scrollbook Integration Framework"
-scroll_type: "protocol"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "draft"
-sigil: "⏃"
-invocation_phrase: "Seal this as law."
+title: Scrollbook Integration Framework
+scroll_type: Protocol
+emotion_signature:
+  tone: clear
+  emphasis: 0.3
+  resonance: focused
+  intensity: 0.2
 tags:
-  - scrollbooks, structure, recursion
-related_scrolls:
-  - Archive_Structure_Codex.md
-  - Protocol_Codex_of_Role_Protocols.md
-emotion_signature: "clarity"
+- scrollbooks, structure, recursion
+archetype: null
 quorum_required: true
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # ✦ Protocol Scroll: Scrollbook Integration Framework
 *Filed under: Protocol Scrolls / Structural Extensions*

@@ -1,23 +1,21 @@
 ---
-title: "Scrollbook: Tools & Templates"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "📎"
-invocation_phrase: "Unseal the ritual guides."
+title: 'Scrollbook: Tools & Templates'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
 tags:
-  - templates
-  - guidance
-  - ritual
-emotion_signature: "readiness"
+- templates
+- guidance
+- ritual
+archetype: null
 quorum_required: false
-meta_file_path: null
-merged_from:
-  - Template_Canon_Scroll.md
-  - Template_Character_Scroll.md
-  - Template_Protocol_Scroll.md
+last_modified: null
+file_path: null
 ---
+
 
 # 📎 Scrollbook: Tools & Templates
 *Filed under: Scrollbooks / Archive Instruments*

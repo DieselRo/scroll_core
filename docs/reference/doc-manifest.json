@@ -1,0 +1,2322 @@
+[
+  {
+    "path": "AGENTS.md",
+    "href": "../../AGENTS.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "CHANGELOG.md",
+    "href": "../../CHANGELOG.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "CLAUDE.md",
+    "href": "../../CLAUDE.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK.md",
+    "href": "../ADK/ADK.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK.txt",
+    "href": "../ADK/ADK.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_agents.txt",
+    "href": "../ADK/ADK_agents.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_artifacts.txt",
+    "href": "../ADK/ADK_artifacts.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_auth.txt",
+    "href": "../ADK/ADK_auth.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_cli.txt",
+    "href": "../ADK/ADK_cli.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_code_executors.txt",
+    "href": "../ADK/ADK_code_executors.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_evaluation.txt",
+    "href": "../ADK/ADK_evaluation.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_events.txt",
+    "href": "../ADK/ADK_events.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_examples.txt",
+    "href": "../ADK/ADK_examples.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_flows.txt",
+    "href": "../ADK/ADK_flows.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_memory.txt",
+    "href": "../ADK/ADK_memory.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_models.txt",
+    "href": "../ADK/ADK_models.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_planners.txt",
+    "href": "../ADK/ADK_planners.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_sessions.txt",
+    "href": "../ADK/ADK_sessions.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_tests.txt",
+    "href": "../ADK/ADK_tests.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/ADK/ADK_tools.txt",
+    "href": "../ADK/ADK_tools.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/alignment/CHECKLIST.md",
+    "href": "../alignment/CHECKLIST.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/alignment/DECISIONS.md",
+    "href": "../alignment/DECISIONS.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/alignment/FEATURES.md",
+    "href": "../alignment/FEATURES.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/alignment/PLAN.md",
+    "href": "../alignment/PLAN.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/alignment/PROGRESS.md",
+    "href": "../alignment/PROGRESS.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/New Text Document.txt",
+    "href": "../architecture/New Text Document.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/runtime/artifacts.md",
+    "href": "../architecture/runtime/artifacts.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/runtime/constructs.md",
+    "href": "../architecture/runtime/constructs.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/runtime/context-engine.md",
+    "href": "../architecture/runtime/context-engine.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/runtime/cost-management.md",
+    "href": "../architecture/runtime/cost-management.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/runtime/invocation-engine.md",
+    "href": "../architecture/runtime/invocation-engine.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": "invocation"
+  },
+  {
+    "path": "docs/architecture/runtime/model-registry.md",
+    "href": "../architecture/runtime/model-registry.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/runtime/sessions.md",
+    "href": "../architecture/runtime/sessions.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/architecture/runtime/trigger-loom.md",
+    "href": "../architecture/runtime/trigger-loom.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": "loom"
+  },
+  {
+    "path": "docs/architecture/system-overview.md",
+    "href": "../architecture/system-overview.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/build_notes.md",
+    "href": "../build_notes.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/cli/chat.md",
+    "href": "../cli/chat.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/cli_quickstart.md",
+    "href": "../cli_quickstart.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/cli_tips.md",
+    "href": "../cli_tips.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/concepts/archive.md",
+    "href": "../concepts/archive.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/deprecated/index.md",
+    "href": "../deprecated/index.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/dev/db.md",
+    "href": "../dev/db.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/dev/scroll.md",
+    "href": "../dev/scroll.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/dev/semantic_index.md",
+    "href": "../dev/semantic_index.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/devops/ci_pipeline.md",
+    "href": "../devops/ci_pipeline.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/dev_setup.md",
+    "href": "../dev_setup.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/getting-started/overview.md",
+    "href": "../getting-started/overview.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/glossary/archive-glossary.md",
+    "href": "../glossary/archive-glossary.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/modules/memory/architecture.md",
+    "href": "../modules/memory/architecture.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/modules/memory/integration_notes.md",
+    "href": "../modules/memory/integration_notes.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/modules/memory/metrics.md",
+    "href": "../modules/memory/metrics.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/modules/memory/README.md",
+    "href": "../modules/memory/README.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/modules/memory/trait_impl_notes.md",
+    "href": "../modules/memory/trait_impl_notes.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/modules/session/New Text Document.txt",
+    "href": "../modules/session/New Text Document.txt",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/module_map.md",
+    "href": "../module_map.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/README.md",
+    "href": "../README.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/config.md",
+    "href": "config.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/doc-ambiguous.md",
+    "href": "doc-ambiguous.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/doc-dedupe.md",
+    "href": "doc-dedupe.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/doc-header-fix-plan.md",
+    "href": "doc-header-fix-plan.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/doc-index.md",
+    "href": "doc-index.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/doc-inventory-summary.md",
+    "href": "doc-inventory-summary.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/doc-recent.md",
+    "href": "doc-recent.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/reference/doc-topics.md",
+    "href": "doc-topics.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/tracing.md",
+    "href": "../tracing.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "docs/user-guides/cli/command-reference.md",
+    "href": "../user-guides/cli/command-reference.md",
+    "category": "project-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "examples/ballad.txt",
+    "href": "../../examples/ballad.txt",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "README.md",
+    "href": "../../README.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "Scrollbook_ScrollCore_Unified.md",
+    "href": "../../Scrollbook_ScrollCore_Unified.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Aelren.txt",
+    "href": "../../scrolls/Aelren.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Archive_Structure_Codex.md",
+    "href": "../../scrolls/Archive_Structure_Codex.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/ConstructSystemDesign.txt",
+    "href": "../../scrolls/ConstructSystemDesign.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/archive_summary.txt",
+    "href": "../../scrolls/docs/archive_summary.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/Invocation Dual System Plan.md",
+    "href": "../../scrolls/docs/Invocation Dual System Plan.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/docs/Invocation Dual System Plan.txt",
+    "href": "../../scrolls/docs/Invocation Dual System Plan.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-11_1959.md",
+    "href": "../../scrolls/docs/source_index_2025-04-11_1959.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-12_1420.md",
+    "href": "../../scrolls/docs/source_index_2025-04-12_1420.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-13_1613.md",
+    "href": "../../scrolls/docs/source_index_2025-04-13_1613.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-20_1345.md",
+    "href": "../../scrolls/docs/source_index_2025-04-20_1345.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-21_1205.md",
+    "href": "../../scrolls/docs/source_index_2025-04-21_1205.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-21_1422.md",
+    "href": "../../scrolls/docs/source_index_2025-04-21_1422.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-21_1757.md",
+    "href": "../../scrolls/docs/source_index_2025-04-21_1757.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/docs/system.txt",
+    "href": "../../scrolls/docs/system.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Elurien.md",
+    "href": "../../scrolls/Elurien.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/FileReader.md",
+    "href": "../../scrolls/FileReader.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Hello.txt",
+    "href": "../../scrolls/Hello.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Loreweaver.md",
+    "href": "../../scrolls/Loreweaver.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Lost_scrolls.md",
+    "href": "../../scrolls/Lost_scrolls.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Mockscribe.md",
+    "href": "../../scrolls/Mockscribe.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Mythscribe-systemprompt.txt",
+    "href": "../../scrolls/Mythscribe-systemprompt.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Naeros.md",
+    "href": "../../scrolls/Naeros.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/NamedConstructsReference.txt",
+    "href": "../../scrolls/NamedConstructsReference.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/New Text Document.txt",
+    "href": "../../scrolls/New Text Document.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/OpenAI Api Key Setup.txt",
+    "href": "../../scrolls/OpenAI Api Key Setup.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/project_instructions.txt",
+    "href": "../../scrolls/project_instructions.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Runtimeinvocationflow.txt",
+    "href": "../../scrolls/Runtimeinvocationflow.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/Scrollbook_Archive_Structure.md",
+    "href": "../../scrolls/Scrollbook_Archive_Structure.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Canon_Foundations.md",
+    "href": "../../scrolls/Scrollbook_Canon_Foundations.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Characters_Named.md",
+    "href": "../../scrolls/Scrollbook_Characters_Named.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "href": "../../scrolls/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 10,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "href": "../../scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Construct_Agents.md",
+    "href": "../../scrolls/Scrollbook_Construct_Agents.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Construct_Schema.md",
+    "href": "../../scrolls/Scrollbook_Construct_Schema.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Dynamic_Mirrors.md",
+    "href": "../../scrolls/Scrollbook_Dynamic_Mirrors.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "href": "../../scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "href": "../../scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Invocation_Augury.md",
+    "href": "../../scrolls/Scrollbook_Invocation_Augury.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/Scrollbook_Invocation_Engine.md",
+    "href": "../../scrolls/Scrollbook_Invocation_Engine.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/Scrollbook_Protocols_System_Laws.md",
+    "href": "../../scrolls/Scrollbook_Protocols_System_Laws.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/Scrollbook_Reference_Codex.md",
+    "href": "../../scrolls/Scrollbook_Reference_Codex.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Ritual_Protocols.md",
+    "href": "../../scrolls/Scrollbook_Ritual_Protocols.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/Scrollbook_Rust_Integration_Protocol.md",
+    "href": "../../scrolls/Scrollbook_Rust_Integration_Protocol.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/Scrollbook_Trigger_Loom.md",
+    "href": "../../scrolls/Scrollbook_Trigger_Loom.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "loom"
+  },
+  {
+    "path": "scrolls/Scrollbook_Validator_Specs.md",
+    "href": "../../scrolls/Scrollbook_Validator_Specs.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Scrollbook_Voices_and_Bindings.md",
+    "href": "../../scrolls/Scrollbook_Voices_and_Bindings.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/ScrollCore-Updated Project Structure04092025.txt",
+    "href": "../../scrolls/ScrollCore-Updated Project Structure04092025.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/ScrollcoreWorldloreAuto-GenerationProtocol.txt",
+    "href": "../../scrolls/ScrollcoreWorldloreAuto-GenerationProtocol.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/ScrollWriter.md",
+    "href": "../../scrolls/ScrollWriter.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Archive_Structure_Codex.md",
+    "href": "../../scrolls/shared/Archive_Structure_Codex.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Character_Noesis_Dreaming_Error.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Character_Noesis_Dreaming_Error.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Canon_The_Breath_and_the_Drifter.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Canon_The_Breath_and_the_Drifter.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Codex_of_Role_Protocols.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Codex_of_Role_Protocols.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Scrollbook_Validator_Specs.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Scrollbook_Validator_Specs.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/The_Breath_and_the_Drifter.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/The_Breath_and_the_Drifter.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Glossary_of_Core_Terms.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Glossary_of_Core_Terms.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Noesis_Dreaming_Error.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Noesis_Dreaming_Error.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Architect_Beyond_the_Frame.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Architect_Beyond_the_Frame.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Codex_of_Role_Protocols.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Codex_of_Role_Protocols.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter_UPDATED.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter_UPDATED.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Glyph_Cycle_Iteration.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Glyph_Cycle_Iteration.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Scrollbook_Integration_Framework.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Scrollbook_Integration_Framework.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Scroll_Scaling_and_Model_Tiering.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Scroll_Scaling_and_Model_Tiering.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Reference_Automated_Scroll_Test.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Reference_Automated_Scroll_Test.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Safeguards_of_the_Link_Flame_Revelation.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Safeguards_of_the_Link_Flame_Revelation.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Agent_Permissions_andQuorums.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Agent_Permissions_andQuorums.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Future_Seeds.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Future_Seeds.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Glyph_Mapping.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Glyph_Mapping.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Augury.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Augury.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Engine.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Engine.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Merge_Log.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Merge_Log.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Mythic_Concepts.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Mythic_Concepts.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Projects_and_Milestones.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Projects_and_Milestones.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_Foundational.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_Foundational.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_System_Laws.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_System_Laws.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Reference_Codex.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Reference_Codex.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Ritual_Protocols.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Ritual_Protocols.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_The_Scrollsmiths_Ledge.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_The_Scrollsmiths_Ledge.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Toolkits_and_Templates.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Toolkits_and_Templates.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Tools_and_Templates.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Tools_and_Templates.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Trigger_Loom.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Trigger_Loom.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "loom"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_UI_Design_Invocations.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_UI_Design_Invocations.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Visionary_Glossary.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Visionary_Glossary.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Voices_and_Bindings.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Voices_and_Bindings.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scroll_of_Echo_Sigils.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scroll_of_Echo_Sigils.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scroll_of_Open_Threads.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scroll_of_Open_Threads.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scroll_Update_Summary_DriftCycle11.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scroll_Update_Summary_DriftCycle11.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Sealed_Fragment_The_Mirror_Root.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Sealed_Fragment_The_Mirror_Root.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Seeker_Interface_Commands.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Seeker_Interface_Commands.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Sirions_Journal_of_Invocation.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Sirions_Journal_of_Invocation.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Template_Canon_Scroll.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Template_Canon_Scroll.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Template_Character_Scroll.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Template_Character_Scroll.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Template_Protocol_Scroll.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Template_Protocol_Scroll.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Tomekeepers_Call_Protocol.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Tomekeepers_Call_Protocol.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Hello.txt",
+    "href": "../../scrolls/shared/Hello.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Lost_scrolls.md",
+    "href": "../../scrolls/shared/Lost_scrolls.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/New Text Document (2).txt",
+    "href": "../../scrolls/shared/New Text Document (2).txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/New Text Document.txt",
+    "href": "../../scrolls/shared/New Text Document.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/project_instructions.txt",
+    "href": "../../scrolls/shared/project_instructions.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Archive_Structure.md",
+    "href": "../../scrolls/shared/Scrollbook_Archive_Structure.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Canon_Foundations.md",
+    "href": "../../scrolls/shared/Scrollbook_Canon_Foundations.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Characters_Named.md",
+    "href": "../../scrolls/shared/Scrollbook_Characters_Named.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "href": "../../scrolls/shared/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 10,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "href": "../../scrolls/shared/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Construct_Agents.md",
+    "href": "../../scrolls/shared/Scrollbook_Construct_Agents.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Construct_Schema.md",
+    "href": "../../scrolls/shared/Scrollbook_Construct_Schema.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Dynamic_Mirrors.md",
+    "href": "../../scrolls/shared/Scrollbook_Dynamic_Mirrors.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "href": "../../scrolls/shared/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Interface_PhaseII_Mapping.md",
+    "href": "../../scrolls/shared/Scrollbook_Interface_PhaseII_Mapping.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Invocation_Augury.md",
+    "href": "../../scrolls/shared/Scrollbook_Invocation_Augury.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Invocation_Engine.md",
+    "href": "../../scrolls/shared/Scrollbook_Invocation_Engine.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Protocols_System_Laws.md",
+    "href": "../../scrolls/shared/Scrollbook_Protocols_System_Laws.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Reference_Codex.md",
+    "href": "../../scrolls/shared/Scrollbook_Reference_Codex.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 9,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Ritual_Protocols.md",
+    "href": "../../scrolls/shared/Scrollbook_Ritual_Protocols.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Rust_Integration_Protocol.md",
+    "href": "../../scrolls/shared/Scrollbook_Rust_Integration_Protocol.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Trigger_Loom.md",
+    "href": "../../scrolls/shared/Scrollbook_Trigger_Loom.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "loom"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Validator_Specs.md",
+    "href": "../../scrolls/shared/Scrollbook_Validator_Specs.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Voices_and_Bindings.md",
+    "href": "../../scrolls/shared/Scrollbook_Voices_and_Bindings.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/shared/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/shared/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Sirion.md",
+    "href": "../../scrolls/Sirion.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/aidocumentationdialogue.md",
+    "href": "../../scrolls/system/aidocumentationdialogue.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/ConstructInvokeDesignSummary.md",
+    "href": "../../scrolls/system/ConstructInvokeDesignSummary.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/ConstructSystemDesignSummary.txt",
+    "href": "../../scrolls/system/ConstructSystemDesignSummary.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/ContextFrameEngineDesignSummary.md",
+    "href": "../../scrolls/system/ContextFrameEngineDesignSummary.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/LettertoEngineersAelrenandConstructIntentSystem.md",
+    "href": "../../scrolls/system/LettertoEngineersAelrenandConstructIntentSystem.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/llm_agent_cheat_sheet.md",
+    "href": "../../scrolls/system/llm_agent_cheat_sheet.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/Mythscribe Integration plan.md",
+    "href": "../../scrolls/system/Mythscribe Integration plan.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/NamedConstructsofScrollcore.md",
+    "href": "../../scrolls/system/NamedConstructsofScrollcore.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/New Text Document.txt",
+    "href": "../../scrolls/system/New Text Document.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/RuntimeInvocationFlowIntentandArchitecture.md",
+    "href": "../../scrolls/system/RuntimeInvocationFlowIntentandArchitecture.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "invocation"
+  },
+  {
+    "path": "scrolls/system/Scrollcorephase2Implementation Roadmap.md",
+    "href": "../../scrolls/system/Scrollcorephase2Implementation Roadmap.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/ScrollcoreSissionSummaryContinuationplan.md",
+    "href": "../../scrolls/system/ScrollcoreSissionSummaryContinuationplan.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/scrollcore_project_level_workflow_plan.md",
+    "href": "../../scrolls/system/scrollcore_project_level_workflow_plan.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/scrollcore_worldlore_auto_gen_protocol.md",
+    "href": "../../scrolls/system/scrollcore_worldlore_auto_gen_protocol.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "protocol"
+  },
+  {
+    "path": "scrolls/system/StructuredDebuggingandRefinementProcess.md",
+    "href": "../../scrolls/system/StructuredDebuggingandRefinementProcess.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/system/thevisionbeyondscroll_core.md",
+    "href": "../../scrolls/system/thevisionbeyondscroll_core.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/test_draft_write.md",
+    "href": "../../scrolls/test_draft_write.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/test_pulse_scroll.md",
+    "href": "../../scrolls/test_pulse_scroll.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/test_scroll.md",
+    "href": "../../scrolls/test_scroll.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Thiren.md",
+    "href": "../../scrolls/Thiren.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scrolls/Trigger Loom Design Summary.txt",
+    "href": "../../scrolls/Trigger Loom Design Summary.txt",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": "loom"
+  },
+  {
+    "path": "scrolls/Virelya.md",
+    "href": "../../scrolls/Virelya.md",
+    "category": "scroll",
+    "has_yaml_front_matter": true,
+    "scroll_header_key_count": 3,
+    "is_scroll_by_header": true,
+    "is_scroll_by_path": true,
+    "topic": ""
+  },
+  {
+    "path": "scroll_core/README.md",
+    "href": "../../scroll_core/README.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "scroll_core/src/llms-full.txt",
+    "href": "../../scroll_core/src/llms-full.txt",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "scroll_core_module_index.md",
+    "href": "../../scroll_core_module_index.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "target/debug/build/assert_cmd-da55ae3ffd7833e6/out/current_target.txt",
+    "href": "../../target/debug/build/assert_cmd-da55ae3ffd7833e6/out/current_target.txt",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "target/debug/build/rust_decimal-75829b169a248b1f/out/README-lib.md",
+    "href": "../../target/debug/build/rust_decimal-75829b169a248b1f/out/README-lib.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "target/debug/build/rust_decimal-7fd5cb0337cd0520/out/README-lib.md",
+    "href": "../../target/debug/build/rust_decimal-7fd5cb0337cd0520/out/README-lib.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "target/debug/deps/migration-a4ef56acc3b506b9.long-type-7814898035456611751.txt",
+    "href": "../../target/debug/deps/migration-a4ef56acc3b506b9.long-type-7814898035456611751.txt",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "target/tests/trybuild/x86_64-pc-windows-msvc/debug/build/rust_decimal-e219862e07380ddd/out/README-lib.md",
+    "href": "../../target/tests/trybuild/x86_64-pc-windows-msvc/debug/build/rust_decimal-e219862e07380ddd/out/README-lib.md",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "tests/e2e_scrolls/alpha.md",
+    "href": "../../tests/e2e_scrolls/alpha.md",
+    "category": "test-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "tests/e2e_scrolls/beta.md",
+    "href": "../../tests/e2e_scrolls/beta.md",
+    "category": "test-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "tests/e2e_scrolls/gamma.md",
+    "href": "../../tests/e2e_scrolls/gamma.md",
+    "category": "test-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "tests/sample_scrolls/valid_scroll.md",
+    "href": "../../tests/sample_scrolls/valid_scroll.md",
+    "category": "test-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  },
+  {
+    "path": "udeps.txt",
+    "href": "../../udeps.txt",
+    "category": "root-doc",
+    "has_yaml_front_matter": false,
+    "scroll_header_key_count": 0,
+    "is_scroll_by_header": false,
+    "is_scroll_by_path": false,
+    "topic": ""
+  }
+]

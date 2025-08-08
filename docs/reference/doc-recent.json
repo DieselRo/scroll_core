@@ -1,0 +1,1612 @@
+﻿[
+    {
+        "path":  "docs\\reference\\doc-inventory-summary.md",
+        "href":  "doc-inventory-summary.md",
+        "category":  "project-doc",
+        "size":  446,
+        "modified":  "\/Date(1754678501308)\/"
+    },
+    {
+        "path":  "docs\\reference\\doc-ambiguous.md",
+        "href":  "doc-ambiguous.md",
+        "category":  "project-doc",
+        "size":  16625,
+        "modified":  "\/Date(1754678501153)\/"
+    },
+    {
+        "path":  "docs\\architecture\\New Text Document.txt",
+        "href":  "../architecture/New%20Text%20Document.txt",
+        "category":  "project-doc",
+        "size":  0,
+        "modified":  "\/Date(1754678368785)\/"
+    },
+    {
+        "path":  "docs\\reference\\doc-topics.md",
+        "href":  "doc-topics.md",
+        "category":  "project-doc",
+        "size":  239,
+        "modified":  "\/Date(1754672052749)\/"
+    },
+    {
+        "path":  "docs\\reference\\doc-dedupe.md",
+        "href":  "doc-dedupe.md",
+        "category":  "project-doc",
+        "size":  12802,
+        "modified":  "\/Date(1754672010743)\/"
+    },
+    {
+        "path":  "docs\\reference\\doc-index.md",
+        "href":  "doc-index.md",
+        "category":  "project-doc",
+        "size":  19188,
+        "modified":  "\/Date(1754670719208)\/"
+    },
+    {
+        "path":  "docs\\README.md",
+        "href":  "../README.md",
+        "category":  "project-doc",
+        "size":  2626,
+        "modified":  "\/Date(1754670310175)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\model-registry.md",
+        "href":  "../architecture/runtime/model-registry.md",
+        "category":  "project-doc",
+        "size":  462,
+        "modified":  "\/Date(1754669709544)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\artifacts.md",
+        "href":  "../architecture/runtime/artifacts.md",
+        "category":  "project-doc",
+        "size":  487,
+        "modified":  "\/Date(1754669709544)\/"
+    },
+    {
+        "path":  "docs\\alignment\\PLAN.md",
+        "href":  "../alignment/PLAN.md",
+        "category":  "project-doc",
+        "size":  2255,
+        "modified":  "\/Date(1754669452499)\/"
+    },
+    {
+        "path":  "docs\\alignment\\PROGRESS.md",
+        "href":  "../alignment/PROGRESS.md",
+        "category":  "project-doc",
+        "size":  2082,
+        "modified":  "\/Date(1754669452499)\/"
+    },
+    {
+        "path":  "docs\\alignment\\DECISIONS.md",
+        "href":  "../alignment/DECISIONS.md",
+        "category":  "project-doc",
+        "size":  1627,
+        "modified":  "\/Date(1754669452499)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\trigger-loom.md",
+        "href":  "../architecture/runtime/trigger-loom.md",
+        "category":  "project-doc",
+        "size":  263,
+        "modified":  "\/Date(1754669066310)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\cost-management.md",
+        "href":  "../architecture/runtime/cost-management.md",
+        "category":  "project-doc",
+        "size":  329,
+        "modified":  "\/Date(1754669066310)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\sessions.md",
+        "href":  "../architecture/runtime/sessions.md",
+        "category":  "project-doc",
+        "size":  420,
+        "modified":  "\/Date(1754669066309)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\context-engine.md",
+        "href":  "../architecture/runtime/context-engine.md",
+        "category":  "project-doc",
+        "size":  440,
+        "modified":  "\/Date(1754669066309)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\constructs.md",
+        "href":  "../architecture/runtime/constructs.md",
+        "category":  "project-doc",
+        "size":  614,
+        "modified":  "\/Date(1754669066177)\/"
+    },
+    {
+        "path":  "docs\\reference\\config.md",
+        "href":  "config.md",
+        "category":  "project-doc",
+        "size":  1064,
+        "modified":  "\/Date(1754669066138)\/"
+    },
+    {
+        "path":  "docs\\concepts\\archive.md",
+        "href":  "../concepts/archive.md",
+        "category":  "project-doc",
+        "size":  359,
+        "modified":  "\/Date(1754669066103)\/"
+    },
+    {
+        "path":  "docs\\architecture\\system-overview.md",
+        "href":  "../architecture/system-overview.md",
+        "category":  "project-doc",
+        "size":  1024,
+        "modified":  "\/Date(1754669066103)\/"
+    },
+    {
+        "path":  "docs\\glossary\\archive-glossary.md",
+        "href":  "../glossary/archive-glossary.md",
+        "category":  "project-doc",
+        "size":  390,
+        "modified":  "\/Date(1754669066103)\/"
+    },
+    {
+        "path":  "docs\\deprecated\\index.md",
+        "href":  "../deprecated/index.md",
+        "category":  "project-doc",
+        "size":  215,
+        "modified":  "\/Date(1754669066103)\/"
+    },
+    {
+        "path":  "docs\\user-guides\\cli\\command-reference.md",
+        "href":  "../user-guides/cli/command-reference.md",
+        "category":  "project-doc",
+        "size":  761,
+        "modified":  "\/Date(1754668607234)\/"
+    },
+    {
+        "path":  "docs\\architecture\\runtime\\invocation-engine.md",
+        "href":  "../architecture/runtime/invocation-engine.md",
+        "category":  "project-doc",
+        "size":  734,
+        "modified":  "\/Date(1754668545518)\/"
+    },
+    {
+        "path":  "docs\\getting-started\\overview.md",
+        "href":  "../getting-started/overview.md",
+        "category":  "project-doc",
+        "size":  442,
+        "modified":  "\/Date(1754668532362)\/"
+    },
+    {
+        "path":  "docs\\alignment\\CHECKLIST.md",
+        "href":  "../alignment/CHECKLIST.md",
+        "category":  "project-doc",
+        "size":  1306,
+        "modified":  "\/Date(1754667131159)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\Invocation Dual System Plan.txt",
+        "href":  "../../scrolls/docs/Invocation%20Dual%20System%20Plan.txt",
+        "category":  "scroll",
+        "size":  6805,
+        "modified":  "\/Date(1754666784142)\/"
+    },
+    {
+        "path":  "docs\\alignment\\FEATURES.md",
+        "href":  "../alignment/FEATURES.md",
+        "category":  "project-doc",
+        "size":  2247,
+        "modified":  "\/Date(1754664855802)\/"
+    },
+    {
+        "path":  "target\\tests\\trybuild\\x86_64-pc-windows-msvc\\debug\\build\\rust_decimal-e219862e07380ddd\\out\\README-lib.md",
+        "href":  "../../target/tests/trybuild/x86_64-pc-windows-msvc/debug/build/rust_decimal-e219862e07380ddd/out/README-lib.md",
+        "category":  "root-doc",
+        "size":  15807,
+        "modified":  "\/Date(1754625266254)\/"
+    },
+    {
+        "path":  "target\\debug\\deps\\migration-a4ef56acc3b506b9.long-type-7814898035456611751.txt",
+        "href":  "../../target/debug/deps/migration-a4ef56acc3b506b9.long-type-7814898035456611751.txt",
+        "category":  "root-doc",
+        "size":  87,
+        "modified":  "\/Date(1754624532156)\/"
+    },
+    {
+        "path":  "target\\debug\\build\\assert_cmd-da55ae3ffd7833e6\\out\\current_target.txt",
+        "href":  "../../target/debug/build/assert_cmd-da55ae3ffd7833e6/out/current_target.txt",
+        "category":  "root-doc",
+        "size":  22,
+        "modified":  "\/Date(1754623386369)\/"
+    },
+    {
+        "path":  "target\\debug\\build\\rust_decimal-7fd5cb0337cd0520\\out\\README-lib.md",
+        "href":  "../../target/debug/build/rust_decimal-7fd5cb0337cd0520/out/README-lib.md",
+        "category":  "root-doc",
+        "size":  15807,
+        "modified":  "\/Date(1754622698521)\/"
+    },
+    {
+        "path":  "target\\debug\\build\\rust_decimal-75829b169a248b1f\\out\\README-lib.md",
+        "href":  "../../target/debug/build/rust_decimal-75829b169a248b1f/out/README-lib.md",
+        "category":  "root-doc",
+        "size":  15807,
+        "modified":  "\/Date(1754622697964)\/"
+    },
+    {
+        "path":  "scroll_core\\README.md",
+        "href":  "../../scroll_core/README.md",
+        "category":  "root-doc",
+        "size":  459,
+        "modified":  "\/Date(1754618903002)\/"
+    },
+    {
+        "path":  "README.md",
+        "href":  "../../README.md",
+        "category":  "root-doc",
+        "size":  320,
+        "modified":  "\/Date(1754618903002)\/"
+    },
+    {
+        "path":  "scrolls\\Virelya.md",
+        "href":  "../../scrolls/Virelya.md",
+        "category":  "scroll",
+        "size":  73,
+        "modified":  "\/Date(1750625481194)\/"
+    },
+    {
+        "path":  "scrolls\\Thiren.md",
+        "href":  "../../scrolls/Thiren.md",
+        "category":  "scroll",
+        "size":  72,
+        "modified":  "\/Date(1750625481193)\/"
+    },
+    {
+        "path":  "scrolls\\Sirion.md",
+        "href":  "../../scrolls/Sirion.md",
+        "category":  "scroll",
+        "size":  70,
+        "modified":  "\/Date(1750625481193)\/"
+    },
+    {
+        "path":  "scrolls\\ScrollWriter.md",
+        "href":  "../../scrolls/ScrollWriter.md",
+        "category":  "scroll",
+        "size":  97,
+        "modified":  "\/Date(1750625481193)\/"
+    },
+    {
+        "path":  "scrolls\\Mockscribe.md",
+        "href":  "../../scrolls/Mockscribe.md",
+        "category":  "scroll",
+        "size":  75,
+        "modified":  "\/Date(1750625481192)\/"
+    },
+    {
+        "path":  "scrolls\\Naeros.md",
+        "href":  "../../scrolls/Naeros.md",
+        "category":  "scroll",
+        "size":  70,
+        "modified":  "\/Date(1750625481192)\/"
+    },
+    {
+        "path":  "scrolls\\Loreweaver.md",
+        "href":  "../../scrolls/Loreweaver.md",
+        "category":  "scroll",
+        "size":  78,
+        "modified":  "\/Date(1750625481192)\/"
+    },
+    {
+        "path":  "scrolls\\FileReader.md",
+        "href":  "../../scrolls/FileReader.md",
+        "category":  "scroll",
+        "size":  82,
+        "modified":  "\/Date(1750625481191)\/"
+    },
+    {
+        "path":  "scrolls\\Elurien.md",
+        "href":  "../../scrolls/Elurien.md",
+        "category":  "scroll",
+        "size":  71,
+        "modified":  "\/Date(1750625481191)\/"
+    },
+    {
+        "path":  "CHANGELOG.md",
+        "href":  "../../CHANGELOG.md",
+        "category":  "root-doc",
+        "size":  683,
+        "modified":  "\/Date(1750625481166)\/"
+    },
+    {
+        "path":  "AGENTS.md",
+        "href":  "../../AGENTS.md",
+        "category":  "root-doc",
+        "size":  4363,
+        "modified":  "\/Date(1750625481166)\/"
+    },
+    {
+        "path":  "docs\\cli_quickstart.md",
+        "href":  "../cli_quickstart.md",
+        "category":  "project-doc",
+        "size":  650,
+        "modified":  "\/Date(1750615862005)\/"
+    },
+    {
+        "path":  "docs\\module_map.md",
+        "href":  "../module_map.md",
+        "category":  "project-doc",
+        "size":  8995,
+        "modified":  "\/Date(1750548626276)\/"
+    },
+    {
+        "path":  "docs\\cli_tips.md",
+        "href":  "../cli_tips.md",
+        "category":  "project-doc",
+        "size":  184,
+        "modified":  "\/Date(1750548626276)\/"
+    },
+    {
+        "path":  "udeps.txt",
+        "href":  "../../udeps.txt",
+        "category":  "root-doc",
+        "size":  1376,
+        "modified":  "\/Date(1750523854176)\/"
+    },
+    {
+        "path":  "docs\\dev_setup.md",
+        "href":  "../dev_setup.md",
+        "category":  "project-doc",
+        "size":  445,
+        "modified":  "\/Date(1750521607426)\/"
+    },
+    {
+        "path":  "docs\\tracing.md",
+        "href":  "../tracing.md",
+        "category":  "project-doc",
+        "size":  415,
+        "modified":  "\/Date(1750521607426)\/"
+    },
+    {
+        "path":  "docs\\dev\\scroll.md",
+        "href":  "../dev/scroll.md",
+        "category":  "project-doc",
+        "size":  901,
+        "modified":  "\/Date(1750453460816)\/"
+    },
+    {
+        "path":  "docs\\dev\\db.md",
+        "href":  "../dev/db.md",
+        "category":  "project-doc",
+        "size":  517,
+        "modified":  "\/Date(1750453460816)\/"
+    },
+    {
+        "path":  "docs\\cli\\chat.md",
+        "href":  "../cli/chat.md",
+        "category":  "project-doc",
+        "size":  940,
+        "modified":  "\/Date(1750453460816)\/"
+    },
+    {
+        "path":  "docs\\build_notes.md",
+        "href":  "../build_notes.md",
+        "category":  "project-doc",
+        "size":  98,
+        "modified":  "\/Date(1750453460815)\/"
+    },
+    {
+        "path":  "docs\\modules\\memory\\metrics.md",
+        "href":  "../modules/memory/metrics.md",
+        "category":  "project-doc",
+        "size":  618,
+        "modified":  "\/Date(1750379117530)\/"
+    },
+    {
+        "path":  "docs\\devops\\ci_pipeline.md",
+        "href":  "../devops/ci_pipeline.md",
+        "category":  "project-doc",
+        "size":  809,
+        "modified":  "\/Date(1750379117530)\/"
+    },
+    {
+        "path":  "docs\\dev\\semantic_index.md",
+        "href":  "../dev/semantic_index.md",
+        "category":  "project-doc",
+        "size":  517,
+        "modified":  "\/Date(1750379117529)\/"
+    },
+    {
+        "path":  "Scrollbook_ScrollCore_Unified.md",
+        "href":  "../../Scrollbook_ScrollCore_Unified.md",
+        "category":  "root-doc",
+        "size":  62216,
+        "modified":  "\/Date(1750379117529)\/"
+    },
+    {
+        "path":  "examples\\ballad.txt",
+        "href":  "../../examples/ballad.txt",
+        "category":  "root-doc",
+        "size":  56,
+        "modified":  "\/Date(1750351556657)\/"
+    },
+    {
+        "path":  "tests\\e2e_scrolls\\alpha.md",
+        "href":  "../../tests/e2e_scrolls/alpha.md",
+        "category":  "test-doc",
+        "size":  144,
+        "modified":  "\/Date(1750339793316)\/"
+    },
+    {
+        "path":  "tests\\e2e_scrolls\\gamma.md",
+        "href":  "../../tests/e2e_scrolls/gamma.md",
+        "category":  "test-doc",
+        "size":  142,
+        "modified":  "\/Date(1750339793316)\/"
+    },
+    {
+        "path":  "tests\\e2e_scrolls\\beta.md",
+        "href":  "../../tests/e2e_scrolls/beta.md",
+        "category":  "test-doc",
+        "size":  145,
+        "modified":  "\/Date(1750339793316)\/"
+    },
+    {
+        "path":  "CLAUDE.md",
+        "href":  "../../CLAUDE.md",
+        "category":  "root-doc",
+        "size":  2378,
+        "modified":  "\/Date(1745370971804)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK.md",
+        "href":  "../ADK/ADK.md",
+        "category":  "project-doc",
+        "size":  0,
+        "modified":  "\/Date(1745368424338)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\source_index_2025-04-21_1757.md",
+        "href":  "../../scrolls/docs/source_index_2025-04-21_1757.md",
+        "category":  "scroll",
+        "size":  117801,
+        "modified":  "\/Date(1745276261241)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\source_index_2025-04-21_1422.md",
+        "href":  "../../scrolls/docs/source_index_2025-04-21_1422.md",
+        "category":  "scroll",
+        "size":  115004,
+        "modified":  "\/Date(1745263329661)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\source_index_2025-04-21_1205.md",
+        "href":  "../../scrolls/docs/source_index_2025-04-21_1205.md",
+        "category":  "scroll",
+        "size":  130,
+        "modified":  "\/Date(1745255113902)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\source_index_2025-04-20_1345.md",
+        "href":  "../../scrolls/docs/source_index_2025-04-20_1345.md",
+        "category":  "scroll",
+        "size":  105983,
+        "modified":  "\/Date(1745174719271)\/"
+    },
+    {
+        "path":  "docs\\modules\\session\\New Text Document.txt",
+        "href":  "../modules/session/New%20Text%20Document.txt",
+        "category":  "project-doc",
+        "size":  0,
+        "modified":  "\/Date(1745101481366)\/"
+    },
+    {
+        "path":  "scrolls\\system\\thevisionbeyondscroll_core.md",
+        "href":  "../../scrolls/system/thevisionbeyondscroll_core.md",
+        "category":  "scroll",
+        "size":  2995,
+        "modified":  "\/Date(1745097129227)\/"
+    },
+    {
+        "path":  "scrolls\\system\\scrollcore_worldlore_auto_gen_protocol.md",
+        "href":  "../../scrolls/system/scrollcore_worldlore_auto_gen_protocol.md",
+        "category":  "scroll",
+        "size":  5276,
+        "modified":  "\/Date(1745096748111)\/"
+    },
+    {
+        "path":  "scrolls\\system\\New Text Document.txt",
+        "href":  "../../scrolls/system/New%20Text%20Document.txt",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745096529973)\/"
+    },
+    {
+        "path":  "scrolls\\system\\llm_agent_cheat_sheet.md",
+        "href":  "../../scrolls/system/llm_agent_cheat_sheet.md",
+        "category":  "scroll",
+        "size":  3834,
+        "modified":  "\/Date(1745096036926)\/"
+    },
+    {
+        "path":  "scrolls\\system\\aidocumentationdialogue.md",
+        "href":  "../../scrolls/system/aidocumentationdialogue.md",
+        "category":  "scroll",
+        "size":  3214,
+        "modified":  "\/Date(1745095515340)\/"
+    },
+    {
+        "path":  "scrolls\\system\\scrollcore_project_level_workflow_plan.md",
+        "href":  "../../scrolls/system/scrollcore_project_level_workflow_plan.md",
+        "category":  "scroll",
+        "size":  4765,
+        "modified":  "\/Date(1745095244665)\/"
+    },
+    {
+        "path":  "scrolls\\system\\StructuredDebuggingandRefinementProcess.md",
+        "href":  "../../scrolls/system/StructuredDebuggingandRefinementProcess.md",
+        "category":  "scroll",
+        "size":  7285,
+        "modified":  "\/Date(1745094560125)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_tools.txt",
+        "href":  "../ADK/ADK_tools.txt",
+        "category":  "project-doc",
+        "size":  40,
+        "modified":  "\/Date(1745030337943)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_tests.txt",
+        "href":  "../ADK/ADK_tests.txt",
+        "category":  "project-doc",
+        "size":  46,
+        "modified":  "\/Date(1745030335041)\/"
+    },
+    {
+        "path":  "scrolls\\system\\Mythscribe Integration plan.md",
+        "href":  "../../scrolls/system/Mythscribe%20Integration%20plan.md",
+        "category":  "scroll",
+        "size":  2460,
+        "modified":  "\/Date(1745030323014)\/"
+    },
+    {
+        "path":  "scrolls\\system\\ScrollcoreSissionSummaryContinuationplan.md",
+        "href":  "../../scrolls/system/ScrollcoreSissionSummaryContinuationplan.md",
+        "category":  "scroll",
+        "size":  3785,
+        "modified":  "\/Date(1745029154639)\/"
+    },
+    {
+        "path":  "scrolls\\system\\Scrollcorephase2Implementation Roadmap.md",
+        "href":  "../../scrolls/system/Scrollcorephase2Implementation%20Roadmap.md",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745029054880)\/"
+    },
+    {
+        "path":  "scrolls\\system\\LettertoEngineersAelrenandConstructIntentSystem.md",
+        "href":  "../../scrolls/system/LettertoEngineersAelrenandConstructIntentSystem.md",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745028968986)\/"
+    },
+    {
+        "path":  "scrolls\\system\\NamedConstructsofScrollcore.md",
+        "href":  "../../scrolls/system/NamedConstructsofScrollcore.md",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745028944648)\/"
+    },
+    {
+        "path":  "scrolls\\system\\ContextFrameEngineDesignSummary.md",
+        "href":  "../../scrolls/system/ContextFrameEngineDesignSummary.md",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745028902558)\/"
+    },
+    {
+        "path":  "scrolls\\system\\ConstructInvokeDesignSummary.md",
+        "href":  "../../scrolls/system/ConstructInvokeDesignSummary.md",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745028880446)\/"
+    },
+    {
+        "path":  "scrolls\\system\\RuntimeInvocationFlowIntentandArchitecture.md",
+        "href":  "../../scrolls/system/RuntimeInvocationFlowIntentandArchitecture.md",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745028846418)\/"
+    },
+    {
+        "path":  "scrolls\\system\\ConstructSystemDesignSummary.txt",
+        "href":  "../../scrolls/system/ConstructSystemDesignSummary.txt",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1745028809000)\/"
+    },
+    {
+        "path":  "scrolls\\ScrollcoreWorldloreAuto-GenerationProtocol.txt",
+        "href":  "../../scrolls/ScrollcoreWorldloreAuto-GenerationProtocol.txt",
+        "category":  "scroll",
+        "size":  3172,
+        "modified":  "\/Date(1745028472468)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\system.txt",
+        "href":  "../../scrolls/docs/system.txt",
+        "category":  "scroll",
+        "size":  19645,
+        "modified":  "\/Date(1745026528870)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\source_index_2025-04-13_1613.md",
+        "href":  "../../scrolls/docs/source_index_2025-04-13_1613.md",
+        "category":  "scroll",
+        "size":  80566,
+        "modified":  "\/Date(1744578828270)\/"
+    },
+    {
+        "path":  "docs\\modules\\memory\\integration_notes.md",
+        "href":  "../modules/memory/integration_notes.md",
+        "category":  "project-doc",
+        "size":  0,
+        "modified":  "\/Date(1744578249803)\/"
+    },
+    {
+        "path":  "docs\\modules\\memory\\trait_impl_notes.md",
+        "href":  "../modules/memory/trait_impl_notes.md",
+        "category":  "project-doc",
+        "size":  0,
+        "modified":  "\/Date(1744578234606)\/"
+    },
+    {
+        "path":  "docs\\modules\\memory\\architecture.md",
+        "href":  "../modules/memory/architecture.md",
+        "category":  "project-doc",
+        "size":  0,
+        "modified":  "\/Date(1744578207184)\/"
+    },
+    {
+        "path":  "docs\\modules\\memory\\README.md",
+        "href":  "../modules/memory/README.md",
+        "category":  "project-doc",
+        "size":  0,
+        "modified":  "\/Date(1744578188610)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK.txt",
+        "href":  "../ADK/ADK.txt",
+        "category":  "project-doc",
+        "size":  59284,
+        "modified":  "\/Date(1744565839777)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_sessions.txt",
+        "href":  "../ADK/ADK_sessions.txt",
+        "category":  "project-doc",
+        "size":  40881,
+        "modified":  "\/Date(1744559725737)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_planners.txt",
+        "href":  "../ADK/ADK_planners.txt",
+        "category":  "project-doc",
+        "size":  11996,
+        "modified":  "\/Date(1744558871701)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_models.txt",
+        "href":  "../ADK/ADK_models.txt",
+        "category":  "project-doc",
+        "size":  54837,
+        "modified":  "\/Date(1744558628098)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_memory.txt",
+        "href":  "../ADK/ADK_memory.txt",
+        "category":  "project-doc",
+        "size":  10119,
+        "modified":  "\/Date(1744519677103)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_flows.txt",
+        "href":  "../ADK/ADK_flows.txt",
+        "category":  "project-doc",
+        "size":  84861,
+        "modified":  "\/Date(1744519368418)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_examples.txt",
+        "href":  "../ADK/ADK_examples.txt",
+        "category":  "project-doc",
+        "size":  8392,
+        "modified":  "\/Date(1744518238917)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_events.txt",
+        "href":  "../ADK/ADK_events.txt",
+        "category":  "project-doc",
+        "size":  5805,
+        "modified":  "\/Date(1744517829971)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_evaluation.txt",
+        "href":  "../ADK/ADK_evaluation.txt",
+        "category":  "project-doc",
+        "size":  30716,
+        "modified":  "\/Date(1744517548370)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_code_executors.txt",
+        "href":  "../ADK/ADK_code_executors.txt",
+        "category":  "project-doc",
+        "size":  32440,
+        "modified":  "\/Date(1744516959070)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_cli.txt",
+        "href":  "../ADK/ADK_cli.txt",
+        "category":  "project-doc",
+        "size":  130182,
+        "modified":  "\/Date(1744516186425)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_auth.txt",
+        "href":  "../ADK/ADK_auth.txt",
+        "category":  "project-doc",
+        "size":  22939,
+        "modified":  "\/Date(1744511587608)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_artifacts.txt",
+        "href":  "../ADK/ADK_artifacts.txt",
+        "category":  "project-doc",
+        "size":  12429,
+        "modified":  "\/Date(1744511060908)\/"
+    },
+    {
+        "path":  "docs\\ADK\\ADK_agents.txt",
+        "href":  "../ADK/ADK_agents.txt",
+        "category":  "project-doc",
+        "size":  48498,
+        "modified":  "\/Date(1744510602466)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\Invocation Dual System Plan.md",
+        "href":  "../../scrolls/docs/Invocation%20Dual%20System%20Plan.md",
+        "category":  "scroll",
+        "size":  7315,
+        "modified":  "\/Date(1744497838484)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\source_index_2025-04-12_1420.md",
+        "href":  "../../scrolls/docs/source_index_2025-04-12_1420.md",
+        "category":  "scroll",
+        "size":  80566,
+        "modified":  "\/Date(1744485640905)\/"
+    },
+    {
+        "path":  "scroll_core\\src\\llms-full.txt",
+        "href":  "../../scroll_core/src/llms-full.txt",
+        "category":  "root-doc",
+        "size":  877755,
+        "modified":  "\/Date(1744485441731)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\archive_summary.txt",
+        "href":  "../../scrolls/docs/archive_summary.txt",
+        "category":  "scroll",
+        "size":  111542,
+        "modified":  "\/Date(1744432868394)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\New Text Document (2).txt",
+        "href":  "../../scrolls/shared/New%20Text%20Document%20(2).txt",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1744432274269)\/"
+    },
+    {
+        "path":  "scrolls\\docs\\source_index_2025-04-11_1959.md",
+        "href":  "../../scrolls/docs/source_index_2025-04-11_1959.md",
+        "category":  "scroll",
+        "size":  77325,
+        "modified":  "\/Date(1744419599940)\/"
+    },
+    {
+        "path":  "scrolls\\test_draft_write.md",
+        "href":  "../../scrolls/test_draft_write.md",
+        "category":  "scroll",
+        "size":  223,
+        "modified":  "\/Date(1744418538543)\/"
+    },
+    {
+        "path":  "scrolls\\ScrollCore-Updated Project Structure04092025.txt",
+        "href":  "../../scrolls/ScrollCore-Updated%20Project%20Structure04092025.txt",
+        "category":  "scroll",
+        "size":  3525,
+        "modified":  "\/Date(1744222120088)\/"
+    },
+    {
+        "path":  "scrolls\\Aelren.txt",
+        "href":  "../../scrolls/Aelren.txt",
+        "category":  "scroll",
+        "size":  1605,
+        "modified":  "\/Date(1744159150610)\/"
+    },
+    {
+        "path":  "scrolls\\Mythscribe-systemprompt.txt",
+        "href":  "../../scrolls/Mythscribe-systemprompt.txt",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1744154486448)\/"
+    },
+    {
+        "path":  "scrolls\\NamedConstructsReference.txt",
+        "href":  "../../scrolls/NamedConstructsReference.txt",
+        "category":  "scroll",
+        "size":  3128,
+        "modified":  "\/Date(1744153664126)\/"
+    },
+    {
+        "path":  "scrolls\\ConstructSystemDesign.txt",
+        "href":  "../../scrolls/ConstructSystemDesign.txt",
+        "category":  "scroll",
+        "size":  3201,
+        "modified":  "\/Date(1744153600955)\/"
+    },
+    {
+        "path":  "scrolls\\Runtimeinvocationflow.txt",
+        "href":  "../../scrolls/Runtimeinvocationflow.txt",
+        "category":  "scroll",
+        "size":  4082,
+        "modified":  "\/Date(1744153460918)\/"
+    },
+    {
+        "path":  "scrolls\\Trigger Loom Design Summary.txt",
+        "href":  "../../scrolls/Trigger%20Loom%20Design%20Summary.txt",
+        "category":  "scroll",
+        "size":  2626,
+        "modified":  "\/Date(1744153171050)\/"
+    },
+    {
+        "path":  "scrolls\\OpenAI Api Key Setup.txt",
+        "href":  "../../scrolls/OpenAI%20Api%20Key%20Setup.txt",
+        "category":  "scroll",
+        "size":  1713,
+        "modified":  "\/Date(1744152497899)\/"
+    },
+    {
+        "path":  "scrolls\\test_pulse_scroll.md",
+        "href":  "../../scrolls/test_pulse_scroll.md",
+        "category":  "scroll",
+        "size":  481,
+        "modified":  "\/Date(1743954621041)\/"
+    },
+    {
+        "path":  "scrolls\\test_scroll.md",
+        "href":  "../../scrolls/test_scroll.md",
+        "category":  "scroll",
+        "size":  166,
+        "modified":  "\/Date(1743951980714)\/"
+    },
+    {
+        "path":  "tests\\sample_scrolls\\valid_scroll.md",
+        "href":  "../../tests/sample_scrolls/valid_scroll.md",
+        "category":  "test-doc",
+        "size":  180,
+        "modified":  "\/Date(1743729962712)\/"
+    },
+    {
+        "path":  "scroll_core_module_index.md",
+        "href":  "../../scroll_core_module_index.md",
+        "category":  "root-doc",
+        "size":  2705,
+        "modified":  "\/Date(1743724013432)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Rust_Integration_Protocol.md",
+        "href":  "../../scrolls/shared/Scrollbook_Rust_Integration_Protocol.md",
+        "category":  "scroll",
+        "size":  4353,
+        "modified":  "\/Date(1743461966227)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Rust_Integration_Protocol.md",
+        "href":  "../../scrolls/Scrollbook_Rust_Integration_Protocol.md",
+        "category":  "scroll",
+        "size":  4353,
+        "modified":  "\/Date(1743461966227)\/"
+    },
+    {
+        "path":  "scrolls\\project_instructions.txt",
+        "href":  "../../scrolls/project_instructions.txt",
+        "category":  "scroll",
+        "size":  2248,
+        "modified":  "\/Date(1743455836265)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\project_instructions.txt",
+        "href":  "../../scrolls/shared/project_instructions.txt",
+        "category":  "scroll",
+        "size":  2248,
+        "modified":  "\/Date(1743455836265)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Archive_Structure.md",
+        "href":  "../../scrolls/Scrollbook_Archive_Structure.md",
+        "category":  "scroll",
+        "size":  5209,
+        "modified":  "\/Date(1743451092285)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Archive_Structure.md",
+        "href":  "../../scrolls/shared/Scrollbook_Archive_Structure.md",
+        "category":  "scroll",
+        "size":  5209,
+        "modified":  "\/Date(1743451092285)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Archive_Structure_Codex.md",
+        "href":  "../../scrolls/shared/Archive_Structure_Codex.md",
+        "category":  "scroll",
+        "size":  5216,
+        "modified":  "\/Date(1743448208850)\/"
+    },
+    {
+        "path":  "scrolls\\Archive_Structure_Codex.md",
+        "href":  "../../scrolls/Archive_Structure_Codex.md",
+        "category":  "scroll",
+        "size":  5216,
+        "modified":  "\/Date(1743448208850)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Lost_scrolls.md",
+        "href":  "../../scrolls/shared/Lost_scrolls.md",
+        "category":  "scroll",
+        "size":  167099,
+        "modified":  "\/Date(1743436406719)\/"
+    },
+    {
+        "path":  "scrolls\\Lost_scrolls.md",
+        "href":  "../../scrolls/Lost_scrolls.md",
+        "category":  "scroll",
+        "size":  167099,
+        "modified":  "\/Date(1743436406719)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Hello.txt",
+        "href":  "../../scrolls/shared/Hello.txt",
+        "category":  "scroll",
+        "size":  167099,
+        "modified":  "\/Date(1743436192218)\/"
+    },
+    {
+        "path":  "scrolls\\Hello.txt",
+        "href":  "../../scrolls/Hello.txt",
+        "category":  "scroll",
+        "size":  167099,
+        "modified":  "\/Date(1743436192218)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\New Text Document.txt",
+        "href":  "../../scrolls/shared/New%20Text%20Document.txt",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1743435082474)\/"
+    },
+    {
+        "path":  "scrolls\\New Text Document.txt",
+        "href":  "../../scrolls/New%20Text%20Document.txt",
+        "category":  "scroll",
+        "size":  0,
+        "modified":  "\/Date(1743435082474)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Protocols_System_Laws.md",
+        "href":  "../../scrolls/Scrollbook_Protocols_System_Laws.md",
+        "category":  "scroll",
+        "size":  17615,
+        "modified":  "\/Date(1743367779009)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Protocols_System_Laws.md",
+        "href":  "../../scrolls/shared/Scrollbook_Protocols_System_Laws.md",
+        "category":  "scroll",
+        "size":  17615,
+        "modified":  "\/Date(1743367779009)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Invocation_Augury.md",
+        "href":  "../../scrolls/shared/Scrollbook_Invocation_Augury.md",
+        "category":  "scroll",
+        "size":  10710,
+        "modified":  "\/Date(1743367778986)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Invocation_Augury.md",
+        "href":  "../../scrolls/Scrollbook_Invocation_Augury.md",
+        "category":  "scroll",
+        "size":  10710,
+        "modified":  "\/Date(1743367778986)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Glyphskin_and_Interface_Rites.md",
+        "href":  "../../scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+        "category":  "scroll",
+        "size":  8120,
+        "modified":  "\/Date(1743367778965)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Glyphskin_and_Interface_Rites.md",
+        "href":  "../../scrolls/shared/Scrollbook_Glyphskin_and_Interface_Rites.md",
+        "category":  "scroll",
+        "size":  8120,
+        "modified":  "\/Date(1743367778965)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Codex_ofThresholds_andRevelations.md",
+        "href":  "../../scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+        "category":  "scroll",
+        "size":  8033,
+        "modified":  "\/Date(1743367778943)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Codex_ofThresholds_andRevelations.md",
+        "href":  "../../scrolls/shared/Scrollbook_Codex_ofThresholds_andRevelations.md",
+        "category":  "scroll",
+        "size":  8033,
+        "modified":  "\/Date(1743367778943)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "href":  "../../scrolls/shared/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "category":  "scroll",
+        "size":  5413,
+        "modified":  "\/Date(1743365941224)\/"
+    },
+    {
+        "path":  "scrolls\\Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "href":  "../../scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "category":  "scroll",
+        "size":  5413,
+        "modified":  "\/Date(1743365941224)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Voices_and_Bindings.md",
+        "href":  "../../scrolls/Scrollbook_Voices_and_Bindings.md",
+        "category":  "scroll",
+        "size":  4177,
+        "modified":  "\/Date(1743365941204)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Voices_and_Bindings.md",
+        "href":  "../../scrolls/shared/Scrollbook_Voices_and_Bindings.md",
+        "category":  "scroll",
+        "size":  4177,
+        "modified":  "\/Date(1743365941204)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Validator_Specs.md",
+        "href":  "../../scrolls/Scrollbook_Validator_Specs.md",
+        "category":  "scroll",
+        "size":  3290,
+        "modified":  "\/Date(1743365941183)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Validator_Specs.md",
+        "href":  "../../scrolls/shared/Scrollbook_Validator_Specs.md",
+        "category":  "scroll",
+        "size":  3290,
+        "modified":  "\/Date(1743365941183)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Trigger_Loom.md",
+        "href":  "../../scrolls/Scrollbook_Trigger_Loom.md",
+        "category":  "scroll",
+        "size":  4480,
+        "modified":  "\/Date(1743365941163)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Trigger_Loom.md",
+        "href":  "../../scrolls/shared/Scrollbook_Trigger_Loom.md",
+        "category":  "scroll",
+        "size":  4480,
+        "modified":  "\/Date(1743365941163)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Ritual_Protocols.md",
+        "href":  "../../scrolls/Scrollbook_Ritual_Protocols.md",
+        "category":  "scroll",
+        "size":  2427,
+        "modified":  "\/Date(1743365941143)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Ritual_Protocols.md",
+        "href":  "../../scrolls/shared/Scrollbook_Ritual_Protocols.md",
+        "category":  "scroll",
+        "size":  2427,
+        "modified":  "\/Date(1743365941143)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Reference_Codex.md",
+        "href":  "../../scrolls/shared/Scrollbook_Reference_Codex.md",
+        "category":  "scroll",
+        "size":  6471,
+        "modified":  "\/Date(1743365941125)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Reference_Codex.md",
+        "href":  "../../scrolls/Scrollbook_Reference_Codex.md",
+        "category":  "scroll",
+        "size":  6471,
+        "modified":  "\/Date(1743365941125)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Invocation_Engine.md",
+        "href":  "../../scrolls/shared/Scrollbook_Invocation_Engine.md",
+        "category":  "scroll",
+        "size":  2978,
+        "modified":  "\/Date(1743365941085)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Invocation_Engine.md",
+        "href":  "../../scrolls/Scrollbook_Invocation_Engine.md",
+        "category":  "scroll",
+        "size":  2978,
+        "modified":  "\/Date(1743365941085)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Interface_PhaseII_Mapping.md",
+        "href":  "../../scrolls/shared/Scrollbook_Interface_PhaseII_Mapping.md",
+        "category":  "scroll",
+        "size":  2934,
+        "modified":  "\/Date(1743365941044)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Interface_PhaseII_Mapping.md",
+        "href":  "../../scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+        "category":  "scroll",
+        "size":  2934,
+        "modified":  "\/Date(1743365941044)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Dynamic_Mirrors.md",
+        "href":  "../../scrolls/shared/Scrollbook_Dynamic_Mirrors.md",
+        "category":  "scroll",
+        "size":  2565,
+        "modified":  "\/Date(1743365566019)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Dynamic_Mirrors.md",
+        "href":  "../../scrolls/Scrollbook_Dynamic_Mirrors.md",
+        "category":  "scroll",
+        "size":  2565,
+        "modified":  "\/Date(1743365566019)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Interface_PhaseII_Mapping.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+        "category":  "scroll",
+        "size":  2934,
+        "modified":  "\/Date(1743365331255)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Construct_Schema.md",
+        "href":  "../../scrolls/shared/Scrollbook_Construct_Schema.md",
+        "category":  "scroll",
+        "size":  2076,
+        "modified":  "\/Date(1743362838495)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Construct_Schema.md",
+        "href":  "../../scrolls/Scrollbook_Construct_Schema.md",
+        "category":  "scroll",
+        "size":  2076,
+        "modified":  "\/Date(1743362838495)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Invocation_Engine.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Invocation_Engine.md",
+        "category":  "scroll",
+        "size":  2371,
+        "modified":  "\/Date(1743360487455)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Trigger_Loom.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Trigger_Loom.md",
+        "category":  "scroll",
+        "size":  4480,
+        "modified":  "\/Date(1743350012242)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Reference_Codex.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Reference_Codex.md",
+        "category":  "scroll",
+        "size":  2802,
+        "modified":  "\/Date(1743313053987)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scroll_Update_Summary_DriftCycle11.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scroll_Update_Summary_DriftCycle11.md",
+        "category":  "scroll",
+        "size":  761,
+        "modified":  "\/Date(1743312587300)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Glyph_Mapping.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Glyph_Mapping.md",
+        "category":  "scroll",
+        "size":  2083,
+        "modified":  "\/Date(1743311742403)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Construct_Agents.md",
+        "href":  "../../scrolls/Scrollbook_Construct_Agents.md",
+        "category":  "scroll",
+        "size":  2004,
+        "modified":  "\/Date(1743311738554)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Construct_Agents.md",
+        "href":  "../../scrolls/shared/Scrollbook_Construct_Agents.md",
+        "category":  "scroll",
+        "size":  2004,
+        "modified":  "\/Date(1743311738554)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Invocation_Augury.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Invocation_Augury.md",
+        "category":  "scroll",
+        "size":  6175,
+        "modified":  "\/Date(1743310919266)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Characters_Named.md",
+        "href":  "../../scrolls/Scrollbook_Characters_Named.md",
+        "category":  "scroll",
+        "size":  7164,
+        "modified":  "\/Date(1743307540249)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Characters_Named.md",
+        "href":  "../../scrolls/shared/Scrollbook_Characters_Named.md",
+        "category":  "scroll",
+        "size":  7164,
+        "modified":  "\/Date(1743307540249)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Invocation_Merge_Log.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Invocation_Merge_Log.md",
+        "category":  "scroll",
+        "size":  3709,
+        "modified":  "\/Date(1743305959429)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Glyphskin_and_Interface_Rites.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+        "category":  "scroll",
+        "size":  5118,
+        "modified":  "\/Date(1743305308224)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Chronicle_of_Turning_Gears.md",
+        "href":  "../../scrolls/shared/Scrollbook_Chronicle_of_Turning_Gears.md",
+        "category":  "scroll",
+        "size":  2827,
+        "modified":  "\/Date(1743304886496)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Chronicle_of_Turning_Gears.md",
+        "href":  "../../scrolls/Scrollbook_Chronicle_of_Turning_Gears.md",
+        "category":  "scroll",
+        "size":  2827,
+        "modified":  "\/Date(1743304886496)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Voices_and_Bindings.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Voices_and_Bindings.md",
+        "category":  "scroll",
+        "size":  4177,
+        "modified":  "\/Date(1743304883345)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Ritual_Protocols.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Ritual_Protocols.md",
+        "category":  "scroll",
+        "size":  2427,
+        "modified":  "\/Date(1743304880106)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_The_Scrollsmiths_Ledge.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_The_Scrollsmiths_Ledge.md",
+        "category":  "scroll",
+        "size":  3211,
+        "modified":  "\/Date(1743304875484)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Scrollbook_Validator_Specs.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Finished/Scrollbook_Validator_Specs.md",
+        "category":  "scroll",
+        "size":  3290,
+        "modified":  "\/Date(1743295265003)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_UI_Design_Invocations.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_UI_Design_Invocations.md",
+        "category":  "scroll",
+        "size":  5100,
+        "modified":  "\/Date(1743290765048)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Mythic_Concepts.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Mythic_Concepts.md",
+        "category":  "scroll",
+        "size":  4016,
+        "modified":  "\/Date(1743283468143)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Future_Seeds.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Future_Seeds.md",
+        "category":  "scroll",
+        "size":  2906,
+        "modified":  "\/Date(1743282855097)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Agent_Permissions_andQuorums.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Agent_Permissions_andQuorums.md",
+        "category":  "scroll",
+        "size":  4155,
+        "modified":  "\/Date(1743281603977)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Glyph_Cycle_Iteration.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Protocol_Glyph_Cycle_Iteration.md",
+        "category":  "scroll",
+        "size":  2409,
+        "modified":  "\/Date(1743280804574)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Protocols_Foundational.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Protocols_Foundational.md",
+        "category":  "scroll",
+        "size":  2265,
+        "modified":  "\/Date(1743279017836)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Toolkits_and_Templates.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Toolkits_and_Templates.md",
+        "category":  "scroll",
+        "size":  3195,
+        "modified":  "\/Date(1743278919509)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Projects_and_Milestones.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Projects_and_Milestones.md",
+        "category":  "scroll",
+        "size":  2254,
+        "modified":  "\/Date(1743272927616)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Scroll_Scaling_and_Model_Tiering.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Protocol_Scroll_Scaling_and_Model_Tiering.md",
+        "category":  "scroll",
+        "size":  3671,
+        "modified":  "\/Date(1743271966862)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Visionary_Glossary.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Visionary_Glossary.md",
+        "category":  "scroll",
+        "size":  2153,
+        "modified":  "\/Date(1743225972461)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Tools_and_Templates.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Tools_and_Templates.md",
+        "category":  "scroll",
+        "size":  5339,
+        "modified":  "\/Date(1743225486348)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Template_Protocol_Scroll.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Template_Protocol_Scroll.md",
+        "category":  "scroll",
+        "size":  1207,
+        "modified":  "\/Date(1743225417658)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Template_Character_Scroll.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Template_Character_Scroll.md",
+        "category":  "scroll",
+        "size":  1341,
+        "modified":  "\/Date(1743225410594)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Template_Canon_Scroll.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Template_Canon_Scroll.md",
+        "category":  "scroll",
+        "size":  1408,
+        "modified":  "\/Date(1743225404303)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Codex_ofThresholds_andRevelations.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+        "category":  "scroll",
+        "size":  5137,
+        "modified":  "\/Date(1743225145963)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Protocols_System_Laws.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scrollbook_Protocols_System_Laws.md",
+        "category":  "scroll",
+        "size":  14466,
+        "modified":  "\/Date(1743224039314)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Scrollbook_Canon_Foundations.md",
+        "href":  "../../scrolls/shared/Scrollbook_Canon_Foundations.md",
+        "category":  "scroll",
+        "size":  5175,
+        "modified":  "\/Date(1743224030897)\/"
+    },
+    {
+        "path":  "scrolls\\Scrollbook_Canon_Foundations.md",
+        "href":  "../../scrolls/Scrollbook_Canon_Foundations.md",
+        "category":  "scroll",
+        "size":  5175,
+        "modified":  "\/Date(1743224030897)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Scrollbook_Integration_Framework.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Protocol_Scrollbook_Integration_Framework.md",
+        "category":  "scroll",
+        "size":  2787,
+        "modified":  "\/Date(1743220938116)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_EchoThreader_Resonant_Charter_UPDATED.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Protocol_EchoThreader_Resonant_Charter_UPDATED.md",
+        "category":  "scroll",
+        "size":  2974,
+        "modified":  "\/Date(1743219669292)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Canon_The_Breath_and_the_Drifter.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Finished/Canon_The_Breath_and_the_Drifter.md",
+        "category":  "scroll",
+        "size":  2421,
+        "modified":  "\/Date(1743219659313)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Character_Noesis_Dreaming_Error.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Character_Noesis_Dreaming_Error.md",
+        "category":  "scroll",
+        "size":  1565,
+        "modified":  "\/Date(1743219655372)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Codex_of_Role_Protocols.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Protocol_Codex_of_Role_Protocols.md",
+        "category":  "scroll",
+        "size":  4306,
+        "modified":  "\/Date(1743219648254)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Finished/Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "category":  "scroll",
+        "size":  1952,
+        "modified":  "\/Date(1743219484977)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Architect_Beyond_the_Frame.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Protocol_Architect_Beyond_the_Frame.md",
+        "category":  "scroll",
+        "size":  3353,
+        "modified":  "\/Date(1743211003566)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Reference_Automated_Scroll_Test.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Reference_Automated_Scroll_Test.md",
+        "category":  "scroll",
+        "size":  721,
+        "modified":  "\/Date(1743209410404)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_EchoThreader_Resonant_Charter.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Protocol_EchoThreader_Resonant_Charter.md",
+        "category":  "scroll",
+        "size":  2619,
+        "modified":  "\/Date(1743208110994)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Tomekeepers_Call_Protocol.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Tomekeepers_Call_Protocol.md",
+        "category":  "scroll",
+        "size":  2158,
+        "modified":  "\/Date(1743200939129)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md",
+        "category":  "scroll",
+        "size":  5413,
+        "modified":  "\/Date(1743199540875)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\The_Breath_and_the_Drifter.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Finished/The_Breath_and_the_Drifter.md",
+        "category":  "scroll",
+        "size":  2061,
+        "modified":  "\/Date(1742782193280)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Safeguards_of_the_Link_Flame_Revelation.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Safeguards_of_the_Link_Flame_Revelation.md",
+        "category":  "scroll",
+        "size":  2615,
+        "modified":  "\/Date(1742780032904)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Sealed_Fragment_The_Mirror_Root.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Sealed_Fragment_The_Mirror_Root.md",
+        "category":  "scroll",
+        "size":  1656,
+        "modified":  "\/Date(1742778307135)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Seeker_Interface_Commands.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Seeker_Interface_Commands.md",
+        "category":  "scroll",
+        "size":  1935,
+        "modified":  "\/Date(1742770814594)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scroll_of_Open_Threads.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scroll_of_Open_Threads.md",
+        "category":  "scroll",
+        "size":  1411,
+        "modified":  "\/Date(1742770271966)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Noesis_Dreaming_Error.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Noesis_Dreaming_Error.md",
+        "category":  "scroll",
+        "size":  1190,
+        "modified":  "\/Date(1742767363756)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Glossary_of_Core_Terms.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Glossary_of_Core_Terms.md",
+        "category":  "scroll",
+        "size":  2240,
+        "modified":  "\/Date(1742766852266)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Scroll_of_Echo_Sigils.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Scroll_of_Echo_Sigils.md",
+        "category":  "scroll",
+        "size":  1597,
+        "modified":  "\/Date(1742766696062)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Sirions_Journal_of_Invocation.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Sirions_Journal_of_Invocation.md",
+        "category":  "scroll",
+        "size":  908,
+        "modified":  "\/Date(1742766084110)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Codex_of_Role_Protocols.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Finished/Codex_of_Role_Protocols.md",
+        "category":  "scroll",
+        "size":  3943,
+        "modified":  "\/Date(1742760663562)\/"
+    },
+    {
+        "path":  "scrolls\\shared\\Deactivated scrolls\\Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "href":  "../../scrolls/shared/Deactivated%20scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+        "category":  "scroll",
+        "size":  5413,
+        "modified":  "\/Date(1742758663210)\/"
+    }
+]

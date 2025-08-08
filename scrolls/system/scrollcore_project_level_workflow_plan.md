@@ -1,3 +1,19 @@
+---
+title: scrollcore project level workflow plan
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # Scroll Core ⭑ Project‑Level Workflow Plan
 
 _Last updated: 2025‑04‑19_

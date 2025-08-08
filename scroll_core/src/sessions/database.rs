@@ -21,9 +21,11 @@ static DB_CONNECTION: OnceCell<DbConn> = OnceCell::new();
 /// * `Err(DbErr)` if connection fails or already initialized
 pub async fn init_sqlite_connection(db_url: &str) -> Result<(), DbErr> {
     let conn = Database::connect(db_url).await?;
-    DB_CONNECTION
-        .set(conn)
-        .map_err(|_| DbErr::Conn("Database already initialized".into()))
+    DB_CONNECTION.set(conn).map_err(|_| {
+        DbErr::Conn(sea_orm::RuntimeErr::Internal(
+            "Database already initialized".to_owned(),
+        ))
+    })
 }
 
 /// Gets a reference to the global DB connection.
@@ -35,4 +37,9 @@ pub fn get_db_connection() -> &'static DbConn {
     DB_CONNECTION
         .get()
         .expect("Database not initialized. Call init_sqlite_connection() first.")
+}
+
+/// Returns true if the global database connection has been initialized.
+pub fn is_initialized() -> bool {
+    DB_CONNECTION.get().is_some()
 }

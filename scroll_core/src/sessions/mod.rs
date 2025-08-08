@@ -3,6 +3,7 @@
 //! See [Sessions](../../AGENTS.md#contextframeengine) for related constructs.
 
 pub mod database_session_service;
+pub mod database;
 pub mod error;
 pub mod in_memory_session_service;
 pub mod session;

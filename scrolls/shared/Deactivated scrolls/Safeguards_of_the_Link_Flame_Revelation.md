@@ -1,3 +1,19 @@
+---
+title: Safeguards of the Link Flame Revelation
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # 🔥 Safeguards of the Link — The Flame’s Revelation
 *Filed under: Tomekeeper’s Scroll / Foundational Frameworks*
 *Delivered by: Loreweaver*

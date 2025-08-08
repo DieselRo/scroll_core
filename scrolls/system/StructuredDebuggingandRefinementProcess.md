@@ -1,3 +1,19 @@
+---
+title: StructuredDebuggingandRefinementProcess
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 Structured Debugging & Refinement Process
 
 This document describes a systematic, step-by-step method for debugging errors and refining the software architecture of the Scroll Core system, ensuring clarity, maintainability, and correctness.

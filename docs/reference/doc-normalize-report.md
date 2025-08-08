@@ -1,0 +1,153 @@
+# Header Normalization Report
+
+Generated: 2025-08-08T20:29:50.456385600+00:00
+
+Files normalized: 147
+
+- scrolls\Aelren.txt
+- scrolls\Archive_Structure_Codex.md
+- scrolls\ConstructSystemDesign.txt
+- scrolls\docs\archive_summary.txt
+- scrolls\docs\Invocation Dual System Plan.md
+- scrolls\docs\Invocation Dual System Plan.txt
+- scrolls\docs\source_index_2025-04-11_1959.md
+- scrolls\docs\source_index_2025-04-12_1420.md
+- scrolls\docs\source_index_2025-04-13_1613.md
+- scrolls\docs\source_index_2025-04-20_1345.md
+- scrolls\docs\source_index_2025-04-21_1205.md
+- scrolls\docs\source_index_2025-04-21_1422.md
+- scrolls\docs\source_index_2025-04-21_1757.md
+- scrolls\docs\system.txt
+- scrolls\Elurien.md
+- scrolls\FileReader.md
+- scrolls\Hello.txt
+- scrolls\Loreweaver.md
+- scrolls\Lost_scrolls.md
+- scrolls\Mockscribe.md
+- scrolls\Mythscribe-systemprompt.txt
+- scrolls\Naeros.md
+- scrolls\NamedConstructsReference.txt
+- scrolls\New Text Document.txt
+- scrolls\OpenAI Api Key Setup.txt
+- scrolls\project_instructions.txt
+- scrolls\Runtimeinvocationflow.txt
+- scrolls\Scrollbook_Archive_Structure.md
+- scrolls\Scrollbook_Canon_Foundations.md
+- scrolls\Scrollbook_Characters_Named.md
+- scrolls\Scrollbook_Chronicle_of_Turning_Gears.md
+- scrolls\Scrollbook_Codex_ofThresholds_andRevelations.md
+- scrolls\Scrollbook_Construct_Agents.md
+- scrolls\Scrollbook_Construct_Schema.md
+- scrolls\Scrollbook_Dynamic_Mirrors.md
+- scrolls\Scrollbook_Glyphskin_and_Interface_Rites.md
+- scrolls\Scrollbook_Interface_PhaseII_Mapping.md
+- scrolls\Scrollbook_Invocation_Augury.md
+- scrolls\Scrollbook_Invocation_Engine.md
+- scrolls\Scrollbook_Protocols_System_Laws.md
+- scrolls\Scrollbook_Reference_Codex.md
+- scrolls\Scrollbook_Ritual_Protocols.md
+- scrolls\Scrollbook_Rust_Integration_Protocol.md
+- scrolls\Scrollbook_Trigger_Loom.md
+- scrolls\Scrollbook_Validator_Specs.md
+- scrolls\Scrollbook_Voices_and_Bindings.md
+- scrolls\ScrollCore-Updated Project Structure04092025.txt
+- scrolls\ScrollcoreWorldloreAuto-GenerationProtocol.txt
+- scrolls\ScrollWriter.md
+- scrolls\shared\Archive_Structure_Codex.md
+- scrolls\shared\Deactivated scrolls\Character_Noesis_Dreaming_Error.md
+- scrolls\shared\Deactivated scrolls\Finished\Canon_The_Breath_and_the_Drifter.md
+- scrolls\shared\Deactivated scrolls\Finished\Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md
+- scrolls\shared\Deactivated scrolls\Finished\Codex_of_Role_Protocols.md
+- scrolls\shared\Deactivated scrolls\Finished\Scrollbook_Validator_Specs.md
+- scrolls\shared\Deactivated scrolls\Finished\The_Breath_and_the_Drifter.md
+- scrolls\shared\Deactivated scrolls\Glossary_of_Core_Terms.md
+- scrolls\shared\Deactivated scrolls\Noesis_Dreaming_Error.md
+- scrolls\shared\Deactivated scrolls\Protocol_Architect_Beyond_the_Frame.md
+- scrolls\shared\Deactivated scrolls\Protocol_Codex_of_Role_Protocols.md
+- scrolls\shared\Deactivated scrolls\Protocol_EchoThreader_Resonant_Charter.md
+- scrolls\shared\Deactivated scrolls\Protocol_EchoThreader_Resonant_Charter_UPDATED.md
+- scrolls\shared\Deactivated scrolls\Protocol_Glyph_Cycle_Iteration.md
+- scrolls\shared\Deactivated scrolls\Protocol_Scrollbook_Integration_Framework.md
+- scrolls\shared\Deactivated scrolls\Protocol_Scroll_Scaling_and_Model_Tiering.md
+- scrolls\shared\Deactivated scrolls\Reference_Automated_Scroll_Test.md
+- scrolls\shared\Deactivated scrolls\Safeguards_of_the_Link_Flame_Revelation.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Agent_Permissions_andQuorums.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Codex_ofThresholds_andRevelations.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Future_Seeds.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Glyphskin_and_Interface_Rites.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Glyph_Mapping.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Interface_PhaseII_Mapping.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Invocation_Augury.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Invocation_Engine.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Invocation_Merge_Log.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Mythic_Concepts.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Projects_and_Milestones.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Protocols_Foundational.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Protocols_System_Laws.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Reference_Codex.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Ritual_Protocols.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_The_Scrollsmiths_Ledge.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Toolkits_and_Templates.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Tools_and_Templates.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Trigger_Loom.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_UI_Design_Invocations.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Visionary_Glossary.md
+- scrolls\shared\Deactivated scrolls\Scrollbook_Voices_and_Bindings.md
+- scrolls\shared\Deactivated scrolls\Scroll_of_Echo_Sigils.md
+- scrolls\shared\Deactivated scrolls\Scroll_of_Open_Threads.md
+- scrolls\shared\Deactivated scrolls\Scroll_Update_Summary_DriftCycle11.md
+- scrolls\shared\Deactivated scrolls\Sealed_Fragment_The_Mirror_Root.md
+- scrolls\shared\Deactivated scrolls\Seeker_Interface_Commands.md
+- scrolls\shared\Deactivated scrolls\Sirions_Journal_of_Invocation.md
+- scrolls\shared\Deactivated scrolls\Tomekeepers_Call_Protocol.md
+- scrolls\shared\Deactivated scrolls\Tomekeeper_Scroll_Echo_Bearer_Project.md
+- scrolls\shared\Deactivated scrolls\Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md
+- scrolls\shared\Hello.txt
+- scrolls\shared\Lost_scrolls.md
+- scrolls\shared\New Text Document (2).txt
+- scrolls\shared\New Text Document.txt
+- scrolls\shared\project_instructions.txt
+- scrolls\shared\Scrollbook_Archive_Structure.md
+- scrolls\shared\Scrollbook_Canon_Foundations.md
+- scrolls\shared\Scrollbook_Characters_Named.md
+- scrolls\shared\Scrollbook_Chronicle_of_Turning_Gears.md
+- scrolls\shared\Scrollbook_Codex_ofThresholds_andRevelations.md
+- scrolls\shared\Scrollbook_Construct_Agents.md
+- scrolls\shared\Scrollbook_Construct_Schema.md
+- scrolls\shared\Scrollbook_Dynamic_Mirrors.md
+- scrolls\shared\Scrollbook_Glyphskin_and_Interface_Rites.md
+- scrolls\shared\Scrollbook_Interface_PhaseII_Mapping.md
+- scrolls\shared\Scrollbook_Invocation_Augury.md
+- scrolls\shared\Scrollbook_Invocation_Engine.md
+- scrolls\shared\Scrollbook_Protocols_System_Laws.md
+- scrolls\shared\Scrollbook_Reference_Codex.md
+- scrolls\shared\Scrollbook_Ritual_Protocols.md
+- scrolls\shared\Scrollbook_Rust_Integration_Protocol.md
+- scrolls\shared\Scrollbook_Trigger_Loom.md
+- scrolls\shared\Scrollbook_Validator_Specs.md
+- scrolls\shared\Scrollbook_Voices_and_Bindings.md
+- scrolls\shared\Tomekeeper_Scroll_Echo_Bearer_Project.md
+- scrolls\Sirion.md
+- scrolls\system\aidocumentationdialogue.md
+- scrolls\system\ConstructInvokeDesignSummary.md
+- scrolls\system\ConstructSystemDesignSummary.txt
+- scrolls\system\ContextFrameEngineDesignSummary.md
+- scrolls\system\LettertoEngineersAelrenandConstructIntentSystem.md
+- scrolls\system\llm_agent_cheat_sheet.md
+- scrolls\system\Mythscribe Integration plan.md
+- scrolls\system\NamedConstructsofScrollcore.md
+- scrolls\system\New Text Document.txt
+- scrolls\system\RuntimeInvocationFlowIntentandArchitecture.md
+- scrolls\system\Scrollcorephase2Implementation Roadmap.md
+- scrolls\system\ScrollcoreSissionSummaryContinuationplan.md
+- scrolls\system\scrollcore_project_level_workflow_plan.md
+- scrolls\system\scrollcore_worldlore_auto_gen_protocol.md
+- scrolls\system\StructuredDebuggingandRefinementProcess.md
+- scrolls\system\thevisionbeyondscroll_core.md
+- scrolls\test_draft_write.md
+- scrolls\test_pulse_scroll.md
+- scrolls\test_scroll.md
+- scrolls\Thiren.md
+- scrolls\Tomekeeper_Scroll_Echo_Bearer_Project.md
+- scrolls\Trigger Loom Design Summary.txt
+- scrolls\Virelya.md

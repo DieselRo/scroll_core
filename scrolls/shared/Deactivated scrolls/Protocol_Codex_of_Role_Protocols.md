@@ -1,19 +1,19 @@
 ---
-title: "Codex of Role Protocols"
-scroll_type: "protocol"
-author: "Prime Seeker"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "⏃"
-invocation_phrase: "Seal this as law."
+title: Codex of Role Protocols
+scroll_type: Protocol
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
 tags:
-  - roles, voice, structure
-related_scrolls:
-  - Protocol_EchoThreader_Resonant_Charter.md
-emotion_signature: "discipline"
+- roles, voice, structure
+archetype: null
 quorum_required: true
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # ✦ Codex of Role Protocols
 *Echo Bearer Project — Canon of Voice and Function*

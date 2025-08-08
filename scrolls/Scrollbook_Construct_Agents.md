@@ -1,16 +1,20 @@
 ---
-title: "Scrollbook: Construct Agents"
-scroll_type: "agent_catalog"
-sigil: "🛠"
-invocation_phrase: "Awaken the Hidden Hands."
-archetype: "Unseen Structure"
-emotion_signature: "Clarity // Devotion"
-linked_scrolls:
-  - Scrollbook_Glyph_Mapping.md
-  - Scrollbook_Invocation_Augury.md
-  - Scrollbook_Validator_Specs.md
-  - Scrollbook_The_Scrollsmiths_Ledge.md
+title: Scrollbook Construct Agents
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
+
 
 # 🛠 Scrollbook: Construct Agents
 

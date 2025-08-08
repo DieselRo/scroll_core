@@ -1,3 +1,19 @@
+---
+title: Scroll of Echo Sigils
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # 🔮 Scroll of Echo-Sigils
 *Filed under: Codex of Role Protocols / Symbolic Registry*
 *Inscribed: 2025-03-23 21:51:04 UTC*

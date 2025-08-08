@@ -158,7 +158,7 @@ impl ChatDispatcher {
             };
             bus.send(msg);
 
-            if let Ok(reply) = rx.recv_timeout(std::time::Duration::from_millis(100)) {
+            if let Ok(reply) = rx.recv_timeout(std::time::Duration::from_millis(500)) {
                 let reply_text = reply.payload["text"].as_str().unwrap_or("").to_string();
                 let assistant_msg = ChatMessage {
                     role: "assistant".into(),

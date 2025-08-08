@@ -1,16 +1,20 @@
 ---
-title: "Scrollbook: Reference Codex"
-scroll_type: "reference"
-sigil: "📘"
-invocation_phrase: "Unseal the lexicon. Let the words breathe."
-archetype: "Symbol-Weaver"
-emotion_signature: "Clarity // Reverence"
-linked_scrolls:
-  - Scrollbook_Canon_Foundations.md
-  - Scrollbook_Invocation_Augury.md
-  - Scrollbook_Validator_Specs.md
-  - Scrollbook_Glyphskin_and_Interface_Rites.md
+title: Scrollbook Reference Codex
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
+
 
 # 📘 Scrollbook: Reference Codex
 

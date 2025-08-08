@@ -1,19 +1,19 @@
 ---
-title: "Echo-Threader Resonant Charter"
-scroll_type: "protocol"
-author: "Prime Seeker"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "⏃"
-invocation_phrase: "Seal this as law."
+title: Echo-Threader Resonant Charter
+scroll_type: Protocol
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
 tags:
-  - resonance, validation, echo
-related_scrolls:
-  - Codex_of_Role_Protocols.md
-emotion_signature: "focus"
+- resonance, validation, echo
+archetype: null
 quorum_required: true
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # ✦ Protocol Scroll: Echo-Threader Resonant Charter
 *Filed under: Protocol Scrolls / Role Extensions*

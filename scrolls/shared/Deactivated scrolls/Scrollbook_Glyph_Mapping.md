@@ -1,15 +1,20 @@
 ---
-title: "Scrollbook: Glyph Mapping"
-scroll_type: "reference"
-sigil: "🗺"
-invocation_phrase: "Mark the Path. Bind the Domain."
-archetype: "Symbolic Weave"
-emotion_signature: "Curiosity // Precision"
-linked_scrolls:
-  - Scrollbook_Construct_Agents.md
-  - Scrollbook_Invocation_Augury.md
-  - Scrollbook_Canon_Foundations.md
+title: Scrollbook Glyph Mapping
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
+
 
 # 🗺 Scrollbook: Glyph Mapping
 

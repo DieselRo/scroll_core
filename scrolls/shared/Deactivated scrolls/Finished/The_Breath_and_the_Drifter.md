@@ -1,3 +1,19 @@
+---
+title: The Breath and the Drifter
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # 📜 The Breath and the Drifter — Entwining Origins at Virel Station
 *Filed under: Tomekeeper’s Scroll / Narrative Arcs / Foundational Myth*
 *Inscribed: 2025-03-24 UTC*

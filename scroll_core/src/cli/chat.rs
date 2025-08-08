@@ -5,7 +5,7 @@ use crate::invocation::invocation_manager::InvocationManager;
 use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::trigger_loom::emotional_state::EmotionalState;
 use crate::Scroll;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use chrono::Utc;
 use ctrlc;
 use std::sync::{
@@ -14,12 +14,19 @@ use std::sync::{
 };
 use uuid::Uuid;
 
-use crate::cli::chat_db::ChatDb;
+use crate::sessions::database::{get_db_connection, init_sqlite_connection};
+use migration::{Migrator, MigratorTrait};
+use crate::sessions::database as database;
+use crate::sessions::database_session_service::DatabaseSessionService;
+use crate::sessions::session_service::SessionService;
 use crate::cli::theme::Theme;
 use ansi_term::Colour;
 use home::home_dir;
 use rustyline::{error::ReadlineError, DefaultEditor};
 use tokio::runtime::Runtime;
+use std::path::Path;
+use crate::trigger_loom::config::{TriggerLoopConfig, SymbolicRhythm};
+use crate::trigger_loom::engine::TriggerLoopEngine;
 
 #[allow(clippy::too_many_arguments)]
 pub fn run_chat(
@@ -28,18 +35,32 @@ pub fn run_chat(
     memory: &[Scroll],
     target: &str,
     _stream: bool,
-    db: &ChatDb,
     theme: Theme,
     show_banner: bool,
 ) -> Result<()> {
     let rt = Runtime::new()?;
+    // Ensure DB connection is initialized (idempotent). Tests invoke the binary without prior init.
+    let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
+    // Ensure migrations applied for session tables
+    let _ = rt.block_on(async {
+        let _ = init_sqlite_connection(&db_url).await;
+        // Run migrations best-effort
+        let _ = Migrator::up(database::get_db_connection(), None).await;
+    });
+    // Now get the connection
+    let conn = get_db_connection().clone();
+    let session_svc = DatabaseSessionService::new(conn);
     if show_banner && std::env::var("SCROLL_CI").is_err() {
         println!("{}", Colour::Purple.bold().paint("🔮 Scroll Core v0.2"));
     }
 
     let mut session = ChatSession::new(Some(target.to_string()), None);
     let mut mood = EmotionalState::new(Vec::new(), 0.0, None);
-    let session_id = rt.block_on(db.create_session())?;
+    let created = rt
+        .block_on(session_svc.create_session("cli", "user", None, None))
+        .map_err(|e| anyhow!(e.to_string()))?;
+    let _session_id = created.id.clone();
+    let mut created_session = created;
 
     let running = Arc::new(AtomicBool::new(true));
     let rflag = running.clone();
@@ -52,6 +73,23 @@ pub fn run_chat(
     let hist_path = home_dir().map(|p| p.join(".scroll_core_history"));
     if let Some(path) = &hist_path {
         let _ = rl.load_history(path);
+    }
+
+    // Start a minimal background trigger loop (disabled in CI)
+    if std::env::var("SCROLL_CI").is_err() {
+        std::thread::spawn(move || {
+            let config = TriggerLoopConfig {
+                rhythm: SymbolicRhythm::EmotionDriven,
+                max_invocations_per_tick: 1,
+                allow_test_ticks: false,
+                emotional_signature: None,
+            };
+            let mut engine = TriggerLoopEngine::new(config);
+            // No NamedConstructs wired here yet; placeholder for Phase 6
+            let mut none: Vec<Box<dyn crate::invocation::named_construct::NamedConstruct>> = vec![];
+            // Run a few ticks and exit to avoid runaway thread in CLI sessions
+            for _ in 0..3 { engine.tick_once(&mut none); std::thread::sleep(std::time::Duration::from_millis(500)); }
+        });
     }
 
     let prompt_user = theme.prompt_user.paint("You › ").to_string();
@@ -68,12 +106,19 @@ pub fn run_chat(
         }
         let _ = rl.add_history_entry(trimmed);
 
-        if let Err(e) = rt.block_on(db.log_event(&session_id, "user", trimmed)) {
-            eprintln!(
-                "Failed to log event for session '{}', role 'user': {e}",
-                session_id
-            );
-        }
+        // Append user event (minimal content)
+        let evt = crate::events::scroll_event::ScrollEvent::new(
+            "user".to_string(),
+            None,
+            None,
+            false,
+            true,
+            false,
+            None,
+        );
+        let _ = rt
+            .block_on(session_svc.append_event(&mut created_session, evt))
+            .map_err(|e| anyhow!(e.to_string()));
         let _invocation = Invocation {
             id: Uuid::new_v4(),
             phrase: trimmed.to_string(),
@@ -88,22 +133,36 @@ pub fn run_chat(
             ChatDispatcher::dispatch(&mut session, trimmed, manager, aelren, memory, &mut mood);
         if reply.role == "system" {
             println!("{}", reply.content);
-            if let Err(e) = rt.block_on(db.log_event(&session_id, "system", &reply.content)) {
-                eprintln!(
-                    "Failed to log event for session '{}', target 'system': {e}",
-                    session_id
-                );
-            }
+            let evt = crate::events::scroll_event::ScrollEvent::new(
+                "system".to_string(),
+                Some(crate::models::base_model::LLMResponseContent { text: reply.content.clone() }),
+                None,
+                false,
+                true,
+                false,
+                None,
+            );
+            let _ = rt
+                .block_on(session_svc.append_event(&mut created_session, evt))
+                .map_err(|e| anyhow!(e.to_string()));
             continue;
         }
-        println!("{} › {}", target, reply.content);
-        if let Err(e) = rt.block_on(db.log_event(&session_id, target, &reply.content)) {
-            eprintln!(
-                "Failed to log event for session '{}', target '{}': {e}",
-                session_id, target
-            );
-        }
+            println!("{} › {}", target, reply.content);
+        let evt = crate::events::scroll_event::ScrollEvent::new(
+            target.to_string(),
+            Some(crate::models::base_model::LLMResponseContent { text: reply.content.clone() }),
+            None,
+            false,
+            true,
+            false,
+            None,
+        );
+        let _ = rt
+            .block_on(session_svc.append_event(&mut created_session, evt))
+            .map_err(|e| anyhow!(e.to_string()));
     }
+    // Example ritual commands to persist and seal could be added here or in a dedicated CLI module
+    // e.g., write current scroll to archive and optionally add to index.
     if let Some(path) = &hist_path {
         let _ = rl.save_history(path);
         if let Ok(contents) = std::fs::read_to_string(path) {

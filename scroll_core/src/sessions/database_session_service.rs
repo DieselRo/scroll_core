@@ -14,6 +14,8 @@ use crate::sessions::session_service::{
 use crate::sessions::state::State;
 use async_trait::async_trait;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
+use sea_orm::sea_query::Expr;
+use sea_orm::ActiveValue::NotSet;
 
 use crate::models::{scroll_event, scroll_session};
 use serde_json;
@@ -54,7 +56,7 @@ impl SessionService for DatabaseSessionService {
             created_at: Set(session.last_update_time as i64),
         };
 
-        active_model.insert(&self.conn).await?;
+        scroll_session::Entity::insert(active_model).exec(&self.conn).await?;
         Ok(session)
     }
 
@@ -91,10 +93,46 @@ impl SessionService for DatabaseSessionService {
 
     async fn append_event(
         &self,
-        _session: &mut ScrollSession,
-        _event: ScrollEvent,
+        session: &mut ScrollSession,
+        event: ScrollEvent,
     ) -> Result<ScrollEvent, Box<dyn std::error::Error>> {
-        todo!()
+        let content_json = match &event.content {
+            Some(c) => serde_json::to_string(c)?,
+            None => String::new(),
+        };
+        let actions_json = match &event.actions {
+            Some(a) => serde_json::to_string(a)?,
+            None => String::new(),
+        };
+
+        let active = scroll_event::ActiveModel {
+            id: Set(event.id.to_string()),
+            session_id: Set(session.id.clone()),
+            author: Set(event.author.clone()),
+            timestamp: Set(event.timestamp as i64),
+            content_json: Set(content_json),
+            actions_json: Set(actions_json),
+            partial: Set(event.partial),
+            turn_complete: Set(event.turn_complete),
+            interrupted: Set(event.interrupted),
+            branch: Set(event.branch.clone()),
+        };
+
+        let _ = scroll_event::Entity::insert(active).exec(&self.conn).await?;
+
+        // Update session last_update_time (best-effort, tolerate race/no-op)
+        let _ = scroll_session::Entity::update_many()
+            .col_expr(
+                scroll_session::Column::LastUpdateTime,
+                Expr::value(chrono::Utc::now().timestamp() as i64),
+            )
+            .filter(scroll_session::Column::Id.eq(session.id.clone()))
+            .exec(&self.conn)
+            .await?;
+
+        // Mirror in-memory state
+        session.last_update_time = chrono::Utc::now().timestamp() as u64;
+        Ok(event)
     }
 
     async fn list_events(
@@ -147,8 +185,17 @@ impl SessionService for DatabaseSessionService {
 
     async fn close_session(
         &self,
-        _session: &mut ScrollSession,
+        session: &mut ScrollSession,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        todo!()
+        let model = scroll_session::ActiveModel {
+            id: Set(session.id.clone()),
+            app_name: NotSet,
+            user_id: NotSet,
+            state_json: NotSet,
+            created_at: NotSet,
+            last_update_time: Set(chrono::Utc::now().timestamp() as i64),
+        };
+        let _ = model.update(&self.conn).await?;
+        Ok(())
     }
 }

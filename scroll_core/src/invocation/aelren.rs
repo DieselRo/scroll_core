@@ -6,7 +6,7 @@
 use crate::construct_ai::{ConstructContext, ConstructResult};
 use crate::core::context_frame_engine::ContextFrameEngine;
 use crate::core::ConstructRegistry;
-use crate::invocation::ledger;
+// DB ledger is written downstream by InvocationManager
 use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::scroll::Scroll;
 use chrono::Utc;
@@ -53,9 +53,7 @@ impl<'a> AelrenHerald<'a> {
             timestamp: Utc::now(),
         };
 
-        if let Err(e) = ledger::log_invocation("logs/aelren.log", &invocation) {
-            eprintln!("⚠️ Failed to log symbolic invocation: {}", e);
-        }
+        // Legacy file logger removed; DB ledger is written by InvocationManager after actual invoke
 
         AelrenFrameResult {
             framed_context: context,
@@ -65,12 +63,32 @@ impl<'a> AelrenHerald<'a> {
     }
 
     fn suggest_construct(&self, context: &ConstructContext) -> Option<String> {
+        // 1) Tag-based hint
         for name in &self.registry_snapshot {
             if context.tags.iter().any(|tag| name.contains(tag)) {
                 return Some(name.clone());
             }
         }
-        None
+        // 2) Tone-based hint (mythscribe for calm/reflective)
+        let tone = context.emotion_signature.tone.to_lowercase();
+        if let Some(ms) = self
+            .registry_snapshot
+            .iter()
+            .find(|n| n.to_lowercase() == "mythscribe")
+        {
+            if ["calm", "reflective", "curious", "neutral"].iter().any(|t| tone.contains(t)) {
+                return Some(ms.clone());
+            }
+        }
+        // 3) Default fallback: mythscribe if available, else first construct
+        if let Some(ms) = self
+            .registry_snapshot
+            .iter()
+            .find(|n| n.to_lowercase() == "mythscribe")
+        {
+            return Some(ms.clone());
+        }
+        self.registry_snapshot.first().cloned()
     }
 
     pub fn invoke_symbolically(

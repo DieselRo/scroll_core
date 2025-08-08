@@ -1,19 +1,21 @@
 ---
-title: "Scrollbook: Visionary Glossary"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🧠"
-invocation_phrase: "Define the echo within."
+title: 'Scrollbook: Visionary Glossary'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
 tags:
-  - glossary
-  - myth
-  - recursion
-emotion_signature: "resonance"
+- glossary
+- myth
+- recursion
+archetype: null
 quorum_required: false
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # 🧠 Scrollbook: Visionary Glossary
 *Filed under: Scrollbooks / Symbolic Reference*

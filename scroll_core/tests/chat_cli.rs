@@ -25,7 +25,7 @@ async fn chat_cli_records() {
     cmd.env("SCROLL_CORE_USE_MOCK", "1")
         .env("SCROLL_CI", "1")
         .env("SCROLL_CORE_ARCHIVE_DIR", archive)
-        .env("CHAT_DB_PATH", db_path.to_str().unwrap())
+        .env("DATABASE_URL", &format!("sqlite://{}?mode=rwc", db_path.to_str().unwrap()))
         .current_dir(archive)
         .args(["chat", "mythscribe", "--no-stream"])
         .write_stdin("ping\nexit\n")

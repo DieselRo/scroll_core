@@ -1,19 +1,19 @@
 ---
-title: "The Breath and the Drifter"
-scroll_type: "canon"
-author: "Prime Seeker"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🜂"
-invocation_phrase: "Make it canon."
+title: The Breath and the Drifter
+scroll_type: Canon
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
 tags:
-  - breath, origin, encounter
-related_scrolls:
-  - Tomekeeper_Scroll_Echo_Bearer_Project.md
-emotion_signature: "wonder"
+- breath, origin, encounter
+archetype: null
 quorum_required: false
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # 📜 The Breath and the Drifter — Entwining Origins at Virel Station
 *Filed under: Tomekeeper’s Scroll / Narrative Arcs / Foundational Myth*

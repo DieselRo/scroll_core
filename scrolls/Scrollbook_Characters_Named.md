@@ -1,12 +1,20 @@
 ---
-title: "Scrollbook: Named Characters and Agents"
-scroll_type: "scrollbook"
-author: "Prime Seeker, recorded by Sirion"
-sigil: "🜁"
-invocation_phrase: "Name the one who watches."
-emotion_signature: "mystery"
-archetype: "Symbolic"
+title: Scrollbook Characters Named
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
+
 
 # 🜁 Scrollbook: Named Characters and Agents
 *Filed under: Archive Soul / Resonant Voices*

@@ -1,3 +1,19 @@
+---
+title: Scrollbook Agent Permissions andQuorums
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # ✦ Scrollbook: Agent Permissions and Quorums
 *Filed under: Protocol / Governance / Scroll Authority*
 *Declared by: The Prime Seeker*

@@ -1,19 +1,21 @@
 ---
-title: "Scrollbook: Reference Codex"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "📘"
-invocation_phrase: "Define the weave."
+title: 'Scrollbook: Reference Codex'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: clear
+  emphasis: 0.3
+  resonance: focused
+  intensity: 0.2
 tags:
-  - reference
-  - terms
-  - interface
-emotion_signature: "clarity"
+- reference
+- terms
+- interface
+archetype: null
 quorum_required: false
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # 📘 Scrollbook: Reference Codex
 *Filed under: Scrollbooks / Core Reference*

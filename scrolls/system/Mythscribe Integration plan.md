@@ -1,3 +1,19 @@
+---
+title: Mythscribe Integration plan
+scroll_type: Myth
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 title: Mythscribe Integration Plan scroll_type: Integration Scroll status: In Progress version: 0.1.0 last_modified: 2025-04-07 keywords:
 
 mythscribe

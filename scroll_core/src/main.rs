@@ -8,11 +8,13 @@ use anyhow::Result;
 use std::path::Path;
 
 use clap::{Parser, Subcommand};
+use migration::MigratorTrait;
 use dotenvy::dotenv;
 use scroll_core::chat::chat_dispatcher::ChatDispatcher;
-use scroll_core::cli::{chat::run_chat, chat_db::ChatDb, theme::ThemeKind};
+use scroll_core::cli::{chat::run_chat, theme::ThemeKind};
 use scroll_core::{
     archive::archive_memory::InMemoryArchive,
+    archive::semantic_index::TokenEmbedder,
     archive::initialize::ensure_archive_dir,
     core::{
         construct_registry::ConstructRegistry,
@@ -61,6 +63,31 @@ enum Commands {
         #[arg(long = "no-banner", action = clap::ArgAction::SetTrue, default_value_t = false)]
         no_banner: bool,
     },
+    /// Archive index operations
+    Index {
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["list", "add", "remove"]))]
+        action: String,
+        #[arg(long)]
+        file: Option<String>,
+    },
+    /// Ritual operations over scrolls (validate, write, seal)
+    Ritual {
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["validate", "validate-all", "write", "seal"]))]
+        action: String,
+        #[arg(long)]
+        file: Option<String>,
+        /// Also add to scroll_index.yaml when writing
+        #[arg(long, action = clap::ArgAction::SetTrue, default_value_t = false)]
+        update_index: bool,
+    },
+    /// Document utilities (index, classify, recent)
+    Doc {
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["index", "classify", "recent", "normalize"]))]
+        action: String,
+        /// Apply minimal headers to scrolls/ files missing valid YAML (DANGEROUS)
+        #[arg(long, action = clap::ArgAction::SetTrue, default_value_t = false)]
+        fix_headers: bool,
+    },
 }
 
 fn main() -> Result<()> {
@@ -85,7 +112,16 @@ fn main() -> Result<()> {
             std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
         ensure_archive_dir(Path::new(&archive_dir))?;
         let (scrolls, _cache) = initialize_scroll_core()?;
-        let archive = InMemoryArchive::new(scrolls.clone());
+        // Initialize database connection for session logging
+        let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+        let rt = tokio::runtime::Runtime::new()?;
+        let _ = rt.block_on(scroll_core::sessions::database::init_sqlite_connection(&db_url));
+        let mut archive = InMemoryArchive::new(scrolls.clone());
+        // Build semantic index for context modes that rely on it
+        {
+            let embedder = TokenEmbedder;
+            let _ = archive.build_semantic_index(&embedder);
+        }
         let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
 
         let mut registry = ConstructRegistry::new();
@@ -101,13 +137,11 @@ fn main() -> Result<()> {
             );
             registry.insert("mythscribe", mythscribe);
         }
+        // Optional: attach a pulse-sensitive construct to bus later (Phase 6)
 
         let manager = InvocationManager::new(registry);
         let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
-        let rt = tokio::runtime::Runtime::new()?;
-        let db_path = std::env::var("CHAT_DB_PATH").unwrap_or_else(|_| "scroll_core.db".into());
-        let db = rt.block_on(ChatDb::open(&db_path))?;
-        let stream_enabled = *stream && *no_stream;
+        let stream_enabled = *stream && !*no_stream;
         let theme_struct = theme.styles();
         run_chat(
             &manager,
@@ -115,11 +149,74 @@ fn main() -> Result<()> {
             &scrolls,
             construct,
             stream_enabled,
-            &db,
             theme_struct,
             !*no_banner,
         )?;
         teardown_scroll_core();
+        return Ok(());
+    }
+
+    if let Some(Commands::Index { action, file }) = &cli.command {
+        let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
+        let path = Path::new(&archive_dir);
+        ensure_archive_dir(path)?;
+        match action.as_str() {
+            "list" => {
+                scroll_core::cli::index::index_list(path).map_err(anyhow::Error::msg)?;
+            }
+            "add" => {
+                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for add"))?;
+                scroll_core::cli::index::index_add(path, &f).map_err(anyhow::Error::msg)?;
+                println!("Added {} to index", f);
+            }
+            "remove" => {
+                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for remove"))?;
+                scroll_core::cli::index::index_remove(path, &f).map_err(anyhow::Error::msg)?;
+                println!("Removed {} from index", f);
+            }
+            _ => unreachable!(),
+        }
+        return Ok(());
+    }
+
+    if let Some(Commands::Ritual { action, file, update_index }) = &cli.command {
+        let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
+        let path = Path::new(&archive_dir);
+        ensure_archive_dir(path)?;
+        match action.as_str() {
+            "validate" => {
+                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for validate"))?;
+                scroll_core::cli::ritual::ritual_validate(path, &f)?;
+            }
+            "validate-all" => {
+                scroll_core::cli::ritual::ritual_validate_all(path)?;
+            }
+            "write" => {
+                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for write"))?;
+                scroll_core::cli::ritual::ritual_write(path, &f, *update_index)?;
+            }
+            "seal" => {
+                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for seal"))?;
+                scroll_core::cli::ritual::ritual_seal(path, &f)?;
+            }
+            _ => unreachable!(),
+        }
+        return Ok(());
+    }
+
+    if let Some(Commands::Doc { action, fix_headers }) = &cli.command {
+        match action.as_str() {
+            "index" => scroll_core::cli::docs::doc_index()?,
+            "classify" => scroll_core::cli::docs::doc_classify()?,
+            "recent" => scroll_core::cli::docs::doc_recent()?,
+            "normalize" => scroll_core::cli::docs::doc_normalize_headers()?,
+            _ => unreachable!(),
+        }
+        if *fix_headers {
+            scroll_core::cli::docs::doc_fix_headers()?;
+            println!("Applied minimal headers to scrolls/ candidates.");
+        }
+        println!("Docs: {} generated under docs/reference", action);
         return Ok(());
     }
 
@@ -135,7 +232,11 @@ fn main() -> Result<()> {
         Ok((scrolls, _cache)) => {
             println!("✨ Scroll Core is active. Awaiting construct cadence...\n");
 
-            let archive = InMemoryArchive::new(scrolls.clone());
+            let mut archive = InMemoryArchive::new(scrolls.clone());
+            {
+                let embedder = TokenEmbedder;
+                let _ = archive.build_semantic_index(&embedder);
+            }
             let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
 
             // Seed construct registry
@@ -145,6 +246,21 @@ fn main() -> Result<()> {
                 "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
             );
             registry.insert("mythscribe", mythscribe);
+
+            // Ensure DB connection and migrations for CLI ledger/session logging
+            {
+                let db_url = std::env::var("DATABASE_URL")
+                    .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+                if !scroll_core::sessions::database::is_initialized() {
+                    if let Ok(rt) = tokio::runtime::Runtime::new() {
+                        let _ = rt.block_on(async {
+                            if scroll_core::sessions::database::init_sqlite_connection(&db_url).await.is_ok() {
+                                let _ = migration::Migrator::up(scroll_core::sessions::database::get_db_connection(), None).await;
+                            }
+                        });
+                    }
+                }
+            }
 
             let manager = InvocationManager::new(registry);
             let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
@@ -173,7 +289,11 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
     scrolls.push(demo_scroll.clone());
 
     // 3️⃣  tiny runtime
-    let archive = InMemoryArchive::new(scrolls.clone());
+    let mut archive = InMemoryArchive::new(scrolls.clone());
+    {
+        let embedder = TokenEmbedder;
+        let _ = archive.build_semantic_index(&embedder);
+    }
     let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
     let mut reg = ConstructRegistry::new();
     let myth = Mythscribe::new(

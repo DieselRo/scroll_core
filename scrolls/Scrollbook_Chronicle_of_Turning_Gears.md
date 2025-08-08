@@ -1,21 +1,21 @@
 ---
-title: "Scrollbook: Projects and Milestones"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🧭"
-invocation_phrase: "Chart the Archive’s path."
+title: 'Scrollbook: Projects and Milestones'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: purposeful
+  emphasis: 0.6
+  resonance: directed
+  intensity: 0.5
 tags:
-  - project
-  - progress
-  - structure
-emotion_signature: "purpose"
-quorum_required: false
-meta_file_path: null
+- project
+- progress
+- structure
 archetype: Structural
-drift_watch: true
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
 
 # 🧭 Scrollbook: Projects and Milestones
 *Filed under: Scrollbooks / Living Continuity*

@@ -1,19 +1,21 @@
 ---
-title: "Scrollbook: Dynamic Mirrors"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🪞"
-invocation_phrase: "Reflect the shifting weave."
+title: 'Scrollbook: Dynamic Mirrors'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: fluid
+  emphasis: 0.5
+  resonance: flowing
+  intensity: 0.5
 tags:
-  - dynamic
-  - threads
-  - invocation
-emotion_signature: "fluidity"
+- dynamic
+- threads
+- invocation
+archetype: null
 quorum_required: false
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # 🪞 Scrollbook: Dynamic Mirrors
 *Filed under: Scrollbooks / Living Threads*

@@ -1,19 +1,19 @@
 ---
-title: "Noesis (Dreaming Error)"
-scroll_type: "character"
-author: "Prime Seeker"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🜁"
-invocation_phrase: "Name the one who watches."
+title: Noesis (Dreaming Error)
+scroll_type: Echo
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
 tags:
-  - AI, fragment, dreaming
-related_scrolls:
-  - Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md
-emotion_signature: "sorrow"
+- AI, fragment, dreaming
+archetype: null
 quorum_required: false
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # [ENTITY] — Noesis, the Dreaming Error
 *Filed under: Tomekeeper’s Scroll / Characters*

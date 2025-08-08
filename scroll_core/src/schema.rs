@@ -2,10 +2,10 @@
 // src/schema.rs
 // ===============================
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use std::fmt;
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
 pub enum ScrollType {
     Canon,
     Protocol,
@@ -35,7 +35,33 @@ impl fmt::Display for ScrollType {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+impl<'de> Deserialize<'de> for ScrollType {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let norm = s
+            .chars()
+            .filter(|c| c.is_alphanumeric())
+            .collect::<String>()
+            .to_lowercase();
+        let mapped = match norm.as_str() {
+            "canon" => ScrollType::Canon,
+            "protocol" => ScrollType::Protocol,
+            "system" => ScrollType::System,
+            "scrollbook" => ScrollType::Scrollbook,
+            "agentcatalog" | "agent" | "catalog" => ScrollType::AgentCatalog,
+            "myth" => ScrollType::Myth,
+            "ritual" => ScrollType::Ritual,
+            "echo" => ScrollType::Echo,
+            _ => ScrollType::Echo, // lenient fallback
+        };
+        Ok(mapped)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum ScrollStatus {
     Emergent,
     Draft,
@@ -47,7 +73,33 @@ pub enum ScrollStatus {
     Deprecated,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+impl<'de> Deserialize<'de> for ScrollStatus {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let norm = s
+            .chars()
+            .filter(|c| c.is_alphanumeric())
+            .collect::<String>()
+            .to_lowercase();
+        let mapped = match norm.as_str() {
+            "emergent" => ScrollStatus::Emergent,
+            "draft" => ScrollStatus::Draft,
+            "active" => ScrollStatus::Active,
+            "mythicvalidated" | "validated" => ScrollStatus::MythicValidated,
+            "sealed" => ScrollStatus::Sealed,
+            "archived" => ScrollStatus::Archived,
+            "latent" => ScrollStatus::Latent,
+            "deprecated" => ScrollStatus::Deprecated,
+            _ => ScrollStatus::Draft,
+        };
+        Ok(mapped)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct EmotionSignature {
     pub tone: String,
     pub emphasis: f32,
@@ -166,6 +218,55 @@ impl fmt::Display for EmotionSignature {
             self.resonance,
             self.intensity.unwrap_or(0.0)
         )
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum EmotionSigRepr {
+    Str(String),
+    Obj {
+        tone: String,
+        emphasis: f32,
+        resonance: String,
+        #[serde(default)]
+        intensity: Option<f32>,
+    },
+}
+
+fn preset_from_str(s: &str) -> EmotionSignature {
+    let key = s.trim().to_lowercase();
+    match key.as_str() {
+        "neutral" => EmotionSignature::neutral(),
+        "reflective" => EmotionSignature::reflective(),
+        "curious" => EmotionSignature::curious(),
+        "urgent" => EmotionSignature::urgent(),
+        "mythic" => EmotionSignature::mythic(),
+        "solemn" => EmotionSignature::solemn(),
+        "reverent" | "reverence" => EmotionSignature::reverent(),
+        "inspired" => EmotionSignature::inspired(),
+        "frenzied" => EmotionSignature::frenzied(),
+        "ancient" => EmotionSignature::ancient(),
+        // fuzzy/common synonyms in existing scrolls
+        "clarity" => EmotionSignature { tone: "clear".into(), emphasis: 0.3, resonance: "focused".into(), intensity: Some(0.2) },
+        "precision" => EmotionSignature { tone: "precise".into(), emphasis: 0.5, resonance: "crisp".into(), intensity: Some(0.4) },
+        "awe" => EmotionSignature { tone: "awed".into(), emphasis: 0.7, resonance: "vast".into(), intensity: Some(0.6) },
+        "fluidity" => EmotionSignature { tone: "fluid".into(), emphasis: 0.5, resonance: "flowing".into(), intensity: Some(0.5) },
+        "purpose" => EmotionSignature { tone: "purposeful".into(), emphasis: 0.6, resonance: "directed".into(), intensity: Some(0.5) },
+        _ => EmotionSignature::neutral(),
+    }
+}
+
+impl<'de> Deserialize<'de> for EmotionSignature {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let repr = EmotionSigRepr::deserialize(deserializer)?;
+        Ok(match repr {
+            EmotionSigRepr::Str(s) => preset_from_str(&s),
+            EmotionSigRepr::Obj { tone, emphasis, resonance, intensity } => EmotionSignature { tone, emphasis, resonance, intensity },
+        })
     }
 }
 

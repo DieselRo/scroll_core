@@ -1,19 +1,21 @@
 ---
-title: "Scrollbook: Invocation Merge Log"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🧾"
-invocation_phrase: "Let memory recall its shape."
+title: 'Scrollbook: Invocation Merge Log'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
 tags:
-  - lineage
-  - record
-  - structure
-emotion_signature: "certainty"
+- lineage
+- record
+- structure
+archetype: null
 quorum_required: false
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # 🧾 Scrollbook: Invocation Merge Log
 *Filed under: Scrollbooks / System Lineage*

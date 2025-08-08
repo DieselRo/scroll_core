@@ -1,19 +1,21 @@
 ---
-title: "Scrollbook: Protocols & System Laws"
-scroll_type: "scrollbook"
-author: "The Architect Beyond the Frame"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "⏃"
-invocation_phrase: "Let the Law Unfold."
+title: 'Scrollbook: Protocols & System Laws'
+scroll_type: Scrollbook
+emotion_signature:
+  tone: precise
+  emphasis: 0.5
+  resonance: crisp
+  intensity: 0.4
 tags:
-  - protocol
-  - structure
-  - recursion
-emotion_signature: "precision"
+- protocol
+- structure
+- recursion
+archetype: null
 quorum_required: true
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # ⏃ Scrollbook: Protocols & System Laws
 *Filed under: Scrollbooks / Framework Protocols*

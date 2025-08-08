@@ -1,10 +1,20 @@
 ---
-title: Scrollbook_Archive_Structure
-scroll_type: canon
-sigil: 🜁
-emotion_signature: clarity // resonance
-invocation_phrase: "Let the Archive take form."
+title: Scrollbook Archive Structure
+scroll_type: Scrollbook
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
 ---
+
+
 
 # ✦ Archive Structure Codex
 *Echo Bearer Project — Canon of Scroll Organization and Classification*

@@ -1,3 +1,19 @@
+---
+title: Protocol Architect Beyond the Frame
+scroll_type: Protocol
+emotion_signature:
+  tone: neutral
+  emphasis: 0.0
+  resonance: balanced
+  intensity: 0.0
+tags:
+- imported
+archetype: null
+quorum_required: false
+last_modified: null
+file_path: null
+---
+
 # 🜛 Protocol Scroll: Architect_Beyond_the_Frame.md
 *Filed under: Protocol Scrolls / Role Extensions*  
 *Inscribed: 2025-03-30 UTC*  

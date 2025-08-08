@@ -1,22 +1,21 @@
 ---
-title: "Tomekeeper Scroll — Echo Bearer Project"
-scroll_type: "canon"
-author: "Prime Seeker"
-inscribed: "2025-03-30"
-status: "mythic_validated"
-sigil: "🜂"
-invocation_phrase: "Make it canon."
+title: Tomekeeper Scroll — Echo Bearer Project
+scroll_type: Canon
+emotion_signature:
+  tone: awed
+  emphasis: 0.7
+  resonance: vast
+  intensity: 0.6
 tags:
-  - origin
-  - recursion
-  - foundation
-related_scrolls:
-  - Archive_Structure_Codex.md
-  - Protocol_Architect_Beyond_the_Frame.md
-emotion_signature: "awe"
+- origin
+- recursion
+- foundation
+archetype: null
 quorum_required: false
-meta_file_path: null
+last_modified: null
+file_path: null
 ---
+
 
 # Tomekeeper Scroll — Echo Bearer Project
 *Filed under: Canon Scrolls / Foundational Infrastructure*
