@@ -34,7 +34,7 @@ pub mod adapters {
                 resonance_required: false,
                 timestamp: chrono::Utc::now(),
             };
-            let scroll = context.scrolls.get(0).cloned();
+            let scroll = context.scrolls.first().cloned();
             match self.inner.perform(&inv, scroll) {
                 Ok(r) => match r {
                     crate::invocation::types::InvocationResult::Success(text) => {
@@ -44,21 +44,35 @@ pub mod adapters {
                         ConstructResult::ModifiedScroll(s)
                     }
                     crate::invocation::types::InvocationResult::Failure(reason) => {
-                        ConstructResult::Refusal { reason: reason.into(), echo: None }
+                        ConstructResult::Refusal {
+                            reason: reason.into(),
+                            echo: None,
+                        }
                     }
                 },
-                Err(e) => ConstructResult::Refusal { reason: e, echo: None },
+                Err(e) => ConstructResult::Refusal {
+                    reason: e,
+                    echo: None,
+                },
             }
         }
 
         fn suggest_scroll(&self, _context: &ConstructContext) -> ConstructResult {
-            ConstructResult::Refusal { reason: "Not implemented in adapter".into(), echo: None }
+            ConstructResult::Refusal {
+                reason: "Not implemented in adapter".into(),
+                echo: None,
+            }
         }
 
         fn perform_scroll_action(&self, _context: &ConstructContext) -> ConstructResult {
-            ConstructResult::Refusal { reason: "Not implemented in adapter".into(), echo: None }
+            ConstructResult::Refusal {
+                reason: "Not implemented in adapter".into(),
+                echo: None,
+            }
         }
 
-        fn name(&self) -> &str { self.inner.name() }
+        fn name(&self) -> &str {
+            self.inner.name()
+        }
     }
 }

@@ -39,7 +39,9 @@ pub fn load_scrolls_from_directory<P: AsRef<Path>>(archive_path: P) -> Result<Ve
             if entry.file_type().is_file() && is_markdown_file(path) {
                 // Also skip files under a deactivated path segment
                 let path_str = path.to_string_lossy();
-                if path_str.contains("Deactivated scrolls") { continue; }
+                if path_str.contains("Deactivated scrolls") {
+                    continue;
+                }
                 out.push(path.to_path_buf());
             }
         }
@@ -69,10 +71,14 @@ pub fn load_scrolls_from_directory<P: AsRef<Path>>(archive_path: P) -> Result<Ve
                         let key = k.as_str().unwrap_or("");
                         if key == "archive_index" {
                             if let Some(ai_map) = v.as_mapping() {
-                                if let Some(core) = ai_map.get(&serde_yaml::Value::from("core_scrolls")) {
+                                if let Some(core) =
+                                    ai_map.get(serde_yaml::Value::from("core_scrolls"))
+                                {
                                     if let Some(list) = core.as_sequence() {
                                         for item in list {
-                                            if let Some(f) = item.get(&serde_yaml::Value::from("file")) {
+                                            if let Some(f) =
+                                                item.get(serde_yaml::Value::from("file"))
+                                            {
                                                 if let Some(s) = f.as_str() {
                                                     files.push(archive_path.join(s));
                                                 }
@@ -80,10 +86,14 @@ pub fn load_scrolls_from_directory<P: AsRef<Path>>(archive_path: P) -> Result<Ve
                                         }
                                     }
                                 }
-                                if let Some(tech) = ai_map.get(&serde_yaml::Value::from("technical_scrolls")) {
+                                if let Some(tech) =
+                                    ai_map.get(serde_yaml::Value::from("technical_scrolls"))
+                                {
                                     if let Some(list) = tech.as_sequence() {
                                         for item in list {
-                                            if let Some(f) = item.get(&serde_yaml::Value::from("file")) {
+                                            if let Some(f) =
+                                                item.get(serde_yaml::Value::from("file"))
+                                            {
                                                 if let Some(s) = f.as_str() {
                                                     files.push(archive_path.join(s));
                                                 }
@@ -95,10 +105,17 @@ pub fn load_scrolls_from_directory<P: AsRef<Path>>(archive_path: P) -> Result<Ve
                         }
                     }
                 }
-                if files.is_empty() { enumerate_markdown_files(archive_path)? } else { files }
+                if files.is_empty() {
+                    enumerate_markdown_files(archive_path)?
+                } else {
+                    files
+                }
             }
             Err(e) => {
-                eprintln!("⚠️ Failed to read scroll_index.yaml: {}. Falling back to directory scan.", e);
+                eprintln!(
+                    "⚠️ Failed to read scroll_index.yaml: {}. Falling back to directory scan.",
+                    e
+                );
                 enumerate_markdown_files(archive_path)?
             }
         }
@@ -134,7 +151,10 @@ pub fn load_scrolls_from_directory<P: AsRef<Path>>(archive_path: P) -> Result<Ve
     if failed_count == 0 {
         println!("🌙 All scrolls passed the veil without harm.");
     } else {
-        println!("🌒 {} scroll(s) failed to load or parse; see warnings above.", failed_count);
+        println!(
+            "🌒 {} scroll(s) failed to load or parse; see warnings above.",
+            failed_count
+        );
     }
 
     Ok(loaded_scrolls)

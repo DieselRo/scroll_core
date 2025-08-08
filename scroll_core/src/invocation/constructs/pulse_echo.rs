@@ -10,8 +10,14 @@ pub struct PulseEcho {
 }
 
 impl NamedConstruct for PulseEcho {
-    fn name(&self) -> &str { "pulse_echo" }
-    fn perform(&self, invocation: &Invocation, _scroll: Option<crate::Scroll>) -> Result<InvocationResult, String> {
+    fn name(&self) -> &str {
+        "pulse_echo"
+    }
+    fn perform(
+        &self,
+        invocation: &Invocation,
+        _scroll: Option<crate::Scroll>,
+    ) -> Result<InvocationResult, String> {
         if let Some(bus) = &self.bus {
             let msg = AgentMessage {
                 id: Uuid::new_v4(),
@@ -27,11 +33,13 @@ impl NamedConstruct for PulseEcho {
 }
 
 impl PulseSensitive for PulseEcho {
-    fn should_awaken(&self, tick: u64) -> bool { tick % 2 == 0 }
+    fn should_awaken(&self, tick: u64) -> bool {
+        tick % 2 == 0
+    }
 }
 
 impl OrchestratedConstruct for PulseEcho {
-    fn attach_bus(&mut self, bus: Bus) { self.bus = Some(bus); }
+    fn attach_bus(&mut self, bus: Bus) {
+        self.bus = Some(bus);
+    }
 }
-
-

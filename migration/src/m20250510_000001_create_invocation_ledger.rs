@@ -27,17 +27,50 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(InvocationLedger::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(InvocationLedger::Id).uuid().not_null().primary_key())
+                    .col(
+                        ColumnDef::new(InvocationLedger::Id)
+                            .uuid()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .col(ColumnDef::new(InvocationLedger::Phrase).text().not_null())
-                    .col(ColumnDef::new(InvocationLedger::Invoker).string().not_null())
-                    .col(ColumnDef::new(InvocationLedger::Invoked).string().not_null())
+                    .col(
+                        ColumnDef::new(InvocationLedger::Invoker)
+                            .string()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(InvocationLedger::Invoked)
+                            .string()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(InvocationLedger::Tier).string().not_null())
                     .col(ColumnDef::new(InvocationLedger::Mode).string().not_null())
-                    .col(ColumnDef::new(InvocationLedger::ResonanceRequired).boolean().not_null())
-                    .col(ColumnDef::new(InvocationLedger::Timestamp).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(InvocationLedger::CostSystemPressure).float().not_null())
-                    .col(ColumnDef::new(InvocationLedger::CostTokenPressure).float().not_null())
-                    .col(ColumnDef::new(InvocationLedger::Decision).string().not_null())
+                    .col(
+                        ColumnDef::new(InvocationLedger::ResonanceRequired)
+                            .boolean()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(InvocationLedger::Timestamp)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(InvocationLedger::CostSystemPressure)
+                            .float()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(InvocationLedger::CostTokenPressure)
+                            .float()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(InvocationLedger::Decision)
+                            .string()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await
@@ -49,5 +82,3 @@ impl MigrationTrait for Migration {
             .await
     }
 }
-
-

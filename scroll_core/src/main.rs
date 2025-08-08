@@ -8,14 +8,14 @@ use anyhow::Result;
 use std::path::Path;
 
 use clap::{Parser, Subcommand};
-use migration::MigratorTrait;
 use dotenvy::dotenv;
+use migration::MigratorTrait;
 use scroll_core::chat::chat_dispatcher::ChatDispatcher;
 use scroll_core::cli::{chat::run_chat, theme::ThemeKind};
 use scroll_core::{
     archive::archive_memory::InMemoryArchive,
-    archive::semantic_index::TokenEmbedder,
     archive::initialize::ensure_archive_dir,
+    archive::semantic_index::TokenEmbedder,
     core::{
         construct_registry::ConstructRegistry,
         context_frame_engine::{ContextFrameEngine, ContextMode},
@@ -82,7 +82,7 @@ enum Commands {
     },
     /// Document utilities (index, classify, recent)
     Doc {
-        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["index", "classify", "recent", "normalize"]))]
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["index", "classify", "recent", "normalize", "master-plan"]))]
         action: String,
         /// Apply minimal headers to scrolls/ files missing valid YAML (DANGEROUS)
         #[arg(long, action = clap::ArgAction::SetTrue, default_value_t = false)]
@@ -113,9 +113,12 @@ fn main() -> Result<()> {
         ensure_archive_dir(Path::new(&archive_dir))?;
         let (scrolls, _cache) = initialize_scroll_core()?;
         // Initialize database connection for session logging
-        let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+        let db_url = std::env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
         let rt = tokio::runtime::Runtime::new()?;
-        let _ = rt.block_on(scroll_core::sessions::database::init_sqlite_connection(&db_url));
+        let _ = rt.block_on(scroll_core::sessions::database::init_sqlite_connection(
+            &db_url,
+        ));
         let mut archive = InMemoryArchive::new(scrolls.clone());
         // Build semantic index for context modes that rely on it
         {
@@ -157,7 +160,8 @@ fn main() -> Result<()> {
     }
 
     if let Some(Commands::Index { action, file }) = &cli.command {
-        let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
+        let archive_dir =
+            std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
         let path = Path::new(&archive_dir);
         ensure_archive_dir(path)?;
         match action.as_str() {
@@ -165,12 +169,16 @@ fn main() -> Result<()> {
                 scroll_core::cli::index::index_list(path).map_err(anyhow::Error::msg)?;
             }
             "add" => {
-                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for add"))?;
+                let f = file
+                    .clone()
+                    .ok_or_else(|| anyhow::anyhow!("--file is required for add"))?;
                 scroll_core::cli::index::index_add(path, &f).map_err(anyhow::Error::msg)?;
                 println!("Added {} to index", f);
             }
             "remove" => {
-                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for remove"))?;
+                let f = file
+                    .clone()
+                    .ok_or_else(|| anyhow::anyhow!("--file is required for remove"))?;
                 scroll_core::cli::index::index_remove(path, &f).map_err(anyhow::Error::msg)?;
                 println!("Removed {} from index", f);
             }
@@ -179,24 +187,36 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    if let Some(Commands::Ritual { action, file, update_index }) = &cli.command {
-        let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
+    if let Some(Commands::Ritual {
+        action,
+        file,
+        update_index,
+    }) = &cli.command
+    {
+        let archive_dir =
+            std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
         let path = Path::new(&archive_dir);
         ensure_archive_dir(path)?;
         match action.as_str() {
             "validate" => {
-                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for validate"))?;
+                let f = file
+                    .clone()
+                    .ok_or_else(|| anyhow::anyhow!("--file is required for validate"))?;
                 scroll_core::cli::ritual::ritual_validate(path, &f)?;
             }
             "validate-all" => {
                 scroll_core::cli::ritual::ritual_validate_all(path)?;
             }
             "write" => {
-                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for write"))?;
+                let f = file
+                    .clone()
+                    .ok_or_else(|| anyhow::anyhow!("--file is required for write"))?;
                 scroll_core::cli::ritual::ritual_write(path, &f, *update_index)?;
             }
             "seal" => {
-                let f = file.clone().ok_or_else(|| anyhow::anyhow!("--file is required for seal"))?;
+                let f = file
+                    .clone()
+                    .ok_or_else(|| anyhow::anyhow!("--file is required for seal"))?;
                 scroll_core::cli::ritual::ritual_seal(path, &f)?;
             }
             _ => unreachable!(),
@@ -204,12 +224,17 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    if let Some(Commands::Doc { action, fix_headers }) = &cli.command {
+    if let Some(Commands::Doc {
+        action,
+        fix_headers,
+    }) = &cli.command
+    {
         match action.as_str() {
             "index" => scroll_core::cli::docs::doc_index()?,
             "classify" => scroll_core::cli::docs::doc_classify()?,
             "recent" => scroll_core::cli::docs::doc_recent()?,
             "normalize" => scroll_core::cli::docs::doc_normalize_headers()?,
+            "master-plan" => scroll_core::cli::docs::doc_generate_master_plan()?,
             _ => unreachable!(),
         }
         if *fix_headers {
@@ -253,11 +278,18 @@ fn main() -> Result<()> {
                     .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
                 if !scroll_core::sessions::database::is_initialized() {
                     if let Ok(rt) = tokio::runtime::Runtime::new() {
-                        let _ = rt.block_on(async {
-                            if scroll_core::sessions::database::init_sqlite_connection(&db_url).await.is_ok() {
-                                let _ = migration::Migrator::up(scroll_core::sessions::database::get_db_connection(), None).await;
+                    rt.block_on(async {
+                            if scroll_core::sessions::database::init_sqlite_connection(&db_url)
+                                .await
+                                .is_ok()
+                            {
+                                let _ = migration::Migrator::up(
+                                    scroll_core::sessions::database::get_db_connection(),
+                                    None,
+                                )
+                                .await;
                             }
-                        });
+                    });
                     }
                 }
             }

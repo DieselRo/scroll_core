@@ -11,5 +11,3 @@ fn ambient_trigger_respects_intensity_and_tags() {
     assert!(should_trigger(&tags, &mood_high, "core", 0.5));
     assert!(!should_trigger(&tags, &mood_high, "unknown", 0.5));
 }
-
-

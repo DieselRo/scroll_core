@@ -1,3 +1,4 @@
+use crate::schema::{ScrollType, YamlMetadata};
 use anyhow::Result;
 use pathdiff::diff_paths;
 use regex::Regex;
@@ -6,7 +7,6 @@ use std::fs;
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
-use crate::schema::YamlMetadata;
 
 #[derive(Serialize)]
 struct DocRow {
@@ -92,17 +92,17 @@ pub fn doc_index() -> Result<()> {
     }
     let mut md_buf = String::new();
     md_buf.push_str("# Document Index\n\n");
-    md_buf.push_str(&format!("Generated: {}\n\n", chrono::Utc::now().to_rfc3339()));
+    md_buf.push_str(&format!(
+        "Generated: {}\n\n",
+        chrono::Utc::now().to_rfc3339()
+    ));
     for (dir, files) in by_dir {
         md_buf.push_str(&format!("## {}\n", dir));
         for f in files {
-            let name = Path::new(&f.path)
-                .file_name()
-                .unwrap()
-                .to_string_lossy();
+            let name = Path::new(&f.path).file_name().unwrap().to_string_lossy();
             md_buf.push_str(&format!("- [{}]({})\n", name, f.href));
         }
-        md_buf.push_str("\n");
+        md_buf.push('\n');
     }
     fs::write(out_dir.join("doc-index.md"), md_buf)?;
     Ok(())
@@ -154,9 +154,15 @@ pub fn doc_recent() -> Result<()> {
     rows.sort_by_key(|(t, _)| std::cmp::Reverse(*t));
     let mut md_buf = String::new();
     md_buf.push_str("# Recent Documents\n\n");
-    md_buf.push_str(&format!("Generated: {}\n\n", chrono::Utc::now().to_rfc3339()));
+    md_buf.push_str(&format!(
+        "Generated: {}\n\n",
+        chrono::Utc::now().to_rfc3339()
+    ));
     for (_, row) in rows.iter().take(200) {
-        md_buf.push_str(&format!("- [{}]({})  — {}\n", row.path, row.href, row.modified));
+        md_buf.push_str(&format!(
+            "- [{}]({})  — {}\n",
+            row.path, row.href, row.modified
+        ));
     }
     fs::write(out_dir.join("doc-recent.md"), md_buf)?;
     Ok(())
@@ -181,11 +187,24 @@ pub fn doc_classify() -> Result<()> {
     }
     let mut rows: Vec<ClassRow> = Vec::new();
     for entry in WalkDir::new(&root).into_iter().filter_map(Result::ok) {
-        if !entry.file_type().is_file() { continue; }
+        if !entry.file_type().is_file() {
+            continue;
+        }
         let path = entry.path();
-        let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("").to_ascii_lowercase();
-        if ext != "md" && ext != "txt" { continue; }
-        let rel_path = path.strip_prefix(&root).unwrap().to_string_lossy().trim_start_matches(['\\','/']).replace('\\', "/");
+        let ext = path
+            .extension()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_ascii_lowercase();
+        if ext != "md" && ext != "txt" {
+            continue;
+        }
+        let rel_path = path
+            .strip_prefix(&root)
+            .unwrap()
+            .to_string_lossy()
+            .trim_start_matches(['\\', '/'])
+            .replace('\\', "/");
         let href = to_href(&out_dir, path);
         let category = category_of(&rel_path);
         let content = fs::read_to_string(path).unwrap_or_default();
@@ -193,29 +212,77 @@ pub fn doc_classify() -> Result<()> {
         let key_count = if has_yaml {
             // parse until next ---
             if let Some(end) = content[4..].find("\n---") {
-                let fm = &content[4..4+end];
+                let fm = &content[4..4 + end];
                 key_re.captures_iter(fm).count()
-            } else { 0 }
-        } else { 0 };
+            } else {
+                0
+            }
+        } else {
+            0
+        };
         let is_header = has_yaml && key_count >= 2;
         let is_path = rel_path.starts_with("scrolls");
         // naive topic from filename
         let lower = rel_path.to_lowercase();
-        let topic = if lower.contains("protocol") { "protocol" } else if lower.contains("ritual") { "ritual" } else if lower.contains("invocation") { "invocation" } else if lower.contains("loom") || lower.contains("trigger") { "loom" } else { "" };
-        rows.push(ClassRow { path: rel_path, href, category, has_yaml_front_matter: has_yaml, scroll_header_key_count: key_count, is_scroll_by_header: is_header, is_scroll_by_path: is_path, topic: topic.into() });
+        let topic = if lower.contains("protocol") {
+            "protocol"
+        } else if lower.contains("ritual") {
+            "ritual"
+        } else if lower.contains("invocation") {
+            "invocation"
+        } else if lower.contains("loom") || lower.contains("trigger") {
+            "loom"
+        } else {
+            ""
+        };
+        rows.push(ClassRow {
+            path: rel_path,
+            href,
+            category,
+            has_yaml_front_matter: has_yaml,
+            scroll_header_key_count: key_count,
+            is_scroll_by_header: is_header,
+            is_scroll_by_path: is_path,
+            topic: topic.into(),
+        });
     }
-    fs::write(out_dir.join("doc-manifest.json"), serde_json::to_vec_pretty(&rows)?)?;
+    fs::write(
+        out_dir.join("doc-manifest.json"),
+        serde_json::to_vec_pretty(&rows)?,
+    )?;
     // ambiguous report
     let mut md_buf = String::new();
     md_buf.push_str("# Ambiguous or Cross-Boundary Documents\n\n");
-    md_buf.push_str(&format!("Generated: {}\n\n", chrono::Utc::now().to_rfc3339()));
-    let non_scroll_header: Vec<&ClassRow> = rows.iter().filter(|r| r.category != "scroll" && r.is_scroll_by_header).collect();
-    let scroll_no_header: Vec<&ClassRow> = rows.iter().filter(|r| r.category == "scroll" && !r.is_scroll_by_header).collect();
-    md_buf.push_str(&format!("## Not under scrolls/, but has scroll header ({})\n", non_scroll_header.len()));
-    for r in &non_scroll_header { md_buf.push_str(&format!("- [{}]({}) — {} (keys: {})\n", r.path, r.href, r.category, r.scroll_header_key_count)); }
-    md_buf.push_str("\n");
-    md_buf.push_str(&format!("## Under scrolls/, but missing scroll header ({})\n", scroll_no_header.len()));
-    for r in &scroll_no_header { md_buf.push_str(&format!("- [{}]({})\n", r.path, r.href)); }
+    md_buf.push_str(&format!(
+        "Generated: {}\n\n",
+        chrono::Utc::now().to_rfc3339()
+    ));
+    let non_scroll_header: Vec<&ClassRow> = rows
+        .iter()
+        .filter(|r| r.category != "scroll" && r.is_scroll_by_header)
+        .collect();
+    let scroll_no_header: Vec<&ClassRow> = rows
+        .iter()
+        .filter(|r| r.category == "scroll" && !r.is_scroll_by_header)
+        .collect();
+    md_buf.push_str(&format!(
+        "## Not under scrolls/, but has scroll header ({})\n",
+        non_scroll_header.len()
+    ));
+    for r in &non_scroll_header {
+        md_buf.push_str(&format!(
+            "- [{}]({}) — {} (keys: {})\n",
+            r.path, r.href, r.category, r.scroll_header_key_count
+        ));
+    }
+    md_buf.push('\n');
+    md_buf.push_str(&format!(
+        "## Under scrolls/, but missing scroll header ({})\n",
+        scroll_no_header.len()
+    ));
+    for r in &scroll_no_header {
+        md_buf.push_str(&format!("- [{}]({})\n", r.path, r.href));
+    }
     fs::write(out_dir.join("doc-ambiguous.md"), md_buf)?;
     Ok(())
 }
@@ -238,8 +305,11 @@ fn infer_scroll_type_from_name(lower: &str) -> &'static str {
     }
 }
 
-fn suggest_header_for(path: &Path, body: &str) -> String {
-    let stem = path.file_stem().and_then(|s| s.to_str()).unwrap_or("Untitled");
+fn suggest_header_for(path: &Path, _body: &str) -> String {
+    let stem = path
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or("Untitled");
     let title = stem.replace(['_', '-'], " ");
     let lower_name = stem.to_lowercase();
     let scroll_type = infer_scroll_type_from_name(&lower_name);
@@ -258,11 +328,22 @@ pub fn doc_fix_headers() -> Result<()> {
     if !scrolls_dir.exists() {
         return Ok(());
     }
-    for entry in WalkDir::new(&scrolls_dir).into_iter().filter_map(Result::ok) {
-        if !entry.file_type().is_file() { continue; }
+    for entry in WalkDir::new(&scrolls_dir)
+        .into_iter()
+        .filter_map(Result::ok)
+    {
+        if !entry.file_type().is_file() {
+            continue;
+        }
         let path = entry.path();
-        let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("").to_ascii_lowercase();
-        if ext != "md" && ext != "txt" { continue; }
+        let ext = path
+            .extension()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_ascii_lowercase();
+        if ext != "md" && ext != "txt" {
+            continue;
+        }
         let content = fs::read_to_string(path).unwrap_or_default();
         let has_yaml = content.starts_with("---\n");
         let mut needs_fix = false;
@@ -270,14 +351,16 @@ pub fn doc_fix_headers() -> Result<()> {
         if has_yaml {
             // replace existing front matter if missing required keys
             if let Some(end_idx) = content[4..].find("\n---") {
-                let header = &content[4..4+end_idx];
+                let header = &content[4..4 + end_idx];
                 // check minimal keys
                 let has_title = header.contains("\ntitle:") || header.starts_with("title:");
-                let has_type = header.contains("\nscroll_type:") || header.starts_with("scroll_type:");
+                let has_type =
+                    header.contains("\nscroll_type:") || header.starts_with("scroll_type:");
                 let has_tags = header.contains("\ntags:") || header.starts_with("tags:");
-                let has_emotion = header.contains("\nemotion_signature:") || header.starts_with("emotion_signature:");
+                let has_emotion = header.contains("\nemotion_signature:")
+                    || header.starts_with("emotion_signature:");
                 if !(has_title && has_type && has_tags && has_emotion) {
-                    let body = &content[(4+end_idx+4)..]; // skip leading '---\n' (4 incl. newline) + header + '\n---'
+                    let body = &content[(4 + end_idx + 4)..]; // skip leading '---\n' (4 incl. newline) + header + '\n---'
                     let header_yaml = suggest_header_for(path, body);
                     new_content.push_str(&header_yaml);
                     new_content.push_str(body);
@@ -312,17 +395,34 @@ pub fn doc_normalize_headers() -> Result<()> {
     fs::create_dir_all(&out_dir)?;
 
     let mut changed: Vec<(String, usize)> = Vec::new();
-    for entry in WalkDir::new(&scrolls_dir).into_iter().filter_map(Result::ok) {
-        if !entry.file_type().is_file() { continue; }
+    for entry in WalkDir::new(&scrolls_dir)
+        .into_iter()
+        .filter_map(Result::ok)
+    {
+        if !entry.file_type().is_file() {
+            continue;
+        }
         let path = entry.path();
-        let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("").to_ascii_lowercase();
-        if ext != "md" && ext != "txt" { continue; }
-        let rel = path.strip_prefix(&root).unwrap_or(path).to_string_lossy().to_string();
+        let ext = path
+            .extension()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_ascii_lowercase();
+        if ext != "md" && ext != "txt" {
+            continue;
+        }
+        let rel = path
+            .strip_prefix(&root)
+            .unwrap_or(path)
+            .to_string_lossy()
+            .to_string();
         let content = fs::read_to_string(path).unwrap_or_default();
-        if !content.starts_with("---\n") { continue; }
+        if !content.starts_with("---\n") {
+            continue;
+        }
         if let Some(end_idx) = content[4..].find("\n---") {
-            let header = &content[4..4+end_idx];
-            let body = &content[(4+end_idx+4)..];
+            let header = &content[4..4 + end_idx];
+            let body = &content[(4 + end_idx + 4)..];
             // Deserialize leniently to canonical YamlMetadata
             match serde_yaml::from_str::<YamlMetadata>(header) {
                 Ok(meta) => {
@@ -342,17 +442,152 @@ pub fn doc_normalize_headers() -> Result<()> {
     // Report
     let mut report = String::new();
     report.push_str("# Header Normalization Report\n\n");
-    report.push_str(&format!("Generated: {}\n\n", chrono::Utc::now().to_rfc3339()));
+    report.push_str(&format!(
+        "Generated: {}\n\n",
+        chrono::Utc::now().to_rfc3339()
+    ));
     report.push_str(&format!("Files normalized: {}\n\n", changed.len()));
-    for (file, _cnt) in &changed { report.push_str(&format!("- {}\n", file)); }
+    for (file, _cnt) in &changed {
+        report.push_str(&format!("- {}\n", file));
+    }
     fs::write(out_dir.join("doc-normalize-report.md"), report)?;
 
     // Append to CHANGELOG
     let changelog_path = out_dir.join("CHANGELOG.md");
     let mut entry = String::new();
-    entry.push_str(&format!("\n- {}: normalized headers for {} scroll(s)\n", chrono::Utc::now().to_rfc3339(), changed.len()));
-    let _ = fs::OpenOptions::new().create(true).append(true).open(&changelog_path)?.write_all(entry.as_bytes());
+    entry.push_str(&format!(
+        "\n- {}: normalized headers for {} scroll(s)\n",
+        chrono::Utc::now().to_rfc3339(),
+        changed.len()
+    ));
+    let _ = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&changelog_path)?
+        .write_all(entry.as_bytes());
     Ok(())
 }
 
+pub fn doc_generate_master_plan() -> Result<()> {
+    let root = repo_root();
+    let out_dir = root.join("docs").join("alignment");
+    fs::create_dir_all(&out_dir)?;
 
+    #[derive(Serialize)]
+    struct Entry {
+        title: String,
+        scroll_type: String,
+        rel: String,
+        modified: String,
+    }
+    let mut entries: Vec<Entry> = Vec::new();
+    for entry in WalkDir::new(root.join("scrolls"))
+        .into_iter()
+        .filter_map(Result::ok)
+    {
+        if !entry.file_type().is_file() {
+            continue;
+        }
+        let path = entry.path();
+        let ext = path
+            .extension()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_ascii_lowercase();
+        if ext != "md" && ext != "txt" {
+            continue;
+        }
+        // Skip deactivated
+        let path_str = path.to_string_lossy();
+        if path_str.contains("Deactivated scrolls") {
+            continue;
+        }
+        let rel = path
+            .strip_prefix(&root)
+            .unwrap_or(path)
+            .to_string_lossy()
+            .replace('\\', "/");
+        let content = fs::read_to_string(path).unwrap_or_default();
+        let mut title = String::from("Untitled Scroll");
+        let mut stype = String::from("Echo");
+        if let Some(stripped) = content.strip_prefix("---\n") {
+            if let Some(end) = stripped.find("\n---") {
+                let fm = &content[4..4 + end];
+                if let Ok(meta) = serde_yaml::from_str::<YamlMetadata>(fm) {
+                    title = meta.title;
+                    stype = meta.scroll_type.to_string();
+                }
+            }
+        }
+        // Fallback title from first Markdown heading
+        if title == "Untitled Scroll" {
+            for line in content.lines() {
+                let trimmed = line.trim();
+                if trimmed.starts_with("# ") {
+                    title = trimmed.trim_start_matches("# ").trim().to_string();
+                    break;
+                }
+            }
+        }
+        // Fallback to file stem prettified
+        if title == "Untitled Scroll" {
+            if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                title = stem.replace(['_', '-'], " ");
+            }
+        }
+        let modified = entry
+            .metadata()
+            .ok()
+            .and_then(|m| m.modified().ok())
+            .map(|t| chrono::DateTime::<chrono::Utc>::from(t).to_rfc3339())
+            .unwrap_or_default();
+        entries.push(Entry {
+            title,
+            scroll_type: stype,
+            rel,
+            modified,
+        });
+    }
+    entries.sort_by(|a, b| b.modified.cmp(&a.modified));
+
+    let mut md = String::new();
+    md.push_str("---\n");
+    md.push_str("title: Master Plan\nstatus: active\naudience: user, dev\n---\n\n");
+    md.push_str("# Master Plan\n\n");
+    md.push_str(
+        "This plan synthesizes the current archive, immediate priorities, and runtime roadmap.\n\n",
+    );
+    md.push_str("## Core Purpose\n");
+    md.push_str("Scroll Core lets named AI Constructs read/write/manage scrolls (YAML+Markdown) as a local-first AI runtime with persistent, structured knowledge.\n\n");
+    md.push_str("## Immediate Priorities\n- Solidify CLI and docs tooling (index/recent/classify/normalize)\n- Ensure all active scrolls load with tolerant parsing\n- LumenMind (frontend) skeleton with construct selector\n\n");
+    md.push_str("## Recent Key Scrolls\n");
+    for e in entries.iter().take(30) {
+        md.push_str(&format!("- [{}]({}) — {}\n", e.title, e.rel, e.scroll_type));
+    }
+    md.push_str("\n## By Type\n");
+    for t in [
+        ScrollType::Scrollbook,
+        ScrollType::Canon,
+        ScrollType::Protocol,
+        ScrollType::System,
+        ScrollType::Myth,
+        ScrollType::Ritual,
+        ScrollType::Echo,
+    ] {
+        let tlabel = t.to_string();
+        let list: Vec<&Entry> = entries
+            .iter()
+            .filter(|e| e.scroll_type == tlabel)
+            .take(10)
+            .collect();
+        if !list.is_empty() {
+            md.push_str(&format!("### {}\n", tlabel));
+            for e in list {
+                md.push_str(&format!("- [{}]({})\n", e.title, e.rel));
+            }
+            md.push('\n');
+        }
+    }
+    fs::write(out_dir.join("MASTER_PLAN.md"), md)?;
+    Ok(())
+}

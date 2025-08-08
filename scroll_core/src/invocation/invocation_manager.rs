@@ -65,7 +65,10 @@ impl InvocationManager {
         // Gate by cost decision before invoking
         match &cost.decision {
             CostDecision::Reject(reason) => {
-                return ConstructResult::Refusal { reason: reason.clone(), echo: cost.poetic_rejection.clone() };
+                return ConstructResult::Refusal {
+                    reason: reason.clone(),
+                    echo: cost.poetic_rejection.clone(),
+                };
             }
             CostDecision::Throttle(_) | CostDecision::Allow => {}
         }
@@ -97,9 +100,9 @@ impl InvocationManager {
             let cost_clone = cost.clone();
             std::thread::spawn(move || {
                 if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    let _ = rt.block_on(async {
+                    rt.block_on(async {
                         // Enrich decision string with routed construct
-                        let mut enriched = cost_clone.clone();
+                        let enriched = cost_clone.clone();
                         if let CostDecision::Allow = enriched.decision {}
                         let _ = crate::invocation::ledger::log_invocation_db(&inv, &enriched).await;
                     });
@@ -119,7 +122,12 @@ impl InvocationManager {
         herald: &AelrenHerald,
     ) -> ConstructResult {
         // Ambient hook: if tags + emotion would trigger a default action, log it to ledger
-        let ambient_hit = ambient::should_trigger(&scroll.yaml_metadata.tags, &crate::trigger_loom::emotional_state::EmotionalState::new(vec![], 0.8, None), "core", 0.7);
+        let ambient_hit = ambient::should_trigger(
+            &scroll.yaml_metadata.tags,
+            &crate::trigger_loom::emotional_state::EmotionalState::new(vec![], 0.8, None),
+            "core",
+            0.7,
+        );
         if ambient_hit {
             let invocation = Invocation {
                 id: Uuid::new_v4(),
@@ -134,7 +142,10 @@ impl InvocationManager {
             let cost = InvocationCost::default();
             let _ = std::thread::spawn(move || {
                 if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    let _ = rt.block_on(async { let _ = crate::invocation::ledger::log_invocation_db(&invocation, &cost).await; });
+                    rt.block_on(async {
+                        let _ =
+                            crate::invocation::ledger::log_invocation_db(&invocation, &cost).await;
+                    });
                 }
             });
         }

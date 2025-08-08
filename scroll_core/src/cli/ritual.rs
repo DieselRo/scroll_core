@@ -3,8 +3,8 @@ use std::path::{Path, PathBuf};
 use anyhow::{anyhow, Result};
 
 use crate::parser::parse_scroll_from_file;
-use crate::scroll_writer::ScrollWriter;
 use crate::schema::ScrollStatus;
+use crate::scroll_writer::ScrollWriter;
 use crate::validator::{validate_scroll, validate_write_allowed};
 
 fn ensure_under_archive(archive_dir: &Path, file: &str) -> Result<PathBuf> {
@@ -47,7 +47,9 @@ pub fn ritual_validate_all(archive_dir: &Path) -> Result<()> {
         }
     }
     println!("Validated. OK: {}, Errors: {}", ok, bad);
-    if bad > 0 { return Err(anyhow!("Validation errors present")); }
+    if bad > 0 {
+        return Err(anyhow!("Validation errors present"));
+    }
     Ok(())
 }
 
@@ -81,5 +83,3 @@ pub fn ritual_seal(archive_dir: &Path, file: &str) -> Result<()> {
     println!("Sealed {}", file);
     Ok(())
 }
-
-

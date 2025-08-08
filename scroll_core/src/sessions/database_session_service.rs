@@ -13,9 +13,9 @@ use crate::sessions::session_service::{
 };
 use crate::sessions::state::State;
 use async_trait::async_trait;
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
 use sea_orm::sea_query::Expr;
 use sea_orm::ActiveValue::NotSet;
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
 
 use crate::models::{scroll_event, scroll_session};
 use serde_json;
@@ -56,7 +56,9 @@ impl SessionService for DatabaseSessionService {
             created_at: Set(session.last_update_time as i64),
         };
 
-        scroll_session::Entity::insert(active_model).exec(&self.conn).await?;
+        scroll_session::Entity::insert(active_model)
+            .exec(&self.conn)
+            .await?;
         Ok(session)
     }
 
@@ -118,13 +120,15 @@ impl SessionService for DatabaseSessionService {
             branch: Set(event.branch.clone()),
         };
 
-        let _ = scroll_event::Entity::insert(active).exec(&self.conn).await?;
+        let _ = scroll_event::Entity::insert(active)
+            .exec(&self.conn)
+            .await?;
 
         // Update session last_update_time (best-effort, tolerate race/no-op)
         let _ = scroll_session::Entity::update_many()
             .col_expr(
                 scroll_session::Column::LastUpdateTime,
-                Expr::value(chrono::Utc::now().timestamp() as i64),
+                Expr::value(chrono::Utc::now().timestamp()),
             )
             .filter(scroll_session::Column::Id.eq(session.id.clone()))
             .exec(&self.conn)
@@ -193,7 +197,7 @@ impl SessionService for DatabaseSessionService {
             user_id: NotSet,
             state_json: NotSet,
             created_at: NotSet,
-            last_update_time: Set(chrono::Utc::now().timestamp() as i64),
+            last_update_time: Set(chrono::Utc::now().timestamp()),
         };
         let _ = model.update(&self.conn).await?;
         Ok(())

@@ -248,11 +248,36 @@ fn preset_from_str(s: &str) -> EmotionSignature {
         "frenzied" => EmotionSignature::frenzied(),
         "ancient" => EmotionSignature::ancient(),
         // fuzzy/common synonyms in existing scrolls
-        "clarity" => EmotionSignature { tone: "clear".into(), emphasis: 0.3, resonance: "focused".into(), intensity: Some(0.2) },
-        "precision" => EmotionSignature { tone: "precise".into(), emphasis: 0.5, resonance: "crisp".into(), intensity: Some(0.4) },
-        "awe" => EmotionSignature { tone: "awed".into(), emphasis: 0.7, resonance: "vast".into(), intensity: Some(0.6) },
-        "fluidity" => EmotionSignature { tone: "fluid".into(), emphasis: 0.5, resonance: "flowing".into(), intensity: Some(0.5) },
-        "purpose" => EmotionSignature { tone: "purposeful".into(), emphasis: 0.6, resonance: "directed".into(), intensity: Some(0.5) },
+        "clarity" => EmotionSignature {
+            tone: "clear".into(),
+            emphasis: 0.3,
+            resonance: "focused".into(),
+            intensity: Some(0.2),
+        },
+        "precision" => EmotionSignature {
+            tone: "precise".into(),
+            emphasis: 0.5,
+            resonance: "crisp".into(),
+            intensity: Some(0.4),
+        },
+        "awe" => EmotionSignature {
+            tone: "awed".into(),
+            emphasis: 0.7,
+            resonance: "vast".into(),
+            intensity: Some(0.6),
+        },
+        "fluidity" => EmotionSignature {
+            tone: "fluid".into(),
+            emphasis: 0.5,
+            resonance: "flowing".into(),
+            intensity: Some(0.5),
+        },
+        "purpose" => EmotionSignature {
+            tone: "purposeful".into(),
+            emphasis: 0.6,
+            resonance: "directed".into(),
+            intensity: Some(0.5),
+        },
         _ => EmotionSignature::neutral(),
     }
 }
@@ -265,7 +290,17 @@ impl<'de> Deserialize<'de> for EmotionSignature {
         let repr = EmotionSigRepr::deserialize(deserializer)?;
         Ok(match repr {
             EmotionSigRepr::Str(s) => preset_from_str(&s),
-            EmotionSigRepr::Obj { tone, emphasis, resonance, intensity } => EmotionSignature { tone, emphasis, resonance, intensity },
+            EmotionSigRepr::Obj {
+                tone,
+                emphasis,
+                resonance,
+                intensity,
+            } => EmotionSignature {
+                tone,
+                emphasis,
+                resonance,
+                intensity,
+            },
         })
     }
 }

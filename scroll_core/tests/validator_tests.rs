@@ -1,10 +1,10 @@
 // scroll_core/tests/validator_tests.rs
 
-use scroll_core::schema::{EmotionSignature, ScrollType, YamlMetadata, ScrollStatus};
-use scroll_core::validator::{validate_scroll, validate_write_allowed};
-use scroll_core::scroll::Scroll;
-use uuid::Uuid;
 use chrono::Utc;
+use scroll_core::schema::{EmotionSignature, ScrollStatus, ScrollType, YamlMetadata};
+use scroll_core::scroll::Scroll;
+use scroll_core::validator::{validate_scroll, validate_write_allowed};
+use uuid::Uuid;
 
 fn make_scroll_with_status(status: ScrollStatus) -> Scroll {
     let now = Utc::now();
@@ -80,5 +80,3 @@ fn write_allowed_for_draft() {
     let s = make_scroll_with_status(ScrollStatus::Draft);
     assert!(validate_write_allowed(&s).is_ok());
 }
-
-

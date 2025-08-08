@@ -33,6 +33,7 @@ cargo run -- chat <construct> [--stream|--no-stream] [--no-banner]
 - Recent report: `cargo run -- doc --action recent`
 - Classify (json/md): `cargo run -- doc --action classify`
 - Normalize headers: `cargo run -- doc --action normalize`
+- Generate master plan: `cargo run -- doc --action master-plan`
 - Fix missing headers (adds minimal YAML): `cargo run -- doc --action classify --fix-headers`
 
 

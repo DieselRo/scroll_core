@@ -16,7 +16,14 @@ fn ritual_write_can_update_index() {
     let mut cmd = Command::cargo_bin("scroll_core").unwrap();
     cmd.env("SCROLL_CI", "1")
         .env("SCROLL_CORE_ARCHIVE_DIR", archive)
-        .args(["ritual", "--action", "write", "--file", file, "--update-index"])
+        .args([
+            "ritual",
+            "--action",
+            "write",
+            "--file",
+            file,
+            "--update-index",
+        ])
         .assert()
         .success();
 
@@ -24,5 +31,3 @@ fn ritual_write_can_update_index() {
     let contents = fs::read_to_string(idx).unwrap();
     assert!(contents.contains(file));
 }
-
-

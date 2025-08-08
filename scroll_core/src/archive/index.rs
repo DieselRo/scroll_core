@@ -18,5 +18,3 @@ pub fn write_index<P: AsRef<Path>>(path: P, idx: &ArchiveIndex) -> Result<(), St
     let s = serde_yaml::to_string(&idx.archive_index).map_err(|e| e.to_string())?;
     fs::write(path.as_ref(), s).map_err(|e| e.to_string())
 }
-
-

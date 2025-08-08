@@ -12,11 +12,24 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Alias::new("scroll_sessions"))
                     .if_not_exists()
-                    .col(ColumnDef::new(Alias::new("id")).string().not_null().primary_key())
+                    .col(
+                        ColumnDef::new(Alias::new("id"))
+                            .string()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .col(ColumnDef::new(Alias::new("app_name")).string().not_null())
                     .col(ColumnDef::new(Alias::new("user_id")).string().not_null())
-                    .col(ColumnDef::new(Alias::new("created_at")).big_integer().not_null())
-                    .col(ColumnDef::new(Alias::new("last_update_time")).big_integer().not_null())
+                    .col(
+                        ColumnDef::new(Alias::new("created_at"))
+                            .big_integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Alias::new("last_update_time"))
+                            .big_integer()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Alias::new("state_json")).text().not_null())
                     .to_owned(),
             )
@@ -25,7 +38,11 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Alias::new("scroll_sessions")).to_owned())
+            .drop_table(
+                Table::drop()
+                    .table(Alias::new("scroll_sessions"))
+                    .to_owned(),
+            )
             .await
     }
 }

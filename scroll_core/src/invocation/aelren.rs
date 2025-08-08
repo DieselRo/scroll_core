@@ -42,7 +42,7 @@ impl<'a> AelrenHerald<'a> {
             None
         };
 
-        let invocation = Invocation {
+        let _invocation = Invocation {
             id: Uuid::new_v4(),
             phrase: "Symbolic reflection".into(),
             invoker: "Aelren".into(),
@@ -76,7 +76,10 @@ impl<'a> AelrenHerald<'a> {
             .iter()
             .find(|n| n.to_lowercase() == "mythscribe")
         {
-            if ["calm", "reflective", "curious", "neutral"].iter().any(|t| tone.contains(t)) {
+            if ["calm", "reflective", "curious", "neutral"]
+                .iter()
+                .any(|t| tone.contains(t))
+            {
                 return Some(ms.clone());
             }
         }

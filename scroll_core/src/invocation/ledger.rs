@@ -33,7 +33,10 @@ pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
 
-pub async fn log_invocation_db(invocation: &Invocation, cost: &InvocationCost) -> Result<(), sea_orm::DbErr> {
+pub async fn log_invocation_db(
+    invocation: &Invocation,
+    cost: &InvocationCost,
+) -> Result<(), sea_orm::DbErr> {
     let conn = get_db_connection();
     let model = ActiveModel {
         id: Set(invocation.id),
@@ -46,9 +49,12 @@ pub async fn log_invocation_db(invocation: &Invocation, cost: &InvocationCost) -
         timestamp: Set(invocation.timestamp),
         cost_system_pressure: Set(cost.cost_profile.system_pressure),
         cost_token_pressure: Set(cost.cost_profile.token_pressure),
-        decision: Set(match &cost.decision { CostDecision::Allow => "Allow".into(), CostDecision::Reject(r) => format!("Reject: {}", r), CostDecision::Throttle(x) => format!("Throttle({:.2})", x) }),
+        decision: Set(match &cost.decision {
+            CostDecision::Allow => "Allow".into(),
+            CostDecision::Reject(r) => format!("Reject: {}", r),
+            CostDecision::Throttle(x) => format!("Throttle({:.2})", x),
+        }),
     };
     let _ = model.insert(conn).await?;
     Ok(())
 }
-

@@ -6,5 +6,3 @@ fn test_loader_handles_empty_dir() {
     let res = load_scrolls_from_directory(dir.path());
     assert!(res.is_ok());
 }
-
-

@@ -14,19 +14,18 @@ use std::sync::{
 };
 use uuid::Uuid;
 
+use crate::cli::theme::Theme;
+use crate::sessions::database;
 use crate::sessions::database::{get_db_connection, init_sqlite_connection};
-use migration::{Migrator, MigratorTrait};
-use crate::sessions::database as database;
 use crate::sessions::database_session_service::DatabaseSessionService;
 use crate::sessions::session_service::SessionService;
-use crate::cli::theme::Theme;
+use crate::trigger_loom::config::{SymbolicRhythm, TriggerLoopConfig};
+use crate::trigger_loom::engine::TriggerLoopEngine;
 use ansi_term::Colour;
 use home::home_dir;
+use migration::{Migrator, MigratorTrait};
 use rustyline::{error::ReadlineError, DefaultEditor};
 use tokio::runtime::Runtime;
-use std::path::Path;
-use crate::trigger_loom::config::{TriggerLoopConfig, SymbolicRhythm};
-use crate::trigger_loom::engine::TriggerLoopEngine;
 
 #[allow(clippy::too_many_arguments)]
 pub fn run_chat(
@@ -42,7 +41,7 @@ pub fn run_chat(
     // Ensure DB connection is initialized (idempotent). Tests invoke the binary without prior init.
     let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
     // Ensure migrations applied for session tables
-    let _ = rt.block_on(async {
+    rt.block_on(async {
         let _ = init_sqlite_connection(&db_url).await;
         // Run migrations best-effort
         let _ = Migrator::up(database::get_db_connection(), None).await;
@@ -88,7 +87,10 @@ pub fn run_chat(
             // No NamedConstructs wired here yet; placeholder for Phase 6
             let mut none: Vec<Box<dyn crate::invocation::named_construct::NamedConstruct>> = vec![];
             // Run a few ticks and exit to avoid runaway thread in CLI sessions
-            for _ in 0..3 { engine.tick_once(&mut none); std::thread::sleep(std::time::Duration::from_millis(500)); }
+            for _ in 0..3 {
+                engine.tick_once(&mut none);
+                std::thread::sleep(std::time::Duration::from_millis(500));
+            }
         });
     }
 
@@ -135,7 +137,9 @@ pub fn run_chat(
             println!("{}", reply.content);
             let evt = crate::events::scroll_event::ScrollEvent::new(
                 "system".to_string(),
-                Some(crate::models::base_model::LLMResponseContent { text: reply.content.clone() }),
+                Some(crate::models::base_model::LLMResponseContent {
+                    text: reply.content.clone(),
+                }),
                 None,
                 false,
                 true,
@@ -147,10 +151,12 @@ pub fn run_chat(
                 .map_err(|e| anyhow!(e.to_string()));
             continue;
         }
-            println!("{} › {}", target, reply.content);
+        println!("{} › {}", target, reply.content);
         let evt = crate::events::scroll_event::ScrollEvent::new(
             target.to_string(),
-            Some(crate::models::base_model::LLMResponseContent { text: reply.content.clone() }),
+            Some(crate::models::base_model::LLMResponseContent {
+                text: reply.content.clone(),
+            }),
             None,
             false,
             true,

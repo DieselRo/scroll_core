@@ -3,8 +3,8 @@
 // Initializes SeaORM connection to SQLite database.
 // ===================================================
 
-use sea_orm::{Database, DbConn, DbErr};
 use once_cell::sync::OnceCell;
+use sea_orm::{Database, DbConn, DbErr};
 
 static DB_CONNECTION: OnceCell<DbConn> = OnceCell::new();
 
