@@ -47,10 +47,11 @@ pub fn index_add(archive_dir: &Path, file: &str) -> Result<(), String> {
         );
         m
     });
-    if !core
-        .iter()
-        .any(|v| v.get(serde_yaml::Value::from("file")).and_then(|f| f.as_str()) == Some(file))
-    {
+    if !core.iter().any(|v| {
+        v.get(serde_yaml::Value::from("file"))
+            .and_then(|f| f.as_str())
+            == Some(file)
+    }) {
         core.push(entry);
     }
 
@@ -87,7 +88,11 @@ pub fn index_remove(archive_dir: &Path, file: &str) -> Result<(), String> {
         .get_mut(serde_yaml::Value::from("core_scrolls"))
         .and_then(|v| v.as_sequence_mut())
     {
-        seq.retain(|v| v.get(serde_yaml::Value::from("file")).and_then(|f| f.as_str()) != Some(file));
+        seq.retain(|v| {
+            v.get(serde_yaml::Value::from("file"))
+                .and_then(|f| f.as_str())
+                != Some(file)
+        });
     }
     root.insert(
         serde_yaml::Value::from("archive_index"),

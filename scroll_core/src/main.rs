@@ -278,7 +278,7 @@ fn main() -> Result<()> {
                     .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
                 if !scroll_core::sessions::database::is_initialized() {
                     if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    rt.block_on(async {
+                        rt.block_on(async {
                             if scroll_core::sessions::database::init_sqlite_connection(&db_url)
                                 .await
                                 .is_ok()
@@ -289,7 +289,7 @@ fn main() -> Result<()> {
                                 )
                                 .await;
                             }
-                    });
+                        });
                     }
                 }
             }
