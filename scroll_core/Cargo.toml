@@ -85,5 +85,9 @@ cargo-deny = []
 compact_tracing = []
 
 
+[package.metadata.cargo-udeps.ignore]
+normal = []
+development = ["strip-ansi-escapes", "trycmd"]
+
 
 
