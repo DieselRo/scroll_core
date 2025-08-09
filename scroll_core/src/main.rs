@@ -6,6 +6,7 @@
 
 use anyhow::Result;
 use std::path::Path;
+use std::time::Duration;
 
 use clap::{Parser, Subcommand};
 use dotenvy::dotenv;
@@ -25,6 +26,7 @@ use scroll_core::{
         aelren::AelrenHerald,
         constructs::openai_construct::Mythscribe,
         invocation_manager::InvocationManager,
+        ledger_service,
         llm::factory,
     },
     parser::parse_scroll,
@@ -120,6 +122,15 @@ fn main() -> Result<()> {
         let _ = rt.block_on(scroll_core::sessions::database::init_sqlite_connection(
             &db_url,
         ));
+        let _ = rt.block_on(migration::Migrator::up(
+            scroll_core::sessions::database::get_db_connection(),
+            None,
+        ));
+        let ledger = if std::env::var("SC_LEDGER_DISABLE").is_err() {
+            Some(ledger_service::start(64, 256))
+        } else {
+            None
+        };
         let mut archive = InMemoryArchive::new(scrolls.clone());
         // Build semantic index for context modes that rely on it
         {
@@ -140,8 +151,10 @@ fn main() -> Result<()> {
             registry.insert("mythscribe", mythscribe);
         }
         // Optional: attach a pulse-sensitive construct to bus later (Phase 6)
-
-        let manager = InvocationManager::new(registry);
+        let mut manager = InvocationManager::new(registry);
+        if let Some((ref handle, _)) = ledger {
+            manager = manager.with_ledger(handle.clone());
+        }
         let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
         let stream_enabled = *stream && !*no_stream;
         let theme_struct = theme.styles();
@@ -154,6 +167,10 @@ fn main() -> Result<()> {
             theme_struct,
             !*no_banner,
         )?;
+        if let Some((handle, service)) = ledger {
+            drop(handle);
+            service.shutdown(Duration::from_millis(250));
+        }
         teardown_scroll_core();
         return Ok(());
     }
@@ -270,31 +287,43 @@ fn main() -> Result<()> {
             registry.insert("mythscribe", mythscribe);
 
             // Ensure DB connection and migrations for CLI ledger/session logging
-            {
-                let db_url = std::env::var("DATABASE_URL")
-                    .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
-                if !scroll_core::sessions::database::is_initialized() {
-                    if let Ok(rt) = tokio::runtime::Runtime::new() {
-                        rt.block_on(async {
-                            if scroll_core::sessions::database::init_sqlite_connection(&db_url)
-                                .await
-                                .is_ok()
-                            {
-                                let _ = migration::Migrator::up(
-                                    scroll_core::sessions::database::get_db_connection(),
-                                    None,
-                                )
-                                .await;
-                            }
-                        });
-                    }
+            let db_url = std::env::var("DATABASE_URL")
+                .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+            if !scroll_core::sessions::database::is_initialized() {
+                if let Ok(rt) = tokio::runtime::Runtime::new() {
+                    rt.block_on(async {
+                        if scroll_core::sessions::database::init_sqlite_connection(&db_url)
+                            .await
+                            .is_ok()
+                        {
+                            let _ = migration::Migrator::up(
+                                scroll_core::sessions::database::get_db_connection(),
+                                None,
+                            )
+                            .await;
+                        }
+                    });
                 }
             }
 
-            let manager = InvocationManager::new(registry);
+            let ledger = if std::env::var("SC_LEDGER_DISABLE").is_err() {
+                Some(ledger_service::start(64, 256))
+            } else {
+                None
+            };
+
+            let mut manager = InvocationManager::new(registry);
+            if let Some((ref handle, _)) = ledger {
+                manager = manager.with_ledger(handle.clone());
+            }
             let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
 
             scroll_core::system::cli_orchestrator::run_cli(&manager, &aelren, &scrolls);
+
+            if let Some((handle, service)) = ledger {
+                drop(handle);
+                service.shutdown(Duration::from_millis(250));
+            }
         }
         Err(e) => eprintln!("❌ Initialization failed: {e}"),
     }

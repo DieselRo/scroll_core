@@ -7,7 +7,9 @@ use scroll_core::chat::chat_session::ChatSession;
 use scroll_core::core::construct_registry::ConstructRegistry;
 use scroll_core::core::context_frame_engine::{ContextFrameEngine, ContextMode};
 use scroll_core::invocation::aelren::AelrenHerald;
-use scroll_core::invocation::constructs::openai_construct::{Mythscribe, OpenAIClient};
+use scroll_core::invocation::constructs::openai_construct::Mythscribe;
+use scroll_core::invocation::llm::openai::OpenAIClient;
+use std::sync::Arc;
 use scroll_core::invocation::invocation_manager::InvocationManager;
 use scroll_core::trigger_loom::emotional_state::EmotionalState;
 
@@ -38,12 +40,13 @@ async fn test_chat_dispatcher_records_access() {
     )));
 
     let mut registry = ConstructRegistry::new();
-    let client = OpenAIClient {
-        api_key: "test".into(),
-        model: "gpt-4o".into(),
-        endpoint: format!("{}/v1/chat/completions", server.uri()),
-        max_tokens: 50,
-    };
+    std::env::set_var("OPENAI_API_KEY", "test");
+    std::env::set_var("SC_LLM_MODEL", "gpt-4o");
+    std::env::set_var(
+        "SC_LLM_ENDPOINT",
+        format!("{}/v1/chat/completions", server.uri()),
+    );
+    let client = Arc::new(OpenAIClient::new_from_env().unwrap());
     registry.insert("mythscribe", Mythscribe::new(client, "System".into()));
     let manager = Box::leak(Box::new(InvocationManager::new(registry)));
 

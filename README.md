@@ -24,3 +24,8 @@ Run `cargo xtask gen-map` to regenerate `docs/module_map.md` after code changes.
 ## Alignment Docs
 
 Active plan, progress, and specs for aligning the runtime with the scrollbooks are tracked in `docs/alignment/`.
+
+## Ledger Service
+
+Invocation logging runs through a background service. It can be disabled by
+setting `SC_LEDGER_DISABLE=1`.

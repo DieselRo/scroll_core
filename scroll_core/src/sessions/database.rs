@@ -8,6 +8,7 @@ use sea_orm::{Database, DbConn, DbErr};
 
 static DB_CONNECTION: OnceCell<DbConn> = OnceCell::new();
 
+
 /// Initializes and stores a global database connection pool.
 ///
 /// Call this once on application startup. Subsequent calls will fail
@@ -43,3 +44,4 @@ pub fn get_db_connection() -> &'static DbConn {
 pub fn is_initialized() -> bool {
     DB_CONNECTION.get().is_some()
 }
+
