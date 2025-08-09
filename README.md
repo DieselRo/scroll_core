@@ -24,3 +24,10 @@ Run `cargo xtask gen-map` to regenerate `docs/module_map.md` after code changes.
 ## Alignment Docs
 
 Active plan, progress, and specs for aligning the runtime with the scrollbooks are tracked in `docs/alignment/`.
+
+## Ledger & Database
+
+The runtime logs invocations to SQLite. Set `DATABASE_URL` to point at a writable
+location (default `sqlite://scroll_core.db?mode=rwc`). During local development
+you can run `cargo test ledger_service_tests -- --nocapture` to verify the
+ledger service buffers and flushes as expected.

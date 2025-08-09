@@ -7,9 +7,10 @@
 
 pub mod aelren;
 pub mod constructs;
-pub mod llm;
 pub mod invocation_manager;
 pub mod ledger;
+pub mod ledger_service;
+pub mod llm;
 pub mod named_construct;
 pub mod types;
 
