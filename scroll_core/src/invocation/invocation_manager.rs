@@ -10,6 +10,7 @@ use crate::construct_ai::ConstructResult;
 use crate::core::cost_manager::{CostDecision, CostManager, InvocationCost};
 use crate::core::ConstructRegistry;
 use crate::invocation::aelren::AelrenHerald;
+use crate::invocation::ledger_service::{LedgerEvent, LedgerHandle};
 use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::trigger_loom::ambient;
 use chrono::Utc;
@@ -21,15 +22,19 @@ use tracing::info_span;
 pub struct InvocationManager {
     pub registry: ConstructRegistry,
     pub max_chain_depth: usize,
-    pub ledger: Option<crate::invocation::ledger_service::LedgerHandle>,
+    pub ledger: Option<LedgerHandle>,
 }
 
 impl InvocationManager {
     pub fn new(registry: ConstructRegistry) -> Self {
-        Self { registry, max_chain_depth: 3, ledger: None }
+        Self {
+            registry,
+            max_chain_depth: 3,
+            ledger: None,
+        }
     }
 
-    pub fn with_ledger(mut self, handle: crate::invocation::ledger_service::LedgerHandle) -> Self {
+    pub fn with_ledger(mut self, handle: LedgerHandle) -> Self {
         self.ledger = Some(handle);
         self
     }
@@ -96,8 +101,9 @@ impl InvocationManager {
 
         let result = self.registry.invoke(name, context);
 
+        // Non-blocking ledger write via channel; ignore backpressure drops
         if let Some(handle) = &self.ledger {
-            let _ = handle.try_log(crate::invocation::ledger_service::LedgerEvent {
+            let _ = handle.try_log(LedgerEvent {
                 invocation: invocation.clone(),
                 cost: cost.clone(),
             });
@@ -134,10 +140,7 @@ impl InvocationManager {
             };
             let cost = InvocationCost::default();
             if let Some(handle) = &self.ledger {
-                let _ = handle.try_log(crate::invocation::ledger_service::LedgerEvent {
-                    invocation,
-                    cost,
-                });
+                let _ = handle.try_log(LedgerEvent { invocation, cost });
             }
         }
         herald.invoke_symbolically(scroll, &self.registry)

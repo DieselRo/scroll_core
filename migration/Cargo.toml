@@ -12,7 +12,7 @@ dotenvy = "0.15"
 serde_json = "1.0"
 
 # 🔧 Required for SQLite database support
-sea-orm = { version = "1.1", features = ["sqlx-sqlite", "runtime-async-std-native-tls", "with-json"] }
+sea-orm = { version = "1.1", features = ["sqlx-sqlite", "runtime-async-std-rustls", "with-json"] }
 
 [lib]
 name = "migration"

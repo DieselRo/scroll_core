@@ -1,4 +1,6 @@
-use scroll_core::invocation::llm::{retry::RetryingClient, mock::MockLLMClient, LLMClient, LLMError};
+use scroll_core::invocation::llm::{
+    mock::MockLLMClient, retry::RetryingClient, LLMClient, LLMError,
+};
 use std::sync::Arc;
 
 #[tokio::test]

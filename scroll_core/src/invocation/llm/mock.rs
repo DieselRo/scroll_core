@@ -10,7 +10,9 @@ pub struct MockLLMClient {
 
 impl MockLLMClient {
     pub fn with_script(script: Vec<Result<String, LLMError>>) -> Self {
-        Self { scripted: Mutex::new(script) }
+        Self {
+            scripted: Mutex::new(script),
+        }
     }
 }
 
@@ -23,4 +25,3 @@ impl LLMClient for MockLLMClient {
         Ok("[mock] The Archive hums softly.".into())
     }
 }
-

@@ -8,12 +8,14 @@
 use async_trait::async_trait;
 use thiserror::Error;
 
-pub mod openai;
 pub mod mock;
+pub mod openai;
 
 /// Lightweight factory to build an `Arc<dyn LLMClient>` from env.
 pub mod factory {
-    use super::{mock::MockLLMClient, openai::OpenAIClient, retry::RetryingClient, LLMClient, LLMError};
+    use super::{
+        mock::MockLLMClient, openai::OpenAIClient, retry::RetryingClient, LLMClient, LLMError,
+    };
     use std::sync::Arc;
 
     /// Creates an LLM client from environment configuration.
@@ -27,7 +29,11 @@ pub mod factory {
         let provider = std::env::var("SC_LLM_PROVIDER")
             .ok()
             .unwrap_or_else(|| {
-                if cfg!(test) { "mock".into() } else { "openai".into() }
+                if cfg!(test) {
+                    "mock".into()
+                } else {
+                    "openai".into()
+                }
             })
             .to_lowercase();
 
@@ -69,7 +75,12 @@ pub mod retry {
     }
 
     impl RetryingClient {
-        pub fn new(inner: Arc<dyn LLMClient + Send + Sync>, max_retries: usize, attempt_timeout_ms: u64, base_backoff_ms: u64) -> Self {
+        pub fn new(
+            inner: Arc<dyn LLMClient + Send + Sync>,
+            max_retries: usize,
+            attempt_timeout_ms: u64,
+            base_backoff_ms: u64,
+        ) -> Self {
             Self {
                 inner,
                 max_retries,
@@ -126,7 +137,9 @@ pub mod retry {
         }
 
         async fn send_stream(&self, _prompt: &str) -> Result<super::TokenStream, LLMError> {
-            Err(LLMError::Unsupported("streaming not supported by retry wrapper".into()))
+            Err(LLMError::Unsupported(
+                "streaming not supported by retry wrapper".into(),
+            ))
         }
     }
 }
@@ -160,7 +173,9 @@ pub trait LLMClient: Send + Sync {
     async fn send(&self, prompt: &str) -> Result<String, LLMError>;
 
     async fn send_stream(&self, _prompt: &str) -> Result<TokenStream, LLMError> {
-        Err(LLMError::Unsupported("streaming not implemented for this client".into()))
+        Err(LLMError::Unsupported(
+            "streaming not implemented for this client".into(),
+        ))
     }
 }
 
@@ -174,9 +189,11 @@ pub mod util {
         if let Ok(handle) = Handle::try_current() {
             handle.block_on(client.send(prompt))
         } else {
-            let rt = Builder::new_current_thread().enable_all().build().map_err(|e| LLMError::Other(e.to_string()))?;
+            let rt = Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .map_err(|e| LLMError::Other(e.to_string()))?;
             rt.block_on(client.send(prompt))
         }
     }
 }
-

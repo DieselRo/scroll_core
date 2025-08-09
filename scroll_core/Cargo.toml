@@ -36,7 +36,7 @@ async-trait = "0.1"
 futures = "0.3"
 thiserror = "1.0"
 bytes = "1.5"
-sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "sqlite", "json"] }
+## Removed legacy sqlx in favor of SeaORM-only path
 
 sea-orm = { version = "1.1", features = [
     "sqlx-sqlite",

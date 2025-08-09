@@ -16,6 +16,7 @@ Environment variables (loaded via `dotenvy` if `.env` is present):
   - Database connection string
   - Defaults: `sqlite://scroll_core.db?mode=rwc` (main) or `sqlite://scroll_core.db` (CLI)
   - Example: `DATABASE_URL=sqlite://scroll_core.db?mode=rwc`
+  - Notes: SeaORM is the sole ORM (sessions + ledger). Legacy SQLx paths have been removed. No OpenSSL is required; HTTP clients use rustls.
 
 - SCROLL_CORE_ARCHIVE_DIR
   - Directory containing scrolls archive

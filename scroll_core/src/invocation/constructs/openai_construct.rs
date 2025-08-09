@@ -17,7 +17,10 @@ pub struct Mythscribe {
 
 impl Mythscribe {
     pub fn new(client: Arc<dyn LLMClient + Send + Sync>, system_prompt: String) -> Self {
-        Self { client, system_prompt }
+        Self {
+            client,
+            system_prompt,
+        }
     }
 }
 
@@ -53,8 +56,14 @@ impl ConstructAI for Mythscribe {
     }
 
     fn suggest_scroll(&self, _context: &ConstructContext) -> ConstructResult {
-        match send_blocking(self.client.as_ref(), "Propose a new scroll in one paragraph.") {
-            Ok(response) => ConstructResult::ScrollDraft { title: "Proposed Scroll".into(), content: response },
+        match send_blocking(
+            self.client.as_ref(),
+            "Propose a new scroll in one paragraph.",
+        ) {
+            Ok(response) => ConstructResult::ScrollDraft {
+                title: "Proposed Scroll".into(),
+                content: response,
+            },
             Err(err) => ConstructResult::Refusal {
                 reason: format!("Invocation failed: {}", map_err(&err)),
                 echo: Some("The glyphs remain unwritten.".into()),
@@ -69,7 +78,9 @@ impl ConstructAI for Mythscribe {
         }
     }
 
-    fn name(&self) -> &str { "Mythscribe" }
+    fn name(&self) -> &str {
+        "Mythscribe"
+    }
 }
 
 fn map_err(e: &LLMError) -> String {
@@ -78,6 +89,10 @@ fn map_err(e: &LLMError) -> String {
         LLMError::Auth => "auth error".into(),
         LLMError::RateLimit => "rate limited".into(),
         LLMError::Timeout => "timeout".into(),
-        LLMError::Transient(s) | LLMError::Network(s) | LLMError::Server(s) | LLMError::Other(s) | LLMError::Unsupported(s) => s.clone(),
+        LLMError::Transient(s)
+        | LLMError::Network(s)
+        | LLMError::Server(s)
+        | LLMError::Other(s)
+        | LLMError::Unsupported(s) => s.clone(),
     }
 }

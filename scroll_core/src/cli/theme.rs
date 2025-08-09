@@ -1,5 +1,5 @@
-use console::Style;
 use clap::ValueEnum;
+use console::Style;
 use std::str::FromStr;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, ValueEnum)]

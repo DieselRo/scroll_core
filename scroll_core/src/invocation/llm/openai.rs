@@ -27,7 +27,31 @@ impl OpenAIClient {
             .timeout(std::time::Duration::from_millis(timeout_ms))
             .build()
             .map_err(|e| LLMError::Other(format!("http client build error: {e}")))?;
-        Ok(Self { api_key, model, endpoint, http })
+        Ok(Self {
+            api_key,
+            model,
+            endpoint,
+            http,
+        })
+    }
+
+    /// Construct a client with explicit config (useful in tests).
+    pub fn new(
+        api_key: String,
+        model: String,
+        endpoint: String,
+        timeout_ms: Option<u64>,
+    ) -> Result<Self, LLMError> {
+        let http = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_millis(timeout_ms.unwrap_or(15_000)))
+            .build()
+            .map_err(|e| LLMError::Other(format!("http client build error: {e}")))?;
+        Ok(Self {
+            api_key,
+            model,
+            endpoint,
+            http,
+        })
     }
 }
 
@@ -80,4 +104,3 @@ impl LLMClient for OpenAIClient {
         }
     }
 }
-

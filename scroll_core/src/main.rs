@@ -22,10 +22,8 @@ use scroll_core::{
     },
     initialize_scroll_core,
     invocation::{
-        aelren::AelrenHerald,
-        constructs::openai_construct::Mythscribe,
-        invocation_manager::InvocationManager,
-        llm::factory,
+        aelren::AelrenHerald, constructs::openai_construct::Mythscribe,
+        invocation_manager::InvocationManager, llm::factory,
     },
     parser::parse_scroll,
     teardown_scroll_core,
@@ -118,7 +116,7 @@ fn main() -> Result<()> {
         let db_url = std::env::var("DATABASE_URL")
             .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
         let rt = tokio::runtime::Runtime::new()?;
-        let _ = rt.block_on(async {
+        rt.block_on(async {
             if scroll_core::sessions::database::init_sqlite_connection(&db_url)
                 .await
                 .is_ok()
@@ -146,14 +144,18 @@ fn main() -> Result<()> {
             );
         } else {
             let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
-            let mythscribe = Mythscribe::new(client, "You are Mythscribe, the poetic analyst of sacred scrolls.".into());
+            let mythscribe = Mythscribe::new(
+                client,
+                "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
+            );
             registry.insert("mythscribe", mythscribe);
         }
         // Optional: attach a pulse-sensitive construct to bus later (Phase 6)
 
-        let (ledger_handle, ledger_service) =
-            scroll_core::invocation::ledger_service::start(64, 256);
-        let manager = InvocationManager::new(registry).with_ledger(ledger_handle);
+        // Start ledger service after DB init/migrations
+        let (ledger_handle, ledger_service) = scroll_core::invocation::ledger_service::start(64, 256);
+
+        let manager = InvocationManager::new(registry).with_ledger(ledger_handle.clone());
         let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
         let stream_enabled = *stream && !*no_stream;
         let theme_struct = theme.styles();
@@ -166,8 +168,10 @@ fn main() -> Result<()> {
             theme_struct,
             !*no_banner,
         )?;
-        drop(manager);
-        ledger_service.shutdown(Duration::from_millis(250));
+        // Graceful shutdown of ledger worker
+        tokio::runtime::Runtime::new()?.block_on(async move {
+            ledger_service.shutdown(std::time::Duration::from_millis(250)).await;
+        });
         teardown_scroll_core();
         return Ok(());
     }
@@ -280,7 +284,10 @@ fn main() -> Result<()> {
             // Seed construct registry
             let mut registry = ConstructRegistry::new();
             let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
-            let mythscribe = Mythscribe::new(client, "You are Mythscribe, the poetic analyst of sacred scrolls.".into());
+            let mythscribe = Mythscribe::new(
+                client,
+                "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
+            );
             registry.insert("mythscribe", mythscribe);
 
             // Ensure DB connection and migrations for CLI ledger/session logging
@@ -304,15 +311,23 @@ fn main() -> Result<()> {
                     }
                 }
             }
-            let (ledger_handle, ledger_service) =
-                scroll_core::invocation::ledger_service::start(64, 256);
-            let manager = InvocationManager::new(registry).with_ledger(ledger_handle);
+
+            // Start ledger service after ensuring DB/migrations
+            let (ledger_handle, ledger_service) = scroll_core::invocation::ledger_service::start(64, 256);
+
+            let manager = InvocationManager::new(registry).with_ledger(ledger_handle.clone());
             let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
 
             scroll_core::system::cli_orchestrator::run_cli(&manager, &aelren, &scrolls);
 
-            drop(manager);
-            ledger_service.shutdown(Duration::from_millis(250));
+            // shutdown ledger
+            if let Ok(rt) = tokio::runtime::Runtime::new() {
+                rt.block_on(async move {
+                    ledger_service
+                        .shutdown(std::time::Duration::from_millis(250))
+                        .await;
+                });
+            }
         }
         Err(e) => eprintln!("❌ Initialization failed: {e}"),
     }
@@ -344,7 +359,10 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
     let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
     let mut reg = ConstructRegistry::new();
     let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
-    let myth = Mythscribe::new(client, "You are Mythscribe, the poetic analyst of sacred scrolls.".into());
+    let myth = Mythscribe::new(
+        client,
+        "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
+    );
     reg.insert("mythscribe", myth);
     let manager = InvocationManager::new(reg);
 
