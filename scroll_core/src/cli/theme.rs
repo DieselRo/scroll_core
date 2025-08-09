@@ -1,4 +1,4 @@
-use ansi_term::{Colour, Style};
+use console::Style;
 use clap::ValueEnum;
 use std::str::FromStr;
 
@@ -33,12 +33,12 @@ impl ThemeKind {
     pub fn styles(self) -> Theme {
         match self {
             ThemeKind::Dark => Theme {
-                prompt_user: Colour::Green.bold(),
-                prompt_agent: Colour::Blue.bold(),
+                prompt_user: Style::new().green().bold(),
+                prompt_agent: Style::new().blue().bold(),
             },
             ThemeKind::Light => Theme {
-                prompt_user: Colour::Purple.bold(),
-                prompt_agent: Colour::Cyan.bold(),
+                prompt_user: Style::new().color256(129).bold(),
+                prompt_agent: Style::new().cyan().bold(),
             },
         }
     }

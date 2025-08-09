@@ -21,7 +21,7 @@ use crate::sessions::database_session_service::DatabaseSessionService;
 use crate::sessions::session_service::SessionService;
 use crate::trigger_loom::config::{SymbolicRhythm, TriggerLoopConfig};
 use crate::trigger_loom::engine::TriggerLoopEngine;
-use ansi_term::Colour;
+use console::Style;
 use home::home_dir;
 use migration::{Migrator, MigratorTrait};
 use rustyline::{error::ReadlineError, DefaultEditor};
@@ -50,7 +50,8 @@ pub fn run_chat(
     let conn = get_db_connection().clone();
     let session_svc = DatabaseSessionService::new(conn);
     if show_banner && std::env::var("SCROLL_CI").is_err() {
-        println!("{}", Colour::Purple.bold().paint("🔮 Scroll Core v0.2"));
+        let purple_bold = Style::new().color256(129).bold();
+        println!("{}", purple_bold.apply_to("🔮 Scroll Core v0.2"));
     }
 
     let mut session = ChatSession::new(Some(target.to_string()), None);
@@ -94,7 +95,7 @@ pub fn run_chat(
         });
     }
 
-    let prompt_user = theme.prompt_user.paint("You › ").to_string();
+    let prompt_user = theme.prompt_user.apply_to("You › ").to_string();
     while running.load(Ordering::SeqCst) {
         let readline = rl.readline(&prompt_user);
         let line = match readline {

@@ -13,7 +13,7 @@ use crate::orchestra::AgentMessage;
 use crate::schema::EmotionSignature;
 use crate::scroll::Scroll;
 use crate::trigger_loom::emotional_state::EmotionalState;
-use atty::Stream;
+use is_terminal::IsTerminal;
 use chrono::Utc;
 use clap::{arg, Command};
 use log::info;
@@ -38,7 +38,7 @@ impl ChatDispatcher {
     }
 
     fn pager_display(text: &str) -> std::io::Result<()> {
-        if atty::is(Stream::Stdout) {
+        if std::io::stdout().is_terminal() {
             let pager = std::env::var("PAGER").unwrap_or_else(|_| {
                 if cfg!(windows) {
                     "more".into()

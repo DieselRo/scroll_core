@@ -18,10 +18,10 @@ log = "0.4"
 reqwest = { version = "0.12", features = ["blocking", "json", "rustls-tls"], default-features = false }
 tracing = "0.1"
 tracing-subscriber = { workspace = true }
-ansi_term = "0.12"
+console = "0.15"
 rustyline = "16"
 home = "0.5"
-atty = "0.2"
+is-terminal = "0.4"
 walkdir = "2"
 pathdiff = "0.2"
 sha2 = "0.10"
