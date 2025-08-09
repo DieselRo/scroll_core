@@ -31,6 +31,7 @@ use scroll_core::{
     teardown_scroll_core,
     trigger_loom::emotional_state::EmotionalState,
 };
+use std::time::Duration;
 
 /// CLI flags recognised by Scroll Core.
 #[derive(Parser)]
@@ -117,9 +118,18 @@ fn main() -> Result<()> {
         let db_url = std::env::var("DATABASE_URL")
             .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
         let rt = tokio::runtime::Runtime::new()?;
-        let _ = rt.block_on(scroll_core::sessions::database::init_sqlite_connection(
-            &db_url,
-        ));
+        let _ = rt.block_on(async {
+            if scroll_core::sessions::database::init_sqlite_connection(&db_url)
+                .await
+                .is_ok()
+            {
+                let _ = migration::Migrator::up(
+                    scroll_core::sessions::database::get_db_connection(),
+                    None,
+                )
+                .await;
+            }
+        });
         let mut archive = InMemoryArchive::new(scrolls.clone());
         // Build semantic index for context modes that rely on it
         {
@@ -141,7 +151,9 @@ fn main() -> Result<()> {
         }
         // Optional: attach a pulse-sensitive construct to bus later (Phase 6)
 
-        let manager = InvocationManager::new(registry);
+        let (ledger_handle, ledger_service) =
+            scroll_core::invocation::ledger_service::start(64, 256);
+        let manager = InvocationManager::new(registry).with_ledger(ledger_handle);
         let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
         let stream_enabled = *stream && !*no_stream;
         let theme_struct = theme.styles();
@@ -154,6 +166,8 @@ fn main() -> Result<()> {
             theme_struct,
             !*no_banner,
         )?;
+        drop(manager);
+        ledger_service.shutdown(Duration::from_millis(250));
         teardown_scroll_core();
         return Ok(());
     }
@@ -290,11 +304,15 @@ fn main() -> Result<()> {
                     }
                 }
             }
-
-            let manager = InvocationManager::new(registry);
+            let (ledger_handle, ledger_service) =
+                scroll_core::invocation::ledger_service::start(64, 256);
+            let manager = InvocationManager::new(registry).with_ledger(ledger_handle);
             let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
 
             scroll_core::system::cli_orchestrator::run_cli(&manager, &aelren, &scrolls);
+
+            drop(manager);
+            ledger_service.shutdown(Duration::from_millis(250));
         }
         Err(e) => eprintln!("❌ Initialization failed: {e}"),
     }

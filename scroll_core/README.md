@@ -10,3 +10,12 @@ Key entry points:
 - `chat/`: interactive chat and routing
 
 
+## Migration Notes (Ledger Service)
+
+Invocation logging now uses a long-lived asynchronous service. Each
+invocation sends a `LedgerEvent` over a bounded channel; the worker
+buffers events until the database connection is ready and then flushes
+them. This removes per-invocation thread spawns and prevents panics when
+the database has not been initialised.
+
+

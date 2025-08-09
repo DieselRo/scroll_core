@@ -24,3 +24,10 @@ Run `cargo xtask gen-map` to regenerate `docs/module_map.md` after code changes.
 ## Alignment Docs
 
 Active plan, progress, and specs for aligning the runtime with the scrollbooks are tracked in `docs/alignment/`.
+
+## Ledger Service
+
+Invocation logs are written by a background ledger service. Events are
+sent over a bounded channel and flushed to the database asynchronously.
+Set `DATABASE_URL` to change the SQLite location used during local
+testing.
