@@ -17,6 +17,13 @@ This repository contains the Scroll Core project.
 
 In tests or offline, set `SC_LLM_PROVIDER=mock` to avoid network calls.
 
+## Database & Ledger
+
+Invocations are persisted to a SQLite database through a long-lived ledger
+service. Set `DATABASE_URL` to control the path (default
+`sqlite://scroll_core.db?mode=rwc`). Run `cargo test ledger_service_tests -- --nocapture`
+to exercise the service locally.
+
 ## Regenerating Documentation
 
 Run `cargo xtask gen-map` to regenerate `docs/module_map.md` after code changes.

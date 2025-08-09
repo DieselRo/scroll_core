@@ -10,6 +10,7 @@ use crate::construct_ai::ConstructResult;
 use crate::core::cost_manager::{CostDecision, CostManager, InvocationCost};
 use crate::core::ConstructRegistry;
 use crate::invocation::aelren::AelrenHerald;
+use crate::invocation::ledger_service::{LedgerEvent, LedgerHandle};
 use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::trigger_loom::ambient;
 use chrono::Utc;
@@ -21,6 +22,7 @@ use tracing::info_span;
 pub struct InvocationManager {
     pub registry: ConstructRegistry,
     pub max_chain_depth: usize,
+    pub ledger: Option<LedgerHandle>,
 }
 
 impl InvocationManager {
@@ -28,7 +30,13 @@ impl InvocationManager {
         Self {
             registry,
             max_chain_depth: 3,
+            ledger: None,
         }
+    }
+
+    pub fn with_ledger(mut self, handle: LedgerHandle) -> Self {
+        self.ledger = Some(handle);
+        self
     }
 
     pub fn invoke_by_name(
@@ -93,20 +101,10 @@ impl InvocationManager {
 
         let result = self.registry.invoke(name, context);
 
-        // Opportunistic ledger write (ignore errors), fire-and-forget off-thread to avoid requiring a runtime
-        #[cfg(not(test))]
-        {
-            let inv = invocation.clone();
-            let cost_clone = cost.clone();
-            std::thread::spawn(move || {
-                if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    rt.block_on(async {
-                        // Enrich decision string with routed construct
-                        let enriched = cost_clone.clone();
-                        if let CostDecision::Allow = enriched.decision {}
-                        let _ = crate::invocation::ledger::log_invocation_db(&inv, &enriched).await;
-                    });
-                }
+        if let Some(handle) = &self.ledger {
+            let _ = handle.try_log(LedgerEvent {
+                invocation: invocation.clone(),
+                cost: cost.clone(),
             });
         }
 
@@ -140,14 +138,9 @@ impl InvocationManager {
                 timestamp: Utc::now(),
             };
             let cost = InvocationCost::default();
-            let _ = std::thread::spawn(move || {
-                if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    rt.block_on(async {
-                        let _ =
-                            crate::invocation::ledger::log_invocation_db(&invocation, &cost).await;
-                    });
-                }
-            });
+            if let Some(handle) = &self.ledger {
+                let _ = handle.try_log(LedgerEvent { invocation, cost });
+            }
         }
         herald.invoke_symbolically(scroll, &self.registry)
     }
