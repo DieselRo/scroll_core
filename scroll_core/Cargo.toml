@@ -19,7 +19,7 @@ reqwest = { version = "0.12", features = ["blocking", "json", "rustls-tls"], def
 tracing = "0.1"
 tracing-subscriber = { workspace = true }
 console = "0.15"
-rustyline = "16"
+rustyline = "17"
 home = "0.5"
 is-terminal = "0.4"
 walkdir = "2"
