@@ -3,6 +3,7 @@ name = "scroll_core"
 version = "0.2.0"
 edition = "2021"
 default-run = "scroll_core"
+license = "MIT"
 
 [dependencies]
 anyhow = "1"
