@@ -1,6 +1,8 @@
 use assert_cmd::Command;
 use predicates::str::contains;
-use sqlx::SqlitePool;
+use scroll_core::invocation::ledger::Entity as LedgerEntity;
+use sea_orm::EntityTrait;
+use sea_orm::PaginatorTrait;
 use std::fs;
 use tempfile::tempdir;
 
@@ -36,13 +38,16 @@ async fn chat_cli_records() {
         .success()
         .stdout(contains("pong"));
 
-    let pool = SqlitePool::connect(&format!("sqlite://{}?mode=rwc", db_path.to_str().unwrap()))
+    // Connect via SeaORM session helper and count rows
+    scroll_core::sessions::database::init_sqlite_connection(&format!(
+        "sqlite://{}?mode=rwc",
+        db_path.to_str().unwrap()
+    ))
+    .await
+    .unwrap();
+    let count = LedgerEntity::find()
+        .count(scroll_core::sessions::database::get_db_connection())
         .await
         .unwrap();
-    let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM scroll_events")
-        .fetch_one(&pool)
-        .await
-        .unwrap();
-    let count = row.0;
-    assert!(count >= 2);
+    assert!(count >= 1);
 }

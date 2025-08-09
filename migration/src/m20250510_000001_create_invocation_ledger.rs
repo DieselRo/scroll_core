@@ -53,7 +53,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(InvocationLedger::Timestamp)
-                            .timestamp_with_time_zone()
+                            .timestamp()
                             .not_null(),
                     )
                     .col(
