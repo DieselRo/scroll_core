@@ -16,6 +16,10 @@ pub mod database;
 pub mod errors;
 pub mod events;
 pub mod invocation;
+// New provider-agnostic LLM interface
+pub mod invocation_llm_alias {
+    pub use crate::invocation::llm;
+}
 pub mod memory;
 pub mod metrics;
 pub mod models;

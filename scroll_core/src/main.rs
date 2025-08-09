@@ -23,8 +23,9 @@ use scroll_core::{
     initialize_scroll_core,
     invocation::{
         aelren::AelrenHerald,
-        constructs::openai_construct::{Mythscribe, OpenAIClient},
+        constructs::openai_construct::Mythscribe,
         invocation_manager::InvocationManager,
+        llm::factory,
     },
     parser::parse_scroll,
     teardown_scroll_core,
@@ -134,10 +135,8 @@ fn main() -> Result<()> {
                 scroll_core::invocation::constructs::mockscribe::Mockscribe,
             );
         } else {
-            let mythscribe = Mythscribe::new(
-                OpenAIClient::new_from_env(),
-                "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
-            );
+            let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            let mythscribe = Mythscribe::new(client, "You are Mythscribe, the poetic analyst of sacred scrolls.".into());
             registry.insert("mythscribe", mythscribe);
         }
         // Optional: attach a pulse-sensitive construct to bus later (Phase 6)
@@ -266,10 +265,8 @@ fn main() -> Result<()> {
 
             // Seed construct registry
             let mut registry = ConstructRegistry::new();
-            let mythscribe = Mythscribe::new(
-                OpenAIClient::new_from_env(),
-                "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
-            );
+            let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            let mythscribe = Mythscribe::new(client, "You are Mythscribe, the poetic analyst of sacred scrolls.".into());
             registry.insert("mythscribe", mythscribe);
 
             // Ensure DB connection and migrations for CLI ledger/session logging
@@ -328,10 +325,8 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
     }
     let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
     let mut reg = ConstructRegistry::new();
-    let myth = Mythscribe::new(
-        OpenAIClient::new_from_env(),
-        "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
-    );
+    let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
+    let myth = Mythscribe::new(client, "You are Mythscribe, the poetic analyst of sacred scrolls.".into());
     reg.insert("mythscribe", myth);
     let manager = InvocationManager::new(reg);
 
