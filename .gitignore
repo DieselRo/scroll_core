@@ -17,3 +17,5 @@ Thumbs.db
 /scrolls/docs/source_index_*.md
 fuzz/artifacts/
 fuzz/corpus/
+
+*:Zone.Identifier*
