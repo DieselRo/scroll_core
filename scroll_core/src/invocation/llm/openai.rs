@@ -43,7 +43,9 @@ impl OpenAIClient {
         timeout_ms: Option<u64>,
     ) -> Result<Self, LLMError> {
         let http = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_millis(timeout_ms.unwrap_or(15_000)))
+            .timeout(std::time::Duration::from_millis(
+                timeout_ms.unwrap_or(15_000),
+            ))
             .build()
             .map_err(|e| LLMError::Other(format!("http client build error: {e}")))?;
         Ok(Self {

@@ -29,7 +29,6 @@ use scroll_core::{
     teardown_scroll_core,
     trigger_loom::emotional_state::EmotionalState,
 };
-use std::time::Duration;
 
 /// CLI flags recognised by Scroll Core.
 #[derive(Parser)]
@@ -153,7 +152,8 @@ fn main() -> Result<()> {
         // Optional: attach a pulse-sensitive construct to bus later (Phase 6)
 
         // Start ledger service after DB init/migrations
-        let (ledger_handle, ledger_service) = scroll_core::invocation::ledger_service::start(64, 256);
+        let (ledger_handle, ledger_service) =
+            scroll_core::invocation::ledger_service::start(64, 256);
 
         let manager = InvocationManager::new(registry).with_ledger(ledger_handle.clone());
         let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
@@ -169,9 +169,7 @@ fn main() -> Result<()> {
             !*no_banner,
         )?;
         // Graceful shutdown of ledger worker
-        tokio::runtime::Runtime::new()?.block_on(async move {
-            ledger_service.shutdown(std::time::Duration::from_millis(250)).await;
-        });
+        ledger_service.shutdown_blocking(std::time::Duration::from_millis(250));
         teardown_scroll_core();
         return Ok(());
     }
@@ -313,7 +311,8 @@ fn main() -> Result<()> {
             }
 
             // Start ledger service after ensuring DB/migrations
-            let (ledger_handle, ledger_service) = scroll_core::invocation::ledger_service::start(64, 256);
+            let (ledger_handle, ledger_service) =
+                scroll_core::invocation::ledger_service::start(64, 256);
 
             let manager = InvocationManager::new(registry).with_ledger(ledger_handle.clone());
             let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
@@ -321,13 +320,7 @@ fn main() -> Result<()> {
             scroll_core::system::cli_orchestrator::run_cli(&manager, &aelren, &scrolls);
 
             // shutdown ledger
-            if let Ok(rt) = tokio::runtime::Runtime::new() {
-                rt.block_on(async move {
-                    ledger_service
-                        .shutdown(std::time::Duration::from_millis(250))
-                        .await;
-                });
-            }
+            ledger_service.shutdown_blocking(std::time::Duration::from_millis(250));
         }
         Err(e) => eprintln!("❌ Initialization failed: {e}"),
     }

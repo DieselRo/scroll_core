@@ -52,7 +52,8 @@ pub mod factory {
 
         let client: Arc<dyn LLMClient> = match provider.as_str() {
             "mock" => Arc::new(MockLLMClient::default()),
-            "openai" | _ => Arc::new(OpenAIClient::new_from_env()?),
+            "openai" => Arc::new(OpenAIClient::new_from_env()?),
+            _ => Arc::new(OpenAIClient::new_from_env()?),
         };
 
         let wrapped = RetryingClient::new(client, max_retries, attempt_timeout_ms, base_backoff_ms);

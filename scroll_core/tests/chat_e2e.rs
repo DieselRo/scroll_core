@@ -8,10 +8,10 @@ use scroll_core::core::construct_registry::ConstructRegistry;
 use scroll_core::core::context_frame_engine::{ContextFrameEngine, ContextMode};
 use scroll_core::invocation::aelren::AelrenHerald;
 use scroll_core::invocation::constructs::openai_construct::Mythscribe;
-use scroll_core::invocation::llm::openai::OpenAIClient;
-use std::sync::Arc;
 use scroll_core::invocation::invocation_manager::InvocationManager;
+use scroll_core::invocation::llm::openai::OpenAIClient;
 use scroll_core::trigger_loom::emotional_state::EmotionalState;
+use std::sync::Arc;
 
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -47,7 +47,10 @@ async fn test_chat_dispatcher_records_access() {
         Some(5000),
     )
     .unwrap();
-    registry.insert("mythscribe", Mythscribe::new(Arc::new(client), "System".into()));
+    registry.insert(
+        "mythscribe",
+        Mythscribe::new(Arc::new(client), "System".into()),
+    );
     let manager = Box::leak(Box::new(InvocationManager::new(registry)));
 
     let scrolls_thread = scrolls.clone();
