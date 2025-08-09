@@ -21,14 +21,17 @@ use tracing::info_span;
 pub struct InvocationManager {
     pub registry: ConstructRegistry,
     pub max_chain_depth: usize,
+    pub ledger: Option<crate::invocation::ledger_service::LedgerHandle>,
 }
 
 impl InvocationManager {
     pub fn new(registry: ConstructRegistry) -> Self {
-        Self {
-            registry,
-            max_chain_depth: 3,
-        }
+        Self { registry, max_chain_depth: 3, ledger: None }
+    }
+
+    pub fn with_ledger(mut self, handle: crate::invocation::ledger_service::LedgerHandle) -> Self {
+        self.ledger = Some(handle);
+        self
     }
 
     pub fn invoke_by_name(
@@ -93,20 +96,10 @@ impl InvocationManager {
 
         let result = self.registry.invoke(name, context);
 
-        // Opportunistic ledger write (ignore errors), fire-and-forget off-thread to avoid requiring a runtime
-        #[cfg(not(test))]
-        {
-            let inv = invocation.clone();
-            let cost_clone = cost.clone();
-            std::thread::spawn(move || {
-                if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    rt.block_on(async {
-                        // Enrich decision string with routed construct
-                        let enriched = cost_clone.clone();
-                        if let CostDecision::Allow = enriched.decision {}
-                        let _ = crate::invocation::ledger::log_invocation_db(&inv, &enriched).await;
-                    });
-                }
+        if let Some(handle) = &self.ledger {
+            let _ = handle.try_log(crate::invocation::ledger_service::LedgerEvent {
+                invocation: invocation.clone(),
+                cost: cost.clone(),
             });
         }
 
@@ -140,14 +133,12 @@ impl InvocationManager {
                 timestamp: Utc::now(),
             };
             let cost = InvocationCost::default();
-            let _ = std::thread::spawn(move || {
-                if let Ok(rt) = tokio::runtime::Runtime::new() {
-                    rt.block_on(async {
-                        let _ =
-                            crate::invocation::ledger::log_invocation_db(&invocation, &cost).await;
-                    });
-                }
-            });
+            if let Some(handle) = &self.ledger {
+                let _ = handle.try_log(crate::invocation::ledger_service::LedgerEvent {
+                    invocation,
+                    cost,
+                });
+            }
         }
         herald.invoke_symbolically(scroll, &self.registry)
     }
