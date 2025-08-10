@@ -3,6 +3,7 @@ pub mod file_reader_construct;
 pub mod loreweaver;
 pub mod mockscribe;
 pub mod mythscribe;
+pub mod mythscribe_gate;
 pub mod naeros;
 pub mod openai_construct;
 pub mod pulse_echo;

@@ -47,11 +47,20 @@ impl TriggerLoopEngine {
         self
     }
 
-    pub fn start_loop(&mut self, constructs: &mut [Box<dyn NamedConstruct>]) {
+    pub fn start_loop(
+        &mut self,
+        constructs: &mut [Box<dyn NamedConstruct>],
+        tick_limit: Option<u64>,
+    ) {
         let base_freq = self.config.resolve_frequency();
         let interval = Duration::from_secs_f32(1.0 / base_freq.max(0.001));
 
         loop {
+            if let Some(limit) = tick_limit {
+                if self.tick_counter >= limit {
+                    break;
+                }
+            }
             let now = Instant::now();
             self.tick_once(constructs);
             let elapsed = now.elapsed();
@@ -65,11 +74,17 @@ impl TriggerLoopEngine {
         &mut self,
         constructs: &mut [Box<dyn NamedConstruct>],
         mut emotion: EmotionalState,
+        tick_limit: Option<u64>,
     ) {
         loop {
+            if let Some(limit) = tick_limit {
+                if self.tick_counter >= limit {
+                    break;
+                }
+            }
             let tick_start = Instant::now();
             // Decay before tick; simple modulation using intensity
-            emotion.decay(0.01);
+            emotion.decay_step();
             let freq = match &self.config.rhythm {
                 crate::trigger_loom::config::SymbolicRhythm::EmotionDriven => {
                     let intensity = emotion.intensity.clamp(0.0, 1.0);

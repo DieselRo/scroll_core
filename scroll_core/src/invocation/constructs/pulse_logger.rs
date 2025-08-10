@@ -1,28 +1,74 @@
-use crate::invocation::named_construct::{NamedConstruct, PulseSensitive};
-use crate::invocation::types::{Invocation, InvocationResult};
+use crate::invocation::ledger_service::{LedgerEvent, LedgerHandle};
+use crate::invocation::named_construct::NamedConstruct;
+use crate::invocation::types::{Invocation, InvocationMode, InvocationResult, InvocationTier};
+use crate::orchestra::{Bus, OrchestratedConstruct};
+use chrono::Utc;
+use uuid::Uuid;
 
 #[derive(Clone, Default)]
-pub struct PulseLogger;
+pub struct PulseLogger {
+    bus: Option<Bus>,
+    ledger: Option<LedgerHandle>,
+}
+
+impl PulseLogger {
+    pub fn with_ledger(mut self, ledger: LedgerHandle) -> Self {
+        self.ledger = Some(ledger);
+        self
+    }
+}
 
 impl NamedConstruct for PulseLogger {
     fn name(&self) -> &str {
         "pulse_logger"
     }
+
     fn perform(
         &self,
         invocation: &Invocation,
         _scroll: Option<crate::Scroll>,
     ) -> Result<InvocationResult, String> {
-        println!("[pulse_logger] tick -> {}", invocation.phrase);
+        if let Some(ledger) = &self.ledger {
+            let event = LedgerEvent {
+                invocation: invocation.clone(),
+                cost: crate::core::cost_manager::InvocationCost::default(),
+            };
+            let _ = ledger.try_log(event);
+        }
         Ok(InvocationResult::Success("ok".into()))
-    }
-    fn as_pulse_sensitive(&self) -> Option<&dyn PulseSensitive> {
-        Some(self)
     }
 }
 
-impl PulseSensitive for PulseLogger {
-    fn should_awaken(&self, tick: u64) -> bool {
-        tick % 3 == 0
+impl OrchestratedConstruct for PulseLogger {
+    fn attach_bus(&mut self, mut bus: Bus) {
+        let rx = bus.subscribe("pulse_logger");
+        let ledger = self.ledger.clone();
+        std::thread::spawn(move || {
+            while let Ok(msg) = rx.recv() {
+                if let Some(ledger) = &ledger {
+                    let invocation = Invocation {
+                        id: Uuid::new_v4(),
+                        phrase: msg
+                            .payload
+                            .get("text")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("")
+                            .to_string(),
+                        invoker: msg.from.clone(),
+                        invoked: "pulse_logger".into(),
+                        tier: InvocationTier::True,
+                        mode: InvocationMode::Read,
+                        resonance_required: false,
+                        timestamp: Utc::now(),
+                    };
+                    let event = LedgerEvent {
+                        invocation,
+                        cost: crate::core::cost_manager::InvocationCost::default(),
+                    };
+                    let _ = ledger.try_log(event);
+                }
+            }
+        });
+        self.bus = Some(bus);
     }
 }

@@ -23,6 +23,42 @@ pub struct TriggerLoopConfig {
     pub emotional_signature: Option<EmotionSignature>,
 }
 
+/// Profiles provide handy presets for deterministic CI runs or richer demos.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TriggerLoopProfile {
+    Ci,
+    Demo,
+}
+
+impl TriggerLoopProfile {
+    /// Return a base configuration tuned for the profile. Callers may override
+    /// the fields afterwards (e.g. via CLI flags).
+    pub fn config(self) -> TriggerLoopConfig {
+        match self {
+            TriggerLoopProfile::Ci => TriggerLoopConfig {
+                rhythm: SymbolicRhythm::Constant(1.0),
+                max_invocations_per_tick: 1,
+                allow_test_ticks: true,
+                emotional_signature: None,
+            },
+            TriggerLoopProfile::Demo => TriggerLoopConfig {
+                rhythm: SymbolicRhythm::Constant(0.5),
+                max_invocations_per_tick: 2,
+                allow_test_ticks: true,
+                emotional_signature: None,
+            },
+        }
+    }
+
+    /// Optional tick cap used by CI profile to prevent infinite loops.
+    pub fn tick_limit(self) -> Option<u64> {
+        match self {
+            TriggerLoopProfile::Ci => Some(3),
+            TriggerLoopProfile::Demo => None,
+        }
+    }
+}
+
 impl TriggerLoopConfig {
     pub fn resolve_frequency(&self) -> f32 {
         self.resolve_frequency_at(Local::now())

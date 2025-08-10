@@ -14,6 +14,10 @@ pub struct EmotionalState {
     // New fields for trigger patterns and sentiment
     pub trigger_patterns: Vec<String>,
     pub sentiment: f32,
+    /// Deterministic seed used for demos/tests.
+    pub seed: u64,
+    /// Default decay rate applied each tick.
+    pub decay_rate: f32,
 }
 
 impl EmotionalState {
@@ -25,6 +29,8 @@ impl EmotionalState {
             timestamp: Utc::now(),
             trigger_patterns: Vec::new(),
             sentiment: 0.0,
+            seed: 0,
+            decay_rate: 0.01,
         }
     }
 
@@ -52,5 +58,11 @@ impl EmotionalState {
         self.intensity = (self.intensity - decay).max(0.0);
         self.sentiment = (self.sentiment - decay).max(0.0);
         self.timestamp = now;
+    }
+
+    /// Decay using the state's stored decay rate.
+    pub fn decay_step(&mut self) {
+        let rate = self.decay_rate;
+        self.decay(rate);
     }
 }
