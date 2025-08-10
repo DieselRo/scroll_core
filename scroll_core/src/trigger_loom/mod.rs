@@ -22,6 +22,7 @@
 
 pub mod ambient;
 pub mod config;
+pub mod decision_ledger;
 pub mod emotion;
 pub mod emotional_state;
 pub mod engine;

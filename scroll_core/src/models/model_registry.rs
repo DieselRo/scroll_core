@@ -277,7 +277,7 @@ fn apply_construct_env_overrides(
         }
         // format: SC_MODEL_{NAME}_KEY
         let rest = &k[9..];
-        let (name, key) = match rest.rsplit_once('_') {
+        let (name, key) = match rest.split_once('_') {
             Some((n, k)) => (n.to_string(), k.to_string()),
             None => continue,
         };
@@ -319,7 +319,7 @@ fn apply_cost_env_overrides(
         }
         // SC_COST_{NAME}_KEY
         let rest = &k[8..];
-        let (name, key) = match rest.rsplit_once('_') {
+        let (name, key) = match rest.split_once('_') {
             Some((n, k)) => (n.to_string(), k.to_string()),
             None => continue,
         };
@@ -367,7 +367,7 @@ fn apply_context_env_overrides(
         }
         // SC_CONTEXT_{NAME}_KEY
         let rest = &k[11..];
-        let (name, key) = match rest.rsplit_once('_') {
+        let (name, key) = match rest.split_once('_') {
             Some((n, k)) => (n.to_string(), k.to_string()),
             None => continue,
         };

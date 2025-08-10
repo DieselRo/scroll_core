@@ -53,6 +53,19 @@ struct Cli {
 
     #[command(subcommand)]
     command: Option<Commands>,
+
+    /// Start the Trigger Loom loop (manual start)
+    #[arg(long = "trigger-loop", action = clap::ArgAction::SetTrue, default_value_t = false)]
+    trigger_loop: bool,
+    /// Deterministic CI mode for Trigger Loom
+    #[arg(long = "trigger-loop-ci", action = clap::ArgAction::SetTrue, default_value_t = false)]
+    trigger_loop_ci: bool,
+    /// Per-tick budget (max invocations)
+    #[arg(long = "trigger-loop-budget")]
+    trigger_loop_budget: Option<usize>,
+    /// Tick period in milliseconds
+    #[arg(long = "trigger-loop-period-ms")]
+    trigger_loop_period_ms: Option<u64>,
 }
 
 #[derive(Subcommand)]
@@ -144,7 +157,7 @@ fn main() -> Result<()> {
         no_stream,
         theme,
         no_banner,
-        explain_context
+        explain_context,
     }) = &cli.command
     {
         if cli.rebuild_index {
@@ -226,6 +239,64 @@ fn main() -> Result<()> {
         // Graceful shutdown of ledger worker
         ledger_service.shutdown_blocking(std::time::Duration::from_millis(250));
         teardown_scroll_core();
+        return Ok(());
+    }
+
+    // Trigger Loom start (explicit via CLI or env)
+    if cli.trigger_loop || std::env::var("SC_TRIGGER_LOOP").ok().as_deref() == Some("1") {
+        // DB init + migrations (for decision ledger)
+        let db_url = std::env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+        let rt = tokio::runtime::Runtime::new()?;
+        rt.block_on(async {
+            if scroll_core::sessions::database::init_sqlite_connection(&db_url)
+                .await
+                .is_ok()
+            {
+                let _ = migration::Migrator::up(
+                    scroll_core::sessions::database::get_db_connection(),
+                    None,
+                )
+                .await;
+            }
+        });
+
+        // Build constructs list; include pulse_echo and pulse_logger for demo
+        let mut constructs: Vec<Box<dyn scroll_core::invocation::named_construct::NamedConstruct>> = vec![
+            Box::new(scroll_core::invocation::constructs::pulse_echo::PulseEcho::default()),
+            Box::new(scroll_core::invocation::constructs::pulse_logger::PulseLogger::default()),
+        ];
+
+        // Configure engine
+        use scroll_core::trigger_loom::config::{SymbolicRhythm, TriggerLoopConfig};
+        let rhythm = if let Some(ms) = cli.trigger_loop_period_ms {
+            let hz = (1000.0f32 / (ms as f32)).max(0.001);
+            SymbolicRhythm::Constant(hz)
+        } else if cli.trigger_loop_ci {
+            SymbolicRhythm::Constant(1.0) // fixed 1Hz
+        } else {
+            SymbolicRhythm::EmotionDriven
+        };
+        let cfg = TriggerLoopConfig {
+            rhythm,
+            max_invocations_per_tick: cli.trigger_loop_budget.unwrap_or(1),
+            allow_test_ticks: true,
+            emotional_signature: None,
+        };
+        let mut engine = scroll_core::trigger_loom::engine::TriggerLoopEngine::new(cfg.clone());
+        if cli.trigger_loop_ci {
+            engine = engine.with_deterministic_seed(42);
+        }
+        println!("▶️ Starting Trigger Loom (press Ctrl-C to stop)...");
+        if cli.trigger_loop_ci || matches!(cfg.rhythm, SymbolicRhythm::Constant(_)) {
+            engine.start_loop(&mut constructs);
+        } else {
+            // Simple emotion source influences cadence via intensity/decay
+            use scroll_core::trigger_loom::emotional_state::EmotionalState;
+            let mut state = EmotionalState::new(vec!["start".into()], 0.5, None);
+            state.trigger_patterns = vec!["pulse".into()];
+            engine.start_loop_with_emotion(&mut constructs, state);
+        }
         return Ok(());
     }
 
@@ -322,11 +393,9 @@ fn main() -> Result<()> {
         let rt = tokio::runtime::Runtime::new()?;
         rt.block_on(async {
             let _ = scroll_core::sessions::database::init_sqlite_connection(&db_url).await;
-            let _ = migration::Migrator::up(
-                scroll_core::sessions::database::get_db_connection(),
-                None,
-            )
-            .await;
+            let _ =
+                migration::Migrator::up(scroll_core::sessions::database::get_db_connection(), None)
+                    .await;
         });
         use scroll_core::invocation::context_ledger::{candidate, frame};
         use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QuerySelect};
@@ -357,14 +426,15 @@ fn main() -> Result<()> {
             );
             if *details {
                 let conn2 = scroll_core::sessions::database::get_db_connection().clone();
-                let rows: Vec<candidate::Model> = tokio::runtime::Runtime::new()?.block_on(async move {
-                    candidate::Entity::find()
-                        .filter(candidate::Column::FrameId.eq(f.frame_id))
-                        .order_by_asc(candidate::Column::Timestamp)
-                        .all(&conn2)
-                        .await
-                        .unwrap_or_default()
-                });
+                let rows: Vec<candidate::Model> =
+                    tokio::runtime::Runtime::new()?.block_on(async move {
+                        candidate::Entity::find()
+                            .filter(candidate::Column::FrameId.eq(f.frame_id))
+                            .order_by_asc(candidate::Column::Timestamp)
+                            .all(&conn2)
+                            .await
+                            .unwrap_or_default()
+                    });
                 for r in rows {
                     let mark = if r.included { "✔" } else { "✖" };
                     println!(
@@ -512,10 +582,10 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
     let mut session = ChatSession::new(None, None);
     let mut mood = EmotionalState::new(Vec::new(), 0.0, None);
     let _dispatcher = ChatDispatcher::new(&manager, &engine);
-            let mut aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
-            if std::env::var("SC_EXPLAIN_CONTEXT").ok().as_deref() == Some("1") {
-                aelren.explain_context = true;
-            }
+    let mut aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
+    if std::env::var("SC_EXPLAIN_CONTEXT").ok().as_deref() == Some("1") {
+        aelren.explain_context = true;
+    }
 
     let user_msg = "@validator Please inspect The Ballad";
     let reply: ChatMessage = ChatDispatcher::dispatch(

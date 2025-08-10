@@ -9,6 +9,7 @@ mod m20250422_001344_add_session_state_column;
 mod m20250501_000001_create_adk_tables;
 mod m20250510_000001_create_invocation_ledger;
 mod m20250810_000002_create_context_ledger;
+mod m20250810_000003_create_trigger_loom_ledger;
 
 pub struct Migrator;
 
@@ -22,6 +23,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20250501_000001_create_adk_tables::Migration),
             Box::new(m20250510_000001_create_invocation_ledger::Migration),
             Box::new(m20250810_000002_create_context_ledger::Migration),
+            Box::new(m20250810_000003_create_trigger_loom_ledger::Migration),
         ]
     }
 }

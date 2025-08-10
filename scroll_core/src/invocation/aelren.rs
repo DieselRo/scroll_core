@@ -5,8 +5,8 @@
 
 use crate::construct_ai::{ConstructContext, ConstructResult};
 use crate::core::context_frame_engine::ContextFrameEngine;
-use crate::invocation::context_ledger::log_context_report;
 use crate::core::ConstructRegistry;
+use crate::invocation::context_ledger::log_context_report;
 // DB ledger is written downstream by InvocationManager
 use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
 use crate::scroll::Scroll;
@@ -60,10 +60,19 @@ impl<'a> AelrenHerald<'a> {
             println!("- frame: {}", report.summary.frame_id);
             for d in &report.decisions {
                 let status = if d.included { "✔" } else { "✖" };
-                let path = d.candidate_path.clone().unwrap_or_else(|| "<unknown>".into());
+                let path = d
+                    .candidate_path
+                    .clone()
+                    .unwrap_or_else(|| "<unknown>".into());
                 println!(
                     "{} {} | score {:.2} | age {:.1}h | tokens {}/{} | {}",
-                    status, path, d.score, d.recency_hours, d.running_tokens, d.max_tokens, d.reason
+                    status,
+                    path,
+                    d.score,
+                    d.recency_hours,
+                    d.running_tokens,
+                    d.max_tokens,
+                    d.reason
                 );
             }
         }

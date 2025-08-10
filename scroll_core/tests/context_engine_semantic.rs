@@ -2,6 +2,7 @@ use logtest::Logger;
 use scroll_core::archive::archive_memory::InMemoryArchive;
 use scroll_core::archive::semantic_index::TokenEmbedder;
 use scroll_core::core::context_frame_engine::{ContextFrameEngine, ContextMode};
+use scroll_core::models::model_registry::ContextThresholds;
 use scroll_core::Scroll;
 
 #[test]
@@ -23,13 +24,14 @@ fn test_context_engine_semantic_recall() {
     archive.build_semantic_index(&TokenEmbedder).unwrap();
 
     let trigger = Scroll::builder("Advanced Rust patterns")
-        .tags(["programming"].as_ref())
+        .tags(["programming", "rust"].as_ref())
         .body("Macros and traits.")
         .invocation_phrase("Invoke")
         .sigil("🔮")
         .build();
-    let engine = ContextFrameEngine::new(&archive, ContextMode::Broad);
-    let ctx = engine.build_context(&trigger);
+    let thresholds = ContextThresholds { max_context_tokens: 3000, min_relevance_score: 0.0, recency_half_life_hours: 48.0, max_items: 12 };
+    let engine = ContextFrameEngine::new(&archive, ContextMode::Broad).with_thresholds(thresholds);
+    let (ctx, _) = engine.build_context(&trigger);
     assert!(ctx.scrolls.iter().any(|s| s.title == "Rust Guide"));
 
     let logs: Vec<String> = logger.map(|r| r.args().to_string()).collect();

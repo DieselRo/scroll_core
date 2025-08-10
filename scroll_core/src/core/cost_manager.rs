@@ -310,8 +310,7 @@ impl RollingCap {
         }
         let sum: f32 = q.iter().map(|(_, v)| *v).sum();
         // look up cap for this construct
-        let cap = ModelRegistry::get_global()
-            .and_then(|r| r.cost_profile(name).daily_usd_cap);
+        let cap = ModelRegistry::get_global().and_then(|r| r.cost_profile(name).daily_usd_cap);
         if let Some(cap) = cap {
             if sum + amount > cap {
                 return false;

@@ -33,4 +33,3 @@ pub struct ContextBuildReport {
     pub summary: ContextFrameSummary,
     pub decisions: Vec<ContextDecision>,
 }
-

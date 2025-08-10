@@ -22,8 +22,8 @@
 - [x] Cost thresholds gate invoke
 
 ## Phase 3
-- [x] Trigger loop scaffold (engine tick; CI-safe)
-- [ ] Emotion-driven rhythm activation with constructs
+- [x] Trigger loop v1 (emotion-modulated; budgeted; CLI-gated)
+- [x] Emotion-driven rhythm activation with constructs
 - [x] Ambient triggers (tags/emotion thresholds)
 
 ## Phase 4

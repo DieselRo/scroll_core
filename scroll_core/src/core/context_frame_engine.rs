@@ -59,7 +59,10 @@ impl<'a> ContextFrameEngine<'a> {
         self
     }
 
-    pub fn build_context(&self, triggering_scroll: &Scroll) -> (ConstructContext, ContextBuildReport) {
+    pub fn build_context(
+        &self,
+        triggering_scroll: &Scroll,
+    ) -> (ConstructContext, ContextBuildReport) {
         let start = std::time::Instant::now();
         let frame_id = Uuid::new_v4();
         let mut running_tokens: usize = token_estimate(triggering_scroll);
@@ -173,7 +176,11 @@ impl<'a> ContextFrameEngine<'a> {
                     frame_id,
                     candidate_path: s.yaml_metadata.file_path.clone(),
                     included: true,
-                    reason: if reason.is_empty() { "included".into() } else { reason },
+                    reason: if reason.is_empty() {
+                        "included".into()
+                    } else {
+                        reason
+                    },
                     score: score as f32,
                     recency_hours: age_h,
                     running_tokens,
@@ -187,7 +194,11 @@ impl<'a> ContextFrameEngine<'a> {
                     candidate_path: s.yaml_metadata.file_path.clone(),
                     included: false,
                     reason: if reason.is_empty() {
-                        if idx >= self.max_scrolls { "max_items_limit".into() } else { "excluded".into() }
+                        if idx >= self.max_scrolls {
+                            "max_items_limit".into()
+                        } else {
+                            "excluded".into()
+                        }
                     } else {
                         reason
                     },
@@ -228,10 +239,7 @@ impl<'a> ContextFrameEngine<'a> {
                 tags: triggering_scroll.yaml_metadata.tags.clone(),
                 user_input: None,
             },
-            ContextBuildReport {
-                summary,
-                decisions,
-            },
+            ContextBuildReport { summary, decisions },
         )
     }
 }
@@ -309,7 +317,7 @@ mod tests {
         let s3 = mk_scroll("c", 1000, 3);
         let archive = InMemoryArchive::new(vec![s0.clone(), s1.clone(), s2.clone(), s3.clone()]);
         let thresholds = ContextThresholds {
-            max_context_tokens: 600, // root ~50 + one 250 => include only one candidate
+            max_context_tokens: 500, // root ~50 + one 250 => include only one candidate
             min_relevance_score: 0.0,
             recency_half_life_hours: 48.0,
             max_items: 5,

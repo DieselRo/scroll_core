@@ -74,7 +74,10 @@ pub async fn log_context_report(report: &ContextBuildReport) -> Result<(), sea_o
     let _ = frame.insert(conn).await?;
 
     // Optional detail rows
-    let verbose = std::env::var("SC_CONTEXT_DECISIONS_VERBOSE").ok().as_deref() == Some("1");
+    let verbose = std::env::var("SC_CONTEXT_DECISIONS_VERBOSE")
+        .ok()
+        .as_deref()
+        == Some("1");
     if verbose {
         for d in &report.decisions {
             let rec = candidate::ActiveModel {

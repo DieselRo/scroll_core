@@ -6,6 +6,7 @@ pub mod mythscribe;
 pub mod naeros;
 pub mod openai_construct;
 pub mod pulse_echo;
+pub mod pulse_logger;
 pub mod sirion;
 pub mod thiren;
 pub mod validator_construct;
