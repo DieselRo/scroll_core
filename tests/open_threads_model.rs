@@ -13,6 +13,13 @@ async fn open_threads_crud() -> Result<(), Box<dyn std::error::Error>> {
         scroll_path: Set("scrolls/demo.md".into()),
         title: Set("Test thread".into()),
         status: Set("OPEN".into()),
+        assignee: Set(None),
+        priority: Set("MEDIUM".into()),
+        tags: Set(None),
+        due_at: Set(None),
+        source: Set(None),
+        reopened_count: Set(0),
+        dedupe_key: Set(None),
         created_at: Set(now),
         updated_at: Set(now),
         last_event_id: Set(None),
@@ -35,4 +42,3 @@ async fn open_threads_crud() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
-

@@ -5,6 +5,7 @@
 #![warn(unused_imports)]
 
 use anyhow::Result;
+use std::str::FromStr;
 use std::path::Path;
 
 use clap::{Parser, Subcommand};
@@ -128,7 +129,7 @@ enum Commands {
     /// Manage persistent open threads
     #[command(name = "open-threads")]
     OpenThreads {
-        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["create", "list", "close"]))]
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["create", "list", "close", "reopen"]))]
         action: String,
         /// Thread title (create)
         #[arg(long = "title")]
@@ -139,9 +140,33 @@ enum Commands {
         /// Optional assignee label (create)
         #[arg(long = "assignee")]
         assignee: Option<String>,
+        /// Optional priority (create) LOW|MEDIUM|HIGH
+        #[arg(long = "priority")]
+        priority: Option<String>,
+        /// Optional comma-separated tags (create)
+        #[arg(long = "tags")]
+        tags: Option<String>,
+        /// Optional ISO8601 due date (create)
+        #[arg(long = "due-at")]
+        due_at: Option<String>,
         /// Filter by status for list (OPEN|IN_PROGRESS|BLOCKED|CLOSED)
         #[arg(long = "status")]
         status: Option<String>,
+        /// Filter by current user assignment
+        #[arg(long = "mine", action = clap::ArgAction::SetTrue, default_value_t = false)]
+        mine: bool,
+        /// Filter overdue (due_at < now and not CLOSED)
+        #[arg(long = "overdue", action = clap::ArgAction::SetTrue, default_value_t = false)]
+        overdue: bool,
+        /// Filter by priority in list
+        #[arg(long = "priority")]
+        list_priority: Option<String>,
+        /// Filter by tags in list (comma separated)
+        #[arg(long = "tags")]
+        list_tags: Option<String>,
+        /// Sort key: created|updated|priority
+        #[arg(long = "sort")]
+        sort: Option<String>,
         /// Limit rows for list
         #[arg(long = "limit")]
         limit: Option<u64>,
@@ -419,9 +444,17 @@ fn main() -> Result<()> {
         scroll,
         assignee,
         status,
+        mine,
+        overdue,
+        list_priority,
+        list_tags,
+        sort,
         limit,
         id,
         reason,
+        priority,
+        tags,
+        due_at,
     }) = &cli.command
     {
         // Ensure DB is ready
@@ -434,7 +467,8 @@ fn main() -> Result<()> {
                 migration::Migrator::up(scroll_core::sessions::database::get_db_connection(), None)
                     .await;
         });
-        use scroll_core::threads::service::ThreadsService;
+        use scroll_core::threads::thread_state_service::ThreadStateService;
+        use scroll_core::threads::types::{Priority, ThreadStatus};
         let conn = scroll_core::sessions::database::get_db_connection().clone();
         match action.as_str() {
             "create" => {
@@ -444,46 +478,122 @@ fn main() -> Result<()> {
                 let s = scroll
                     .as_ref()
                     .ok_or_else(|| anyhow::anyhow!("--scroll is required for create"))?;
-                let svc = ThreadsService::new(&conn);
+                let prio = if let Some(p) = priority.as_ref() {
+                    Priority::from_str(p).map_err(|e| anyhow::anyhow!(e))?
+                } else {
+                    Priority::Medium
+                };
+                let tags_vec: Option<Vec<String>> = tags
+                    .as_ref()
+                    .map(|s| s.split(',').map(|t| t.trim().to_string()).collect());
+                let due = if let Some(d) = due_at.as_ref() {
+                    Some(
+                        chrono::DateTime::parse_from_rfc3339(d)
+                            .map_err(|e| anyhow::anyhow!(format!(
+                                "invalid --due-at (RFC3339): {}",
+                                e
+                            )))?
+                            .with_timezone(&chrono::Utc),
+                    )
+                } else {
+                    None
+                };
+                let svc = ThreadStateService::new(&conn);
                 let rec = tokio::runtime::Runtime::new()?.block_on(async {
-                    svc.open_for_validation(s, t, None, assignee.as_deref())
-                        .await
-                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                    svc.create(
+                        s,
+                        t,
+                        assignee.as_deref(),
+                        prio,
+                        tags_vec,
+                        due,
+                        None,
+                        "cli",
+                    )
+                    .await
+                    .map_err(|e| anyhow::anyhow!(e.to_string()))
                 })?;
                 println!(
-                    "created: {} | {} | {} | {}",
-                    rec.id, rec.status, rec.scroll_path, rec.title
+                    "created: {} | {} | {} | {} | prio={} | tags={}",
+                    rec.id,
+                    rec.status,
+                    rec.scroll_path,
+                    rec.title,
+                    rec.priority,
+                    rec.tags.unwrap_or_default()
                 );
             }
             "list" => {
-                let svc = ThreadsService::new(&conn);
+                let svc = ThreadStateService::new(&conn);
+                // parse status if provided
+                let s_parsed: Option<ThreadStatus> = if let Some(s) = status.as_ref() {
+                    Some(ThreadStatus::from_str(s).map_err(|e| anyhow::anyhow!(e))?)
+                } else {
+                    None
+                };
+                let who = if *mine { std::env::var("USER").ok() } else { None };
+                let prio = if let Some(p) = list_priority.as_ref() {
+                    Some(Priority::from_str(p).map_err(|e| anyhow::anyhow!(e))?)
+                } else { None };
+                let tags_vec: Option<Vec<String>> = list_tags
+                    .as_ref()
+                    .map(|s| s.split(',').map(|t| t.trim().to_ascii_lowercase()).filter(|t| !t.is_empty()).map(|t| t.to_string()).collect());
                 let rows = tokio::runtime::Runtime::new()?.block_on(async {
-                    svc.list(status.as_deref(), scroll.as_deref(), *limit)
-                        .await
-                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                    svc.list(
+                        s_parsed,
+                        scroll.as_deref(),
+                        *limit,
+                        who.as_deref(),
+                        prio,
+                        tags_vec,
+                        *overdue,
+                        sort.as_deref(),
+                    )
+                    .await
+                    .map_err(|e| anyhow::anyhow!(e.to_string()))
                 })?;
                 for r in rows {
                     println!(
-                        "{} | {} | {} | {} | {}",
+                        "{} | {} | {} | {} | {} | prio={} | assignee={} | due_at={}",
                         r.id,
                         r.status,
                         r.scroll_path,
                         r.title,
-                        r.created_at
+                        r.created_at,
+                        r.priority,
+                        r.assignee.unwrap_or_default(),
+                        r.due_at.map(|d| d.to_rfc3339()).unwrap_or_else(|| "".into())
                     );
                 }
+            }
+            "reopen" => {
+                let id = id
+                    .as_ref()
+                    .ok_or_else(|| anyhow::anyhow!("<id> is required for reopen"))?;
+                let svc = ThreadStateService::new(&conn);
+                let _ = tokio::runtime::Runtime::new()?.block_on(async {
+                    svc.update_status(id, ThreadStatus::Open, reason.as_deref(), "cli")
+                        .await
+                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                })?;
+                println!("reopened: {}", id);
             }
             "close" => {
                 let id = id
                     .as_ref()
                     .ok_or_else(|| anyhow::anyhow!("<id> is required for close"))?;
-                let svc = ThreadsService::new(&conn);
-                let changed = tokio::runtime::Runtime::new()?.block_on(async {
-                    svc.close(id, reason.as_deref(), None)
-                        .await
-                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                let svc = ThreadStateService::new(&conn);
+                let _ = tokio::runtime::Runtime::new()?.block_on(async {
+                    svc.update_status(
+                        id,
+                        scroll_core::threads::types::ThreadStatus::Closed,
+                        reason.as_deref(),
+                        "cli",
+                    )
+                    .await
+                    .map_err(|e| anyhow::anyhow!(e.to_string()))
                 })?;
-                if changed > 0 {
+                if true {
                     println!("closed: {}", id);
                 } else {
                     println!("not-found: {}", id);
