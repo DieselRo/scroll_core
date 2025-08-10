@@ -1,5 +1,6 @@
 use sea_orm::entity::prelude::*;
 use sea_orm::Set;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::core::context_decisions::ContextBuildReport;
@@ -7,7 +8,7 @@ use crate::sessions::database::get_db_connection;
 
 pub mod frame {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+    #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
     #[sea_orm(table_name = "context_frame_ledger")]
     pub struct Model {
         #[sea_orm(primary_key)]
@@ -30,7 +31,7 @@ pub mod frame {
 
 pub mod candidate {
     use super::*;
-    #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+    #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
     #[sea_orm(table_name = "context_candidate_ledger")]
     pub struct Model {
         #[sea_orm(primary_key)]
@@ -51,7 +52,10 @@ pub mod candidate {
     impl ActiveModelBehavior for ActiveModel {}
 }
 
-pub async fn log_context_report(report: &ContextBuildReport) -> Result<(), sea_orm::DbErr> {
+pub async fn log_context_report(
+    report: &ContextBuildReport,
+    verbose: bool,
+) -> Result<(), sea_orm::DbErr> {
     // Do nothing if DB is not initialized
     if !crate::sessions::database::is_initialized() {
         return Ok(());
@@ -74,10 +78,6 @@ pub async fn log_context_report(report: &ContextBuildReport) -> Result<(), sea_o
     let _ = frame.insert(conn).await?;
 
     // Optional detail rows
-    let verbose = std::env::var("SC_CONTEXT_DECISIONS_VERBOSE")
-        .ok()
-        .as_deref()
-        == Some("1");
     if verbose {
         for d in &report.decisions {
             let rec = candidate::ActiveModel {

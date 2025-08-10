@@ -56,6 +56,8 @@ pub struct ContextConfig {
     pub defaults: ContextThresholds,
     #[serde(default)]
     pub constructs: HashMap<String, ContextThresholds>,
+    #[serde(default)]
+    pub decisions_verbose: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -86,6 +88,7 @@ pub struct ModelRegistry {
     source_file: Option<PathBuf>,
     context_defaults: ContextThresholds,
     context_constructs: HashMap<String, ContextThresholds>,
+    context_decisions_verbose: bool,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -119,6 +122,7 @@ impl ModelRegistry {
         let mut source_file: Option<PathBuf> = None;
         let mut context_defaults: ContextThresholds = ContextThresholds::default();
         let mut context_constructs: HashMap<String, ContextThresholds> = HashMap::new();
+        let mut decisions_verbose: bool = false;
 
         // 2) load YAML if present
         let yaml_path = resolve_config_path(path);
@@ -135,6 +139,7 @@ impl ModelRegistry {
                         if let Some(ctx) = cfg.context {
                             context_defaults = ctx.defaults;
                             context_constructs = ctx.constructs;
+                            decisions_verbose = ctx.decisions_verbose;
                         }
                     }
                     Err(e) => return Err(RegistryError::Load(e.to_string())),
@@ -147,7 +152,11 @@ impl ModelRegistry {
         apply_global_env_overrides(&mut default_spec)?;
         apply_construct_env_overrides(&mut constructs)?;
         apply_cost_env_overrides(&mut cost_profiles)?;
-        apply_context_env_overrides(&mut context_defaults, &mut context_constructs)?;
+        apply_context_env_overrides(
+            &mut context_defaults,
+            &mut context_constructs,
+            &mut decisions_verbose,
+        )?;
 
         Ok(Self {
             default_spec,
@@ -156,6 +165,7 @@ impl ModelRegistry {
             source_file,
             context_defaults,
             context_constructs,
+            context_decisions_verbose: decisions_verbose,
         })
     }
 
@@ -187,15 +197,32 @@ impl ModelRegistry {
             context: ContextConfig {
                 defaults: self.context_defaults.clone(),
                 constructs: self.context_constructs.clone(),
+                decisions_verbose: self.context_decisions_verbose,
             },
         }
     }
 
     pub fn context_for(&self, construct: &str) -> ContextThresholds {
-        self.context_constructs
-            .get(construct)
-            .cloned()
-            .unwrap_or_else(|| self.context_defaults.clone())
+        if let Some(th) = self.context_constructs.get(construct) {
+            th.clone()
+        } else {
+            use once_cell::sync::Lazy;
+            use std::collections::HashSet;
+            use std::sync::Mutex;
+            static WARNED: Lazy<Mutex<HashSet<String>>> = Lazy::new(|| Mutex::new(HashSet::new()));
+            let mut w = WARNED.lock().unwrap();
+            if w.insert(construct.to_string()) {
+                tracing::warn!(
+                    "context thresholds for unknown construct '{}' falling back to defaults",
+                    construct
+                );
+            }
+            self.context_defaults.clone()
+        }
+    }
+
+    pub fn context_decisions_verbose(&self) -> bool {
+        self.context_decisions_verbose
     }
 }
 
@@ -339,6 +366,7 @@ fn apply_cost_env_overrides(
 fn apply_context_env_overrides(
     defaults: &mut ContextThresholds,
     constructs: &mut HashMap<String, ContextThresholds>,
+    decisions_verbose: &mut bool,
 ) -> Result<(), RegistryError> {
     if let Ok(v) = std::env::var("SC_CONTEXT_MAX_TOKENS") {
         if let Ok(n) = v.parse::<usize>() {
@@ -359,6 +387,10 @@ fn apply_context_env_overrides(
         if let Ok(n) = v.parse::<usize>() {
             defaults.max_items = n;
         }
+    }
+    if let Ok(v) = std::env::var("SC_CONTEXT_DECISIONS_VERBOSE") {
+        let v_lower = v.to_lowercase();
+        *decisions_verbose = v_lower == "1" || v_lower == "true";
     }
     // Per-construct
     for (k, v) in std::env::vars() {
@@ -507,5 +539,32 @@ context:
 
         std::env::remove_var("SC_CONTEXT_MAX_TOKENS");
         std::env::remove_var("SC_CONTEXT_Mythscribe_MAX_ITEMS");
+    }
+
+    #[test]
+    fn decisions_verbose_env_over_yaml_over_default() {
+        let dir = tempdir().unwrap();
+        let yaml = dir.path().join("models.yaml");
+        fs::write(
+            &yaml,
+            r#"version: 1
+context:
+  decisions_verbose: true
+  defaults:
+    max_context_tokens: 3000
+    min_relevance_score: 0.4
+    recency_half_life_hours: 24
+    max_items: 10
+"#,
+        )
+        .unwrap();
+
+        std::env::set_var("SC_CONTEXT_DECISIONS_VERBOSE", "false");
+        let reg = ModelRegistry::from_env_and_file(Some(&yaml)).unwrap();
+        assert!(!reg.context_decisions_verbose());
+        std::env::remove_var("SC_CONTEXT_DECISIONS_VERBOSE");
+
+        let reg2 = ModelRegistry::from_env_and_file(Some(&yaml)).unwrap();
+        assert!(reg2.context_decisions_verbose());
     }
 }

@@ -40,4 +40,38 @@ To speed up warm starts, the semantic index persists to an OS-specific cache dir
 
 Environment toggles are documented in `docs/reference/config.md`.
 
+## Thresholds and Reasons
+
+Context selection limits can be tuned globally or per construct in `models.yaml`:
+
+```yaml
+context:
+  decisions_verbose: false
+  defaults:
+    max_context_tokens: 3000
+    min_relevance_score: 0.35
+    recency_half_life_hours: 48
+    max_items: 12
+  constructs:
+    Mythscribe:
+      max_context_tokens: 4000
+```
+
+Environment variables override YAML values (`SC_CONTEXT_MAX_TOKENS`,
+`SC_CONTEXT_Mythscribe_MAX_ITEMS`, etc.). `SC_CONTEXT_DECISIONS_VERBOSE=true`
+enables detailed candidate logging to the context ledger.
+
+Each candidate evaluated by the engine is tagged with a reason code:
+
+| Code            | Meaning                                      |
+|-----------------|----------------------------------------------|
+| `Included`      | Candidate was added to the frame             |
+| `SelfExclusion` | Triggering scroll filtered from candidates   |
+| `LowRelevance`  | Below `min_relevance_score`                  |
+| `MaxItems`      | Exceeds `max_items` limit                    |
+| `TokenBudget`   | Would exceed `max_context_tokens`            |
+| `IncludedFallback` | Explicitly seeded fallback candidate     |
+
+Reason strings are stable and stored in the context ledger for later audit.
+
 
