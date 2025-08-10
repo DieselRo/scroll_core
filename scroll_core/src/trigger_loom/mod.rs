@@ -30,3 +30,4 @@ pub mod glyph_matcher;
 pub mod loom;
 pub mod recursion_control;
 pub mod trigger_loop;
+pub mod orchestrator;

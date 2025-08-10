@@ -591,3 +591,130 @@ pub fn doc_generate_master_plan() -> Result<()> {
     fs::write(out_dir.join("MASTER_PLAN.md"), md)?;
     Ok(())
 }
+
+// ───────────────────────────────────────────────────────────────────────────────
+// Contradiction Scanner (skeleton)
+// ───────────────────────────────────────────────────────────────────────────────
+#[derive(Default, Debug, serde::Serialize)]
+struct ContradictionReport {
+    duplicate_titles: Vec<String>,
+    duplicate_paths: Vec<String>,
+    // Future: conflicting types/tags across same topic, etc.
+}
+
+pub fn doc_scan_contradictions(fix: bool) -> Result<()> {
+    let root = repo_root();
+    let out_dir = root.join("docs").join("reference");
+    std::fs::create_dir_all(&out_dir)?;
+
+    // Determine archive dir from env for testability
+    let archive_dir = std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
+    let base = Path::new(&archive_dir);
+    if !base.exists() {
+        eprintln!("warning: archive dir '{}' does not exist", base.display());
+    }
+
+    // Simple pass: track titles and paths
+    use std::collections::{BTreeMap, BTreeSet};
+    let mut titles: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    let mut paths_seen: BTreeSet<String> = BTreeSet::new();
+    let mut duplicate_paths: BTreeSet<String> = BTreeSet::new();
+
+    for entry in WalkDir::new(base).into_iter().filter_map(Result::ok) {
+        if !entry.file_type().is_file() {
+            continue;
+        }
+        let path = entry.path();
+        let ext = path
+            .extension()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_ascii_lowercase();
+        if ext != "md" && ext != "txt" {
+            continue;
+        }
+        let rel = diff_paths(path, &root).unwrap_or_else(|| path.to_path_buf());
+        let rel_str = rel.to_string_lossy().replace('\\', "/");
+        if !paths_seen.insert(rel_str.clone()) {
+            duplicate_paths.insert(rel_str.clone());
+        }
+        let content = std::fs::read_to_string(path).unwrap_or_default();
+        let mut title = None::<String>;
+        if let Some(rest) = content.strip_prefix("---\n") {
+            if let Some(end) = rest.find("\n---") {
+                let fm = &content[4..4 + end];
+                if let Ok(meta) = serde_yaml::from_str::<YamlMetadata>(fm) {
+                    title = Some(meta.title);
+                }
+            }
+        }
+        let t = title.unwrap_or_else(|| path.file_stem().and_then(|s| s.to_str()).unwrap_or("Untitled").to_string());
+        titles.entry(t).or_default().insert(rel_str);
+    }
+
+    let mut duplicate_titles = Vec::new();
+    for (t, set) in titles {
+        if set.len() > 1 {
+            duplicate_titles.push(format!("{} → {}", t, set.into_iter().collect::<Vec<_>>().join(", ")));
+        }
+    }
+    duplicate_titles.sort();
+
+    let mut duplicate_paths_vec = duplicate_paths.into_iter().collect::<Vec<_>>();
+    duplicate_paths_vec.sort();
+
+    let report = ContradictionReport {
+        duplicate_titles: duplicate_titles.clone(),
+        duplicate_paths: duplicate_paths_vec.clone(),
+    };
+    // Write machine-readable JSON
+    std::fs::write(out_dir.join("doc-contradictions.json"), serde_json::to_vec_pretty(&report)?)?;
+    // Write human-readable Markdown
+    let mut md = String::new();
+    md.push_str("# Contradiction Scan Report\n\n");
+    md.push_str(&format!("Generated: {}\n\n", chrono::Utc::now().to_rfc3339()));
+    if duplicate_titles.is_empty() && duplicate_paths_vec.is_empty() {
+        md.push_str("No contradictions detected by the skeleton scanner.\n");
+    } else {
+        if !duplicate_titles.is_empty() {
+            md.push_str("## Duplicate Titles\n");
+            for row in &duplicate_titles {
+                md.push_str(&format!("- {}\n", row));
+            }
+            md.push('\n');
+        }
+        if !duplicate_paths_vec.is_empty() {
+            md.push_str("## Duplicate Paths\n");
+            for row in &duplicate_paths_vec {
+                md.push_str(&format!("- {}\n", row));
+            }
+            md.push('\n');
+        }
+    }
+    std::fs::write(out_dir.join("doc-contradictions.md"), md)?;
+
+    if fix {
+        // Skeleton fix strategy: open a placeholder thread per duplicate title group
+        // if DB is configured. Failures are non-fatal.
+        if let Ok(url) = std::env::var("DATABASE_URL") {
+            if let Ok(rt) = tokio::runtime::Runtime::new() {
+                let fut = async move {
+                    if let Ok(_conn) = crate::sessions::database::ensure_ready_with_url(&url).await
+                    {
+                        let ac = crate::threads::thread_autocapture::ThreadAutocapture::new(
+                            &crate::sessions::database::get_db_connection(),
+                        );
+                        for row in duplicate_titles {
+                            let title = format!("Contradiction: duplicate title — {}", row);
+                            let _ = ac.on_validator_failure("<doc-scan>", &title).await;
+                        }
+                    }
+                };
+                let _ = rt.block_on(fut);
+            }
+        }
+    }
+
+    println!("Docs: contradiction report written to docs/reference/doc-contradictions.md");
+    Ok(())
+}

@@ -72,6 +72,9 @@ struct Cli {
     /// Explain context decisions during trigger-loop constructs
     #[arg(long = "explain-context", action = clap::ArgAction::SetTrue, default_value_t = false)]
     explain_context: bool,
+    /// Override tick-limit for trigger-loop (demo/ci)
+    #[arg(long = "ticks")]
+    ticks: Option<u64>,
 }
 
 #[derive(Subcommand)]
@@ -131,13 +134,16 @@ enum Commands {
         #[arg(long, action = clap::ArgAction::SetTrue, default_value_t = false)]
         update_index: bool,
     },
-    /// Document utilities (index, classify, recent)
+    /// Document utilities (index, classify, recent, normalize, master-plan, scan-contradictions)
     Doc {
-        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["index", "classify", "recent", "normalize", "master-plan"]))]
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["index", "classify", "recent", "normalize", "master-plan", "scan-contradictions"]))]
         action: String,
         /// Apply minimal headers to scrolls/ files missing valid YAML (DANGEROUS)
         #[arg(long, action = clap::ArgAction::SetTrue, default_value_t = false)]
         fix_headers: bool,
+        /// Attempt to open remediation threads for contradictions (if DB configured)
+        #[arg(long = "fix", action = clap::ArgAction::SetTrue, default_value_t = false)]
+        fix_contradictions: bool,
     },
     /// Manage persistent open threads
     #[command(name = "open-threads")]
@@ -370,7 +376,7 @@ fn main() -> Result<()> {
         > = vec![Box::new(echo), Box::new(gate)];
 
         println!("▶️ Starting Trigger Loom (press Ctrl-C to stop)...");
-        let tick_limit = profile.tick_limit();
+        let tick_limit: Option<u64> = if let Some(v) = cli.ticks { Some(v) } else { profile.tick_limit() };
         if matches!(profile, TriggerLoopProfile::Ci) {
             engine.start_loop(&mut constructs, tick_limit);
         } else {
@@ -467,6 +473,7 @@ fn main() -> Result<()> {
     if let Some(Commands::Doc {
         action,
         fix_headers,
+        fix_contradictions,
     }) = &cli.command
     {
         match action.as_str() {
@@ -475,6 +482,7 @@ fn main() -> Result<()> {
             "recent" => scroll_core::cli::docs::doc_recent()?,
             "normalize" => scroll_core::cli::docs::doc_normalize_headers()?,
             "master-plan" => scroll_core::cli::docs::doc_generate_master_plan()?,
+            "scan-contradictions" => scroll_core::cli::docs::doc_scan_contradictions(*fix_contradictions)?,
             _ => unreachable!(),
         }
         if *fix_headers {
