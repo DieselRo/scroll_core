@@ -17,6 +17,7 @@ pub mod factory {
         mock::MockLLMClient, openai::OpenAIClient, retry::RetryingClient, LLMClient, LLMError,
     };
     use std::sync::Arc;
+    use crate::models::model_registry::{ModelSpec, Provider};
 
     /// Creates an LLM client from environment configuration.
     ///
@@ -54,6 +55,43 @@ pub mod factory {
             "mock" => Arc::new(MockLLMClient::default()),
             "openai" => Arc::new(OpenAIClient::new_from_env()?),
             _ => Arc::new(OpenAIClient::new_from_env()?),
+        };
+
+        let wrapped = RetryingClient::new(client, max_retries, attempt_timeout_ms, base_backoff_ms);
+        Ok(Arc::new(wrapped))
+    }
+
+    /// Creates an LLM client from a resolved `ModelSpec`.
+    pub fn from_spec(spec: &ModelSpec) -> Result<Arc<dyn LLMClient>, LLMError> {
+        let max_retries = std::env::var("SC_LLM_MAX_RETRIES")
+            .ok()
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(2);
+        let attempt_timeout_ms = std::env::var("SC_LLM_ATTEMPT_TIMEOUT_MS")
+            .ok()
+            .and_then(|s| s.parse::<u64>().ok())
+            .unwrap_or(10_000);
+        let base_backoff_ms = std::env::var("SC_LLM_BASE_BACKOFF_MS")
+            .ok()
+            .and_then(|s| s.parse::<u64>().ok())
+            .unwrap_or(200);
+
+        let client: Arc<dyn LLMClient> = match spec.provider {
+            Provider::Mock | Provider::Local => Arc::new(MockLLMClient::default()),
+            Provider::OpenAI => {
+                let endpoint = std::env::var("SC_LLM_ENDPOINT")
+                    .unwrap_or_else(|_| "https://api.openai.com/v1/chat/completions".to_string());
+                let api_key = std::env::var("OPENAI_API_KEY")
+                    .map_err(|_| LLMError::Config("OPENAI_API_KEY not set".into()))?;
+                let timeout_ms = std::env::var("SC_LLM_GLOBAL_TIMEOUT_MS")
+                    .ok()
+                    .and_then(|s| s.parse::<u64>().ok());
+                Arc::new(OpenAIClient::new(api_key, spec.model.clone(), endpoint, timeout_ms)?)
+            }
+            Provider::Anthropic => {
+                // For now, route unsupported providers to a Config error
+                return Err(LLMError::Unsupported("Anthropic provider not implemented".into()));
+            }
         };
 
         let wrapped = RetryingClient::new(client, max_retries, attempt_timeout_ms, base_backoff_ms);

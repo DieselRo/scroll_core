@@ -6,6 +6,7 @@ use crate::errors::MetricError;
 use crate::invocation::types::Invocation;
 use crate::metrics::clamp_finite;
 use crate::scroll::Scroll;
+use crate::models::model_registry::{ModelRegistry, ThresholdCostProfile as RegistryCostProfile};
 
 #[cfg(test)]
 use std::cell::RefCell;
@@ -230,11 +231,31 @@ impl CostManager {
             scrolls_touched: scrolls.len(),
         };
 
-        let decision = if context.token_estimate > 12000 {
+        // Base decision (existing behavior)
+        let mut decision = if context.token_estimate > 12000 {
             CostDecision::Reject("Context window too large.".to_string())
         } else {
             CostDecision::Allow
         };
+
+        // Enforce configured cost thresholds if registry is available
+        if let Some(reg) = ModelRegistry::get_global() {
+            let profile = reg.cost_profile(&_invocation.invoked);
+            if let Some(limit) = profile.per_request_usd_limit {
+                if let Some(estimated) = estimate_usd(&_invocation.invoked, &context) {
+                    if estimated > limit {
+                        decision = CostDecision::Reject(format!("Per-request cost estimate ${:.4} exceeds limit ${:.4}", estimated, limit));
+                    }
+                }
+            }
+            if let Some(cap) = profile.daily_usd_cap {
+                if let Some(estimated) = estimate_usd(&_invocation.invoked, &context) {
+                    if !RollingCap::check_and_add(&_invocation.invoked, estimated) {
+                        decision = CostDecision::Reject("Daily cost cap reached".into());
+                    }
+                }
+            }
+        }
 
         let cost_profile = Self::calculate_cost_profile(&context, &system)?;
 
@@ -257,4 +278,51 @@ impl CostManager {
             cost_profile,
         })
     }
+}
+
+use std::collections::VecDeque;
+use std::sync::Mutex;
+use once_cell::sync::Lazy;
+
+static ROLLING_STATE: Lazy<Mutex<std::collections::HashMap<String, VecDeque<(i64, f32)>>>> = Lazy::new(|| Mutex::new(std::collections::HashMap::new()));
+
+struct RollingCap;
+
+impl RollingCap {
+    // returns true if under cap after adding this amount (uses 24h window)
+    fn check_and_add(name: &str, amount: f32) -> bool {
+        let now = chrono::Utc::now().timestamp();
+        let mut map = ROLLING_STATE.lock().unwrap();
+        let q = map.entry(name.to_string()).or_insert_with(VecDeque::new);
+        // drop entries older than 24h
+        let cutoff = now - 86_400;
+        while let Some(front) = q.front() {
+            if front.0 < cutoff { q.pop_front(); } else { break; }
+        }
+        let sum: f32 = q.iter().map(|(_, v)| *v).sum();
+        // look up cap for this construct
+        let cap = ModelRegistry::get_global()
+            .map(|r| r.cost_profile(name).daily_usd_cap)
+            .flatten();
+        if let Some(cap) = cap {
+            if sum + amount > cap { return false; }
+        }
+        q.push_back((now, amount));
+        true
+    }
+}
+
+fn estimate_usd(construct: &str, context: &ContextCost) -> Option<f32> {
+    // Estimate cost using optional pricing hints from registry.extra
+    let reg = ModelRegistry::get_global()?;
+    let spec = reg.by_construct(construct).ok()?;
+    let input_price = spec.extra.get("input_per_1k_usd").and_then(|v| v.as_f64()).unwrap_or(0.0) as f32;
+    let output_price = spec.extra.get("output_per_1k_usd").and_then(|v| v.as_f64()).unwrap_or(0.0) as f32;
+    if input_price == 0.0 && output_price == 0.0 { return None; }
+    let in_cost = (context.token_estimate as f32 / 1000.0) * input_price;
+    // We don't know output tokens; approximate as 50% of input or bounded by max_output_tokens
+    let approx_out_tokens = (context.token_estimate as f32 * 0.5)
+        .min(ModelRegistry::get_global().and_then(|r| r.by_construct(construct).ok()?.max_output_tokens.map(|m| m as f32)).unwrap_or(f32::MAX));
+    let out_cost = (approx_out_tokens / 1000.0) * output_price;
+    Some(in_cost + out_cost)
 }

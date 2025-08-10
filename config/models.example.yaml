@@ -1,0 +1,20 @@
+version: 1
+default:
+  provider: openai
+  model: gpt-4.1-mini
+  max_output_tokens: 2048
+constructs:
+  Mythscribe:
+    provider: openai
+    model: gpt-4.1
+    max_output_tokens: 4096
+    extra:
+      input_per_1k_usd: 0.005
+      output_per_1k_usd: 0.015
+cost_profiles:
+  default:
+    daily_usd_cap: 5.00
+    per_request_usd_limit: 0.10
+  Mythscribe:
+    per_request_usd_limit: 0.25
+

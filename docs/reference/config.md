@@ -38,4 +38,8 @@ Notes
 - `.env` is loaded at startup; tests may override via process env
 - See `scroll_core/src/tracing.rs` for tracing behavior
 
+Model & Cost Configuration
+- See `docs/reference/models-config.md` for provider/model selection and cost thresholds.
+
+
 

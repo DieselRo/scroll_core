@@ -16,3 +16,8 @@
 - Renamed `invocation_core` to `invocation` and `runner_core` to `runner`.
 - Added `ScrollBuilder` and refactored public API.
 - 📝 Documentation: expanded Construct directory; added 25 module doc-comments.
+### Added
+- ModelRegistry: central provider/model resolution with ENV > YAML > defaults
+- CLI flag `--print-model-config` to dump resolved config (secrets redacted)
+- Example config at `config/models.example.yaml`
+- Docs for model config at `docs/reference/models-config.md`

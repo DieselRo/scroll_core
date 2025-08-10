@@ -12,6 +12,7 @@ use dotenvy::dotenv;
 use migration::MigratorTrait;
 use scroll_core::chat::chat_dispatcher::ChatDispatcher;
 use scroll_core::cli::{chat::run_chat, theme::ThemeKind};
+use scroll_core::models::model_registry::ModelRegistry;
 use scroll_core::{
     archive::archive_memory::InMemoryArchive,
     archive::initialize::ensure_archive_dir,
@@ -37,6 +38,10 @@ struct Cli {
     /// Path to a demo scroll that should trigger a cooperative run
     #[arg(long)]
     demo: Option<String>,
+
+    /// Print resolved model config and exit
+    #[arg(long = "print-model-config", action = clap::ArgAction::SetTrue, default_value_t = false)]
+    print_model_config: bool,
 
     #[command(subcommand)]
     command: Option<Commands>,
@@ -99,6 +104,19 @@ fn main() -> Result<()> {
 
     let cli = Cli::parse();
 
+    // Build registry once; it maintains env-only behavior when no YAML is present
+    let model_registry = ModelRegistry::from_env_and_file(None)
+        .map_err(|e| anyhow::anyhow!(format!("model registry error: {e}")))?;
+    let model_registry = std::sync::Arc::new(model_registry);
+    let _ = ModelRegistry::set_global(model_registry.clone());
+
+    if cli.print_model_config {
+        let redacted = model_registry.effective_config();
+        let yaml = serde_yaml::to_string(&redacted).unwrap_or_else(|_| "<failed to serialize>".into());
+        println!("{}", yaml);
+        return Ok(());
+    }
+
     if let Some(Commands::Chat {
         construct,
         stream,
@@ -142,7 +160,9 @@ fn main() -> Result<()> {
                 scroll_core::invocation::constructs::mockscribe::Mockscribe,
             );
         } else {
-            let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            let spec = model_registry.clone().by_construct("Mythscribe").map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            let client = scroll_core::invocation::llm::factory::from_spec(&spec)
+                .map_err(|e| anyhow::anyhow!(e.to_string()))?;
             let mythscribe = Mythscribe::new(
                 client,
                 "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
@@ -281,7 +301,9 @@ fn main() -> Result<()> {
 
             // Seed construct registry
             let mut registry = ConstructRegistry::new();
-            let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            let spec = model_registry.clone().by_construct("Mythscribe").map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            let client = scroll_core::invocation::llm::factory::from_spec(&spec)
+                .map_err(|e| anyhow::anyhow!(e.to_string()))?;
             let mythscribe = Mythscribe::new(
                 client,
                 "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),
@@ -351,7 +373,9 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
     }
     let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
     let mut reg = ConstructRegistry::new();
-    let client = factory::from_env().map_err(|e| anyhow::anyhow!(e.to_string()))?;
+    let spec = ModelRegistry::get_global().unwrap().by_construct("Mythscribe").map_err(|e| anyhow::anyhow!(e.to_string()))?;
+    let client = scroll_core::invocation::llm::factory::from_spec(&spec)
+        .map_err(|e| anyhow::anyhow!(e.to_string()))?;
     let myth = Mythscribe::new(
         client,
         "You are Mythscribe, the poetic analyst of sacred scrolls.".into(),

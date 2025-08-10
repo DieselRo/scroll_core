@@ -95,8 +95,11 @@ pub fn run_cli(manager: &InvocationManager, aelren: &AelrenHerald, scrolls: &[Sc
             }
             Command::Test(prompt) => {
                 use crate::invocation::constructs::openai_construct::Mythscribe;
-                use crate::invocation::llm::factory;
-                let client = match factory::from_env() {
+                let spec = match crate::models::model_registry::ModelRegistry::get_global() {
+                    Some(reg) => reg.by_construct("Mythscribe").unwrap_or_default(),
+                    None => crate::models::model_registry::ModelSpec::default(),
+                };
+                let client = match crate::invocation::llm::factory::from_spec(&spec) {
                     Ok(c) => c,
                     Err(e) => {
                         println!("LLM client init failed: {}", e);
