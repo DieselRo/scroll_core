@@ -19,4 +19,6 @@ Open threads make unresolved work visible and trackable across scrolls. Use them
 - Create: `cargo run -- open-threads --action create --title "Fix missing header" --scroll scrolls/001_intro.md --assignee aelren`
 - List open for a path: `cargo run -- open-threads --action list --status OPEN --scroll scrolls/001_intro.md`
 - Close: `cargo run -- open-threads --action close <id> --reason "Header added"`
+- Reopen: `cargo run -- open-threads --action reopen <id> --reason "retry"`
+- Nudge blocked/overdue: `cargo run -- open-threads --action nudge`
 

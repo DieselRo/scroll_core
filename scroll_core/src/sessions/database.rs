@@ -5,8 +5,12 @@
 
 use once_cell::sync::OnceCell;
 use sea_orm::{Database, DbConn, DbErr};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+use migration::MigratorTrait;
 
 static DB_CONNECTION: OnceCell<DbConn> = OnceCell::new();
+static DB_READY: AtomicBool = AtomicBool::new(false);
 
 /// Initializes and stores a global database connection pool.
 ///
@@ -42,4 +46,30 @@ pub fn get_db_connection() -> &'static DbConn {
 /// Returns true if the global database connection has been initialized.
 pub fn is_initialized() -> bool {
     DB_CONNECTION.get().is_some()
+}
+
+/// Runs migrations and marks the database as ready for writers.
+/// Safe to call multiple times; subsequent calls are no-ops.
+pub async fn ensure_ready_with_url(db_url: &str) -> Result<&'static DbConn, DbErr> {
+    if !is_initialized() {
+        init_sqlite_connection(db_url).await?;
+    }
+    let conn = get_db_connection();
+    // Best-effort migrations; if another caller races, Migrator::up is idempotent
+    let _ = migration::Migrator::up(conn, None).await;
+    DB_READY.store(true, Ordering::SeqCst);
+    Ok(conn)
+}
+
+/// Reads DATABASE_URL from env, falls back to sqlite file in CWD.
+pub async fn ensure_ready_from_env() -> Result<&'static DbConn, DbErr> {
+    let raw = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
+    // Normalize: strip query
+    let url = match raw.find('?') { Some(i) => &raw[..i], None => &raw };
+    ensure_ready_with_url(url).await
+}
+
+/// Returns true once migrations have been applied.
+pub fn is_ready() -> bool {
+    DB_READY.load(Ordering::SeqCst)
 }

@@ -84,6 +84,7 @@ trycmd = "0.15"
 metrics = ["dep:metrics", "dep:metrics-exporter-prometheus"]
 cargo-deny = []
 compact_tracing = []
+notifier_slack = []
 
 
 [package.metadata.cargo-udeps.ignore]

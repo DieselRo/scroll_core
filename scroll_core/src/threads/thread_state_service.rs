@@ -3,6 +3,7 @@ use uuid::Uuid;
 use std::str::FromStr;
 
 use crate::entities::open_threads as ot;
+use crate::notifications::{notify_event, NotificationEvent, NotificationKind};
 use crate::threads::thread_events_service::ThreadEventsService;
 use crate::threads::types::{normalize_tags, tags_to_db, Priority, ThreadEventType, ThreadStatus};
 
@@ -61,6 +62,12 @@ impl<'a> ThreadStateService<'a> {
         act.last_event_id = Set(Some(ev_id.clone()));
         act.update(self.conn).await?;
         loaded.last_event_id = Some(ev_id);
+
+        // Send notification: ThreadCreated
+        let mut note = NotificationEvent::new(NotificationKind::ThreadCreated, id.clone(), title.to_string(), scroll_path.to_string());
+        note.assignee = assignee.map(|s| s.to_string());
+        note.priority = Some(priority.to_string());
+        let _ = notify_event(note);
         Ok(loaded)
     }
 
@@ -71,7 +78,7 @@ impl<'a> ThreadStateService<'a> {
         reason: Option<&str>,
         actor: &str,
     ) -> Result<ot::Model, sea_orm::DbErr> {
-        let mut model = ot::Entity::find_by_id(id.to_string())
+        let model = ot::Entity::find_by_id(id.to_string())
             .one(self.conn)
             .await?
             .ok_or_else(|| sea_orm::DbErr::RecordNotFound(format!("thread {} not found", id)))?;
@@ -100,6 +107,17 @@ impl<'a> ThreadStateService<'a> {
             .await?;
         active.last_event_id = Set(Some(ev.id));
         let updated = active.update(self.conn).await?;
+
+        // Send notification: StatusChanged with flap/rate control in hub
+        let mut note = NotificationEvent::new(
+            NotificationKind::StatusChanged,
+            id.to_string(),
+            updated.title.clone(),
+            updated.scroll_path.clone(),
+        );
+        note.status = Some(new_status.to_string());
+        note.reason = reason.map(|s| s.to_string());
+        let _ = notify_event(note);
         Ok(updated)
     }
 
@@ -128,6 +146,17 @@ impl<'a> ThreadStateService<'a> {
             .await?;
         active.last_event_id = Set(Some(ev.id));
         let updated = active.update(self.conn).await?;
+
+        // Send notification: AssignmentChanged
+        let mut note = NotificationEvent::new(
+            NotificationKind::AssignmentChanged,
+            id.to_string(),
+            updated.title.clone(),
+            updated.scroll_path.clone(),
+        );
+        note.assignee = assignee.map(|s| s.to_string());
+        note.reason = Some("assignment change".into());
+        let _ = notify_event(note);
         Ok(updated)
     }
 
@@ -141,8 +170,10 @@ impl<'a> ThreadStateService<'a> {
             .one(self.conn)
             .await?
             .ok_or_else(|| sea_orm::DbErr::RecordNotFound(format!("thread {} not found", id)))?;
+        let oldp = model.priority.clone();
         let mut active: ot::ActiveModel = model.into();
-        active.priority = Set(priority.to_string());
+        let newp = priority.to_string();
+        active.priority = Set(newp.clone());
         active.updated_at = Set(chrono::Utc::now());
 
         let events = ThreadEventsService::new(self.conn);
@@ -151,6 +182,19 @@ impl<'a> ThreadStateService<'a> {
             .await?;
         active.last_event_id = Set(Some(ev.id));
         let updated = active.update(self.conn).await?;
+
+        // Only notify when moving to HIGH
+        if newp == "HIGH" && oldp != "HIGH" {
+            let mut note = NotificationEvent::new(
+                NotificationKind::StatusChanged,
+                id.to_string(),
+                updated.title.clone(),
+                updated.scroll_path.clone(),
+            );
+            note.priority = Some(newp);
+            note.reason = Some("priority escalated".into());
+            let _ = notify_event(note);
+        }
         Ok(updated)
     }
 

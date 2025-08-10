@@ -38,6 +38,7 @@ pub mod telemetry;
 pub mod tools;
 pub mod tracing;
 pub mod trigger_loom;
+pub mod notifications;
 pub mod validator;
 pub mod threads;
 

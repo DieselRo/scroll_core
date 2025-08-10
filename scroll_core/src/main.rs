@@ -111,7 +111,10 @@ enum Commands {
     /// Ritual operations over scrolls (validate, write, seal)
     Ritual {
         #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["validate", "validate-all", "write", "seal"]))]
-        action: String,
+        action: Option<String>,
+        /// Positional action for compatibility: `ritual validate --file ...`
+        #[arg(index = 1)]
+        action_positional: Option<String>,
         #[arg(long)]
         file: Option<String>,
         /// Also add to scroll_index.yaml when writing
@@ -129,7 +132,7 @@ enum Commands {
     /// Manage persistent open threads
     #[command(name = "open-threads")]
     OpenThreads {
-        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["create", "list", "close", "reopen"]))]
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["create", "list", "close", "reopen", "nudge"]))]
         action: String,
         /// Thread title (create)
         #[arg(long = "title")]
@@ -159,10 +162,10 @@ enum Commands {
         #[arg(long = "overdue", action = clap::ArgAction::SetTrue, default_value_t = false)]
         overdue: bool,
         /// Filter by priority in list
-        #[arg(long = "priority")]
+        #[arg(long = "filter-priority")]
         list_priority: Option<String>,
         /// Filter by tags in list (comma separated)
-        #[arg(long = "tags")]
+        #[arg(long = "filter-tags")]
         list_tags: Option<String>,
         /// Sort key: created|updated|priority
         #[arg(long = "sort")]
@@ -226,16 +229,7 @@ fn main() -> Result<()> {
             .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
         let rt = tokio::runtime::Runtime::new()?;
         rt.block_on(async {
-            if scroll_core::sessions::database::init_sqlite_connection(&db_url)
-                .await
-                .is_ok()
-            {
-                let _ = migration::Migrator::up(
-                    scroll_core::sessions::database::get_db_connection(),
-                    None,
-                )
-                .await;
-            }
+            let _ = scroll_core::sessions::database::ensure_ready_with_url(&db_url).await;
         });
         let mut archive = InMemoryArchive::new(scrolls.clone());
         // Build semantic index for context modes that rely on it
@@ -300,16 +294,7 @@ fn main() -> Result<()> {
             .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
         let rt = tokio::runtime::Runtime::new()?;
         rt.block_on(async {
-            if scroll_core::sessions::database::init_sqlite_connection(&db_url)
-                .await
-                .is_ok()
-            {
-                let _ = migration::Migrator::up(
-                    scroll_core::sessions::database::get_db_connection(),
-                    None,
-                )
-                .await;
-            }
+            let _ = scroll_core::sessions::database::ensure_ready_with_url(&db_url).await;
         });
 
         // Build constructs list; include pulse_echo and pulse_logger for demo
@@ -381,6 +366,7 @@ fn main() -> Result<()> {
 
     if let Some(Commands::Ritual {
         action,
+        action_positional,
         file,
         update_index,
     }) = &cli.command
@@ -389,7 +375,8 @@ fn main() -> Result<()> {
             std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
         let path = Path::new(&archive_dir);
         ensure_archive_dir(path)?;
-        match action.as_str() {
+        let action_eff = action_positional.as_ref().or(action.as_ref()).ok_or_else(|| anyhow::anyhow!("ritual action is required (validate | validate-all | write | seal)"))?;
+        match action_eff.as_str() {
             "validate" => {
                 let f = file
                     .clone()
@@ -485,7 +472,7 @@ fn main() -> Result<()> {
                 };
                 let tags_vec: Option<Vec<String>> = tags
                     .as_ref()
-                    .map(|s| s.split(',').map(|t| t.trim().to_string()).collect());
+                    .map(|s| s.split(',').map(|t| t.trim().to_string()).collect::<Vec<String>>());
                 let due = if let Some(d) = due_at.as_ref() {
                     Some(
                         chrono::DateTime::parse_from_rfc3339(d)
@@ -531,13 +518,22 @@ fn main() -> Result<()> {
                 } else {
                     None
                 };
-                let who = if *mine { std::env::var("USER").ok() } else { None };
+                let who = if *mine {
+                    std::env::var("USER").ok().or_else(|| std::env::var("USERNAME").ok())
+                } else {
+                    None
+                };
                 let prio = if let Some(p) = list_priority.as_ref() {
                     Some(Priority::from_str(p).map_err(|e| anyhow::anyhow!(e))?)
                 } else { None };
                 let tags_vec: Option<Vec<String>> = list_tags
                     .as_ref()
-                    .map(|s| s.split(',').map(|t| t.trim().to_ascii_lowercase()).filter(|t| !t.is_empty()).map(|t| t.to_string()).collect());
+                    .map(|s| s
+                        .split(',')
+                        .map(|t| t.trim().to_ascii_lowercase())
+                        .filter(|t| !t.is_empty())
+                        .map(|t| t.to_string())
+                        .collect::<Vec<String>>());
                 let rows = tokio::runtime::Runtime::new()?.block_on(async {
                     svc.list(
                         s_parsed,
@@ -565,6 +561,16 @@ fn main() -> Result<()> {
                         r.due_at.map(|d| d.to_rfc3339()).unwrap_or_else(|| "".into())
                     );
                 }
+            }
+            "nudge" => {
+                // emit system-note nudges for blocked or overdue threads
+                let svc = scroll_core::threads::thread_autocapture::ThreadAutocapture::new(&conn);
+                let count = tokio::runtime::Runtime::new()?.block_on(async {
+                    svc.nudge_blocked_or_overdue()
+                        .await
+                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                })?;
+                println!("nudged {} thread(s)", count);
             }
             "reopen" => {
                 let id = id
@@ -717,21 +723,10 @@ fn main() -> Result<()> {
             {
                 let db_url = std::env::var("DATABASE_URL")
                     .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
-                if !scroll_core::sessions::database::is_initialized() {
-                    if let Ok(rt) = tokio::runtime::Runtime::new() {
-                        rt.block_on(async {
-                            if scroll_core::sessions::database::init_sqlite_connection(&db_url)
-                                .await
-                                .is_ok()
-                            {
-                                let _ = migration::Migrator::up(
-                                    scroll_core::sessions::database::get_db_connection(),
-                                    None,
-                                )
-                                .await;
-                            }
-                        });
-                    }
+                if let Ok(rt) = tokio::runtime::Runtime::new() {
+                    rt.block_on(async {
+                        let _ = scroll_core::sessions::database::ensure_ready_with_url(&db_url).await;
+                    });
                 }
             }
 

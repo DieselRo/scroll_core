@@ -227,12 +227,15 @@ enum EmotionSigRepr {
     Str(String),
     Obj {
         tone: String,
+        #[serde(default = "default_emphasis")] 
         emphasis: f32,
         resonance: String,
         #[serde(default)]
         intensity: Option<f32>,
     },
 }
+
+fn default_emphasis() -> f32 { 0.0 }
 
 fn preset_from_str(s: &str) -> EmotionSignature {
     let key = s.trim().to_lowercase();

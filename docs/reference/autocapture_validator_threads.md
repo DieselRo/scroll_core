@@ -15,6 +15,19 @@ Scroll Core integrates validator results with the thread system to capture work 
 - On repeated failure after close:
   - The prior CLOSED thread is reopened (incrementing `reopened_count`).
 
+## Service Facade (Autocapture)
+
+Higher-level subsystems should use the small facade to capture threads with smart defaults:
+
+```text
+ThreadAutocapture::on_validator_failure(scroll_path, title)
+ThreadAutocapture::on_validator_pass(scroll_path)
+ThreadAutocapture::nudge_blocked_or_overdue()
+```
+
+Defaults:
+- source=VALIDATOR, priority=MEDIUM, due_at=now+48h, consistent reasons.
+
 ## CLI Examples
 
 - Validate one file (autocapture applies):

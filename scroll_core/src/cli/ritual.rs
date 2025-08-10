@@ -10,28 +10,57 @@ use migration::MigratorTrait;
 use sea_orm::DatabaseConnection;
 
 fn ensure_db() -> DatabaseConnection {
-    let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+    if crate::sessions::database::is_initialized() {
+        return crate::sessions::database::get_db_connection().clone();
+    }
+    let raw = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
+    // Normalize SQLite URL: strip query, canonicalize Windows paths, ensure sqlite:/// prefix
+    let mut base = match raw.find('?') { Some(idx) => raw[..idx].to_string(), None => raw };
+    if base.starts_with("sqlite://") {
+        let path_part = &base[9..];
+        // If not already sqlite:/// and looks like Windows drive path, canonicalize
+        if !base.starts_with("sqlite::///") {
+            let p = std::path::Path::new(path_part);
+            let abs = if p.is_absolute() { p.to_path_buf() } else { std::env::current_dir().unwrap().join(p) };
+            let norm = abs.to_string_lossy().replace('\\', "/");
+            base = format!("sqlite:///{}", norm);
+        }
+    }
+    let db_url = base;
     let rt = tokio::runtime::Runtime::new().expect("rt");
     rt.block_on(async move {
-        let _ = crate::sessions::database::init_sqlite_connection(&db_url).await;
+        crate::sessions::database::init_sqlite_connection(&db_url)
+            .await
+            .expect("DB init failed");
         let conn = crate::sessions::database::get_db_connection().clone();
-        let _ = migration::Migrator::up(&conn, None).await;
+        migration::Migrator::up(&conn, None)
+            .await
+            .expect("migrations failed");
         conn
     })
 }
 
 fn ensure_under_archive(archive_dir: &Path, file: &str) -> Result<PathBuf> {
-    let p = archive_dir.join(file);
-    if !p.exists() {
-        return Err(anyhow!(format!("File not found: {}", p.display())));
+    let as_path = Path::new(file);
+    if as_path.is_absolute() {
+        if as_path.exists() {
+            return Ok(as_path.to_path_buf());
+        } else {
+            return Err(anyhow!(format!("File not found: {}", as_path.display())));
+        }
     }
-    Ok(p)
+    let joined = archive_dir.join(file);
+    if !joined.exists() {
+        return Err(anyhow!(format!("File not found: {}", joined.display())));
+    }
+    Ok(joined)
 }
 
 pub fn ritual_validate(archive_dir: &Path, file: &str) -> Result<()> {
     let full = ensure_under_archive(archive_dir, file)?;
     let scroll = parse_scroll_from_file(&full)?;
     let conn = ensure_db();
+    // Use canonical path to ensure stable matching
     let scroll_path = full.to_string_lossy().to_string();
     match validate_scroll(&scroll.yaml_metadata) {
         Ok(()) => {
@@ -45,7 +74,7 @@ pub fn ritual_validate(archive_dir: &Path, file: &str) -> Result<()> {
         }
         Err(e) => {
             // On failure: dedupe_or_open w/ defaults and due_at now+48h
-            let title = format!("Validation failed: {}", file);
+            let title = format!("Validation failed: {}", full.display());
             let rt = tokio::runtime::Runtime::new()?;
             rt.block_on(async move {
                 let ac = crate::threads::thread_autocapture::ThreadAutocapture::new(&conn);

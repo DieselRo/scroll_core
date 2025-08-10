@@ -5,6 +5,7 @@ use crate::threads::dedupe_service::DedupeService;
 use crate::threads::thread_events_service::ThreadEventsService;
 use crate::threads::thread_state_service::ThreadStateService;
 use crate::threads::types::{Priority, ThreadEventType, ThreadStatus};
+use crate::notifications::notify_overdue_thread;
 
 fn validator_key(scroll_path: &str) -> String {
     format!("VALIDATOR|{}", scroll_path)
@@ -81,6 +82,9 @@ impl<'a> ThreadAutocapture<'a> {
                 let _ = events
                     .record_event(&t.id, ThreadEventType::SystemNote, "autocapture", Some(reason))
                     .await?;
+                if overdue {
+                    let _ = notify_overdue_thread(&t.id, &t.title, &t.scroll_path, Some(reason));
+                }
                 count += 1;
             }
         }

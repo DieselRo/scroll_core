@@ -58,3 +58,45 @@ fn open_threads_cli_ordering() {
     assert_eq!(title2, "Second");
 }
 
+#[test]
+fn open_threads_cli_overdue_filter() {
+    let dir = tempdir().unwrap();
+    let path = dir.path().join("open_threads.sqlite");
+    let url = format!("sqlite://{}?mode=rwc", path.display());
+
+    // create two threads: one overdue, one not
+    let mut cmd = Command::cargo_bin("scroll_core").unwrap();
+    cmd.env("DATABASE_URL", &url)
+        .args([
+            "open-threads", "--action", "create", "--title", "Overdue",
+            "--scroll", "scrolls/a.md", "--due-at", "2000-01-01T00:00:00Z"
+        ])
+        .assert()
+        .success();
+
+    let mut cmd2 = Command::cargo_bin("scroll_core").unwrap();
+    cmd2.env("DATABASE_URL", &url)
+        .args([
+            "open-threads", "--action", "create", "--title", "NotDue",
+            "--scroll", "scrolls/a.md", "--due-at", "2999-01-01T00:00:00Z"
+        ])
+        .assert()
+        .success();
+
+    // list with overdue filter: should only show the overdue one
+    let output = Command::cargo_bin("scroll_core")
+        .unwrap()
+        .env("DATABASE_URL", &url)
+        .args(["open-threads", "--action", "list", "--overdue"])
+        .assert()
+        .success()
+        .get_output()
+        .stdout
+        .clone();
+
+    let s = String::from_utf8_lossy(&output);
+    let lines: Vec<&str> = s.lines().collect();
+    assert!(lines.iter().any(|l| l.contains("Overdue")));
+    assert!(lines.iter().all(|l| !l.contains("NotDue")));
+}
+
