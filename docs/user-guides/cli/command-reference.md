@@ -36,4 +36,10 @@ cargo run -- chat <construct> [--stream|--no-stream] [--no-banner]
 - Generate master plan: `cargo run -- doc --action master-plan`
 - Fix missing headers (adds minimal YAML): `cargo run -- doc --action classify --fix-headers`
 
+## Open Threads
+
+- Create: `cargo run -- open-threads --action create --title "<title>" --scroll <path> [--assignee <name>]`
+- List: `cargo run -- open-threads --action list [--status OPEN] [--scroll <path>] [--limit N]`
+- Close: `cargo run -- open-threads --action close <id> [--reason <text>]`
+
 

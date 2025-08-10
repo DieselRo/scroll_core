@@ -15,6 +15,7 @@ pub mod core;
 pub mod database;
 pub mod errors;
 pub mod events;
+pub mod entities;
 pub mod invocation;
 // New provider-agnostic LLM interface
 pub mod invocation_llm_alias {
@@ -38,6 +39,7 @@ pub mod tools;
 pub mod tracing;
 pub mod trigger_loom;
 pub mod validator;
+pub mod threads;
 
 pub use cache_manager::CacheManager;
 pub use errors::MetricError;

@@ -125,6 +125,32 @@ enum Commands {
         #[arg(long, action = clap::ArgAction::SetTrue, default_value_t = false)]
         fix_headers: bool,
     },
+    /// Manage persistent open threads
+    #[command(name = "open-threads")]
+    OpenThreads {
+        #[arg(long, value_parser = clap::builder::PossibleValuesParser::new(["create", "list", "close"]))]
+        action: String,
+        /// Thread title (create)
+        #[arg(long = "title")]
+        title: Option<String>,
+        /// Scroll path the thread refers to (create/list filter)
+        #[arg(long = "scroll")]
+        scroll: Option<String>,
+        /// Optional assignee label (create)
+        #[arg(long = "assignee")]
+        assignee: Option<String>,
+        /// Filter by status for list (OPEN|IN_PROGRESS|BLOCKED|CLOSED)
+        #[arg(long = "status")]
+        status: Option<String>,
+        /// Limit rows for list
+        #[arg(long = "limit")]
+        limit: Option<u64>,
+        /// Close by id (close)
+        id: Option<String>,
+        /// Optional reason on close
+        #[arg(long = "reason")]
+        reason: Option<String>,
+    },
 }
 
 fn main() -> Result<()> {
@@ -383,6 +409,88 @@ fn main() -> Result<()> {
             println!("Applied minimal headers to scrolls/ candidates.");
         }
         println!("Docs: {} generated under docs/reference", action);
+        return Ok(());
+    }
+
+    // Open Threads API + CLI
+    if let Some(Commands::OpenThreads {
+        action,
+        title,
+        scroll,
+        assignee,
+        status,
+        limit,
+        id,
+        reason,
+    }) = &cli.command
+    {
+        // Ensure DB is ready
+        let db_url = std::env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+        let rt = tokio::runtime::Runtime::new()?;
+        rt.block_on(async {
+            let _ = scroll_core::sessions::database::init_sqlite_connection(&db_url).await;
+            let _ =
+                migration::Migrator::up(scroll_core::sessions::database::get_db_connection(), None)
+                    .await;
+        });
+        use scroll_core::threads::service::ThreadsService;
+        let conn = scroll_core::sessions::database::get_db_connection().clone();
+        match action.as_str() {
+            "create" => {
+                let t = title
+                    .as_ref()
+                    .ok_or_else(|| anyhow::anyhow!("--title is required for create"))?;
+                let s = scroll
+                    .as_ref()
+                    .ok_or_else(|| anyhow::anyhow!("--scroll is required for create"))?;
+                let svc = ThreadsService::new(&conn);
+                let rec = tokio::runtime::Runtime::new()?.block_on(async {
+                    svc.open_for_validation(s, t, None, assignee.as_deref())
+                        .await
+                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                })?;
+                println!(
+                    "created: {} | {} | {} | {}",
+                    rec.id, rec.status, rec.scroll_path, rec.title
+                );
+            }
+            "list" => {
+                let svc = ThreadsService::new(&conn);
+                let rows = tokio::runtime::Runtime::new()?.block_on(async {
+                    svc.list(status.as_deref(), scroll.as_deref(), *limit)
+                        .await
+                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                })?;
+                for r in rows {
+                    println!(
+                        "{} | {} | {} | {} | {}",
+                        r.id,
+                        r.status,
+                        r.scroll_path,
+                        r.title,
+                        r.created_at
+                    );
+                }
+            }
+            "close" => {
+                let id = id
+                    .as_ref()
+                    .ok_or_else(|| anyhow::anyhow!("<id> is required for close"))?;
+                let svc = ThreadsService::new(&conn);
+                let changed = tokio::runtime::Runtime::new()?.block_on(async {
+                    svc.close(id, reason.as_deref(), None)
+                        .await
+                        .map_err(|e| anyhow::anyhow!(e.to_string()))
+                })?;
+                if changed > 0 {
+                    println!("closed: {}", id);
+                } else {
+                    println!("not-found: {}", id);
+                }
+            }
+            _ => unreachable!(),
+        }
         return Ok(());
     }
 
