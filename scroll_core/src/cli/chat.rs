@@ -15,15 +15,13 @@ use std::sync::{
 use uuid::Uuid;
 
 use crate::cli::theme::Theme;
-use crate::sessions::database;
-use crate::sessions::database::{get_db_connection, init_sqlite_connection};
+use crate::sessions::database::{ensure_ready_with_url, get_db_connection};
 use crate::sessions::database_session_service::DatabaseSessionService;
 use crate::sessions::session_service::SessionService;
 use crate::trigger_loom::config::{SymbolicRhythm, TriggerLoopConfig};
 use crate::trigger_loom::engine::TriggerLoopEngine;
 use console::Style;
 use home::home_dir;
-use migration::{Migrator, MigratorTrait};
 use rustyline::{error::ReadlineError, DefaultEditor};
 use tokio::runtime::Runtime;
 
@@ -40,13 +38,9 @@ pub fn run_chat(
     let rt = Runtime::new()?;
     // Ensure DB connection is initialized (idempotent). Tests invoke the binary without prior init.
     let db_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
-    // Ensure migrations applied for session tables
     rt.block_on(async {
-        let _ = init_sqlite_connection(&db_url).await;
-        // Run migrations best-effort
-        let _ = Migrator::up(database::get_db_connection(), None).await;
+        let _ = ensure_ready_with_url(&db_url).await;
     });
-    // Now get the connection
     let conn = get_db_connection().clone();
     let session_svc = DatabaseSessionService::new(conn);
     if show_banner && std::env::var("SCROLL_CI").is_err() {
