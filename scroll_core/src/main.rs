@@ -66,6 +66,12 @@ struct Cli {
     /// Tick period in milliseconds
     #[arg(long = "trigger-loop-period-ms")]
     trigger_loop_period_ms: Option<u64>,
+    /// Profile for trigger loop: demo or ci
+    #[arg(long = "profile", value_parser = clap::builder::PossibleValuesParser::new(["demo", "ci"]))]
+    profile: Option<String>,
+    /// Explain context decisions during trigger-loop constructs
+    #[arg(long = "explain-context", action = clap::ArgAction::SetTrue, default_value_t = false)]
+    explain_context: bool,
 }
 
 #[derive(Subcommand)]
@@ -294,6 +300,13 @@ fn main() -> Result<()> {
 
     // Trigger Loom start (explicit via CLI or env)
     if cli.trigger_loop || std::env::var("SC_TRIGGER_LOOP").ok().as_deref() == Some("1") {
+        use scroll_core::invocation::constructs::{
+            mythscribe_gate::MythscribeGate, pulse_echo::PulseEcho, pulse_logger::PulseLogger,
+        };
+        use scroll_core::orchestra::Bus;
+        use scroll_core::trigger_loom::config::TriggerLoopProfile;
+        use scroll_core::orchestra::OrchestratedConstruct;
+
         // DB init + migrations (for decision ledger)
         let db_url = std::env::var("DATABASE_URL")
             .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
@@ -302,42 +315,78 @@ fn main() -> Result<()> {
             let _ = scroll_core::sessions::database::ensure_ready_with_url(&db_url).await;
         });
 
-        // Build constructs list; include pulse_echo and pulse_logger for demo
-        let mut constructs: Vec<Box<dyn scroll_core::invocation::named_construct::NamedConstruct>> = vec![
-            Box::new(scroll_core::invocation::constructs::pulse_echo::PulseEcho::default()),
-            Box::new(scroll_core::invocation::constructs::pulse_logger::PulseLogger::default()),
-        ];
+        if cli.explain_context {
+            std::env::set_var("SC_EXPLAIN_CONTEXT", "1");
+        }
 
-        // Configure engine
-        use scroll_core::trigger_loom::config::{SymbolicRhythm, TriggerLoopConfig};
-        let rhythm = if let Some(ms) = cli.trigger_loop_period_ms {
-            let hz = (1000.0f32 / (ms as f32)).max(0.001);
-            SymbolicRhythm::Constant(hz)
-        } else if cli.trigger_loop_ci {
-            SymbolicRhythm::Constant(1.0) // fixed 1Hz
+        // Start ledger service
+        let (ledger_handle, ledger_service) =
+            scroll_core::invocation::ledger_service::start(64, 256);
+
+        // Load scrolls to check tags for ambient triggers
+        let (scrolls, _cache) = initialize_scroll_core()?;
+        let pulse_enabled = scrolls
+            .iter()
+            .any(|s| s.yaml_metadata.tags.iter().any(|t| t == "pulse"));
+
+        // Determine profile
+        let profile = if cli.trigger_loop_ci
+            || cli.profile.as_deref() == Some("ci")
+        {
+            TriggerLoopProfile::Ci
         } else {
-            SymbolicRhythm::EmotionDriven
+            TriggerLoopProfile::Demo
         };
-        let cfg = TriggerLoopConfig {
-            rhythm,
-            max_invocations_per_tick: cli.trigger_loop_budget.unwrap_or(1),
-            allow_test_ticks: true,
-            emotional_signature: None,
-        };
+
+        // Build base config from profile and override via CLI
+        use scroll_core::trigger_loom::config::SymbolicRhythm;
+        let mut cfg = profile.config();
+        if let Some(b) = cli.trigger_loop_budget {
+            cfg.max_invocations_per_tick = b;
+        }
+        if let Some(ms) = cli.trigger_loop_period_ms {
+            let hz = (1000.0f32 / (ms as f32)).max(0.001);
+            cfg.rhythm = SymbolicRhythm::Constant(hz);
+        }
+
         let mut engine = scroll_core::trigger_loom::engine::TriggerLoopEngine::new(cfg.clone());
-        if cli.trigger_loop_ci {
+        if matches!(profile, TriggerLoopProfile::Ci) {
             engine = engine.with_deterministic_seed(42);
         }
+
+        // Bus wiring and constructs
+        let bus = Bus::new();
+        let mut echo = PulseEcho::default().with_ledger(ledger_handle.clone());
+        echo.enabled = pulse_enabled;
+        echo.attach_bus(bus.clone());
+        let mut logger = PulseLogger::default().with_ledger(ledger_handle.clone());
+        logger.attach_bus(bus.clone());
+        let mut gate = MythscribeGate::default().with_ledger(ledger_handle.clone());
+        gate.ci_mode = matches!(profile, TriggerLoopProfile::Ci);
+        gate.attach_bus(bus.clone());
+
+        let mut constructs: Vec<
+            Box<dyn scroll_core::invocation::named_construct::NamedConstruct>,
+        > = vec![Box::new(echo), Box::new(gate)];
+
         println!("▶️ Starting Trigger Loom (press Ctrl-C to stop)...");
-        if cli.trigger_loop_ci || matches!(cfg.rhythm, SymbolicRhythm::Constant(_)) {
-            engine.start_loop(&mut constructs);
+        let tick_limit = profile.tick_limit();
+        if matches!(profile, TriggerLoopProfile::Ci) {
+            engine.start_loop(&mut constructs, tick_limit);
         } else {
-            // Simple emotion source influences cadence via intensity/decay
             use scroll_core::trigger_loom::emotional_state::EmotionalState;
             let mut state = EmotionalState::new(vec!["start".into()], 0.5, None);
-            state.trigger_patterns = vec!["pulse".into()];
-            engine.start_loop_with_emotion(&mut constructs, state);
+            if pulse_enabled {
+                state.trigger_patterns.push("pulse".into());
+            }
+            engine.start_loop_with_emotion(&mut constructs, state, tick_limit);
         }
+
+        drop(constructs);
+        drop(logger);
+        drop(ledger_handle);
+        // Graceful shutdown of ledger worker
+        ledger_service.shutdown_blocking(std::time::Duration::from_millis(250));
         return Ok(());
     }
 
