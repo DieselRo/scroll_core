@@ -24,6 +24,7 @@ pub struct AelrenHerald<'a> {
     pub frame_engine: ContextFrameEngine<'a>,
     pub registry_snapshot: Vec<String>,
     pub explain_context: bool,
+    pub decisions_verbose: bool,
 }
 
 impl<'a> AelrenHerald<'a> {
@@ -32,6 +33,7 @@ impl<'a> AelrenHerald<'a> {
             frame_engine,
             registry_snapshot,
             explain_context: false,
+            decisions_verbose: false,
         }
     }
 
@@ -46,15 +48,16 @@ impl<'a> AelrenHerald<'a> {
         };
 
         // Persist decisions to ledger (best effort)
-        let verbose = self.explain_context;
+        let explain = self.explain_context;
+        let verbose = self.decisions_verbose;
         let report_clone = report.clone();
         let _ = tokio::runtime::Runtime::new().map(|rt| {
             rt.block_on(async move {
-                let _ = log_context_report(&report_clone).await;
+                let _ = log_context_report(&report_clone, verbose).await;
             })
         });
 
-        if verbose {
+        if explain {
             // Print simple table of decisions
             println!("Context decisions ({}):", report.summary.construct);
             println!("- frame: {}", report.summary.frame_id);

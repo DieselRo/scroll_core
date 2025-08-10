@@ -99,6 +99,11 @@ enum Commands {
         /// Also print candidate detail rows
         #[arg(long = "details", action = clap::ArgAction::SetTrue, default_value_t = false)]
         details: bool,
+        #[arg(
+            long = "export",
+            value_parser = clap::builder::PossibleValuesParser::new(["json", "yaml"])
+        )]
+        export: Option<String>,
     },
     /// Archive index operations
     Index {
@@ -269,6 +274,7 @@ fn main() -> Result<()> {
         let manager = InvocationManager::new(registry).with_ledger(ledger_handle.clone());
         let mut aelren = AelrenHerald::new(engine, vec![construct.clone()]);
         aelren.explain_context = *explain_context;
+        aelren.decisions_verbose = model_registry.context_decisions_verbose();
         let stream_enabled = *stream && !*no_stream;
         let theme_struct = theme.styles();
         run_chat(
@@ -611,7 +617,12 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
-    if let Some(Commands::Context { limit, details }) = &cli.command {
+    if let Some(Commands::Context {
+        limit,
+        details,
+        export,
+    }) = &cli.command
+    {
         // Ensure DB is ready
         let db_url =
             std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
@@ -623,6 +634,7 @@ fn main() -> Result<()> {
         })?;
         use scroll_core::invocation::context_ledger::{candidate, frame};
         use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QuerySelect};
+        use serde::Serialize;
         let frames: Vec<frame::Model> = tokio::runtime::Runtime::new()?.block_on(async move {
             frame::Entity::find()
                 .order_by_desc(frame::Column::Timestamp)
@@ -631,26 +643,18 @@ fn main() -> Result<()> {
                 .await
                 .unwrap_or_default()
         });
-        println!("Latest {} context frames:", frames.len());
-        for f in &frames {
-            println!(
-                "- frame={} construct={} max_tokens={} max_items={} min_rel={:.2} half_life_h={:.1} candidates={} included={} excluded={} build_ms={} at {}",
-                f.frame_id,
-                f.construct,
-                f.max_tokens,
-                f.max_items,
-                f.min_relevance,
-                f.half_life_hours,
-                f.total_candidates,
-                f.included_count,
-                f.excluded_count,
-                f.build_ms,
-                f.timestamp
-            );
-            if *details {
-                let conn2 = scroll_core::sessions::database::get_db_connection().clone();
-                let rows: Vec<candidate::Model> =
-                    tokio::runtime::Runtime::new()?.block_on(async move {
+        if let Some(fmt) = export {
+            #[derive(Serialize)]
+            struct FrameExport {
+                frame: frame::Model,
+                candidates: Vec<candidate::Model>,
+            }
+            let mut out = Vec::new();
+            for f in frames {
+                let mut candidates_vec = Vec::new();
+                if *details {
+                    let conn2 = scroll_core::sessions::database::get_db_connection().clone();
+                    candidates_vec = tokio::runtime::Runtime::new()?.block_on(async move {
                         candidate::Entity::find()
                             .filter(candidate::Column::FrameId.eq(f.frame_id))
                             .order_by_asc(candidate::Column::Timestamp)
@@ -658,18 +662,59 @@ fn main() -> Result<()> {
                             .await
                             .unwrap_or_default()
                     });
-                for r in rows {
-                    let mark = if r.included { "✔" } else { "✖" };
-                    println!(
-                        "  {} {} score={:.2} age_h={:.1} tokens={}/{} reason={}",
-                        mark,
-                        r.candidate_path.unwrap_or_else(|| "<unknown>".into()),
-                        r.score,
-                        r.recency_hours,
-                        r.running_tokens,
-                        r.max_tokens,
-                        r.reason
-                    );
+                }
+                out.push(FrameExport {
+                    frame: f,
+                    candidates: candidates_vec,
+                });
+            }
+            let serialized = if fmt == "json" {
+                serde_json::to_string_pretty(&out)?
+            } else {
+                serde_yaml::to_string(&out)?
+            };
+            println!("{}", serialized);
+        } else {
+            println!("Latest {} context frames:", frames.len());
+            for f in &frames {
+                println!(
+                    "- frame={} construct={} max_tokens={} max_items={} min_rel={:.2} half_life_h={:.1} candidates={} included={} excluded={} build_ms={} at {}",
+                    f.frame_id,
+                    f.construct,
+                    f.max_tokens,
+                    f.max_items,
+                    f.min_relevance,
+                    f.half_life_hours,
+                    f.total_candidates,
+                    f.included_count,
+                    f.excluded_count,
+                    f.build_ms,
+                    f.timestamp
+                );
+                if *details {
+                    let conn2 = scroll_core::sessions::database::get_db_connection().clone();
+                    let rows: Vec<candidate::Model> =
+                        tokio::runtime::Runtime::new()?.block_on(async move {
+                            candidate::Entity::find()
+                                .filter(candidate::Column::FrameId.eq(f.frame_id))
+                                .order_by_asc(candidate::Column::Timestamp)
+                                .all(&conn2)
+                                .await
+                                .unwrap_or_default()
+                        });
+                    for r in rows {
+                        let mark = if r.included { "✔" } else { "✖" };
+                        println!(
+                            "  {} {} score={:.2} age_h={:.1} tokens={}/{} reason={}",
+                            mark,
+                            r.candidate_path.unwrap_or_else(|| "<unknown>".into()),
+                            r.score,
+                            r.recency_hours,
+                            r.running_tokens,
+                            r.max_tokens,
+                            r.reason
+                        );
+                    }
                 }
             }
         }

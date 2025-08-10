@@ -15,6 +15,7 @@ use crate::scroll::Scroll;
 use uuid::Uuid;
 
 use super::context_decisions::{ContextBuildReport, ContextDecision, ContextFrameSummary};
+use crate::invocation::context_reasons::ReasonCode;
 
 pub enum ContextMode {
     Narrow,
@@ -114,9 +115,6 @@ impl<'a> ContextFrameEngine<'a> {
             .query_semantic(&query, related.len().max(self.max_scrolls * 2))
             .into_iter()
             .filter_map(|(s, score)| {
-                if s.id == triggering_scroll.id {
-                    return None;
-                }
                 let age_hours = (now
                     .signed_duration_since(s.origin.last_modified)
                     .num_seconds()
@@ -128,9 +126,6 @@ impl<'a> ContextFrameEngine<'a> {
         // If semantic results empty (e.g., Narrow mode), synthesize candidates from related list with neutral score
         if candidates.is_empty() {
             for s in related {
-                if s.id == triggering_scroll.id {
-                    continue;
-                }
                 let age_hours = (now
                     .signed_duration_since(s.origin.last_modified)
                     .num_seconds()
@@ -151,21 +146,25 @@ impl<'a> ContextFrameEngine<'a> {
         let mut decisions: Vec<ContextDecision> = Vec::new();
         let mut included = 0usize;
         let mut excluded = 0usize;
-        for (idx, (s, score, age_h)) in candidates.into_iter().enumerate() {
-            let mut reason = String::new();
+        for (s, score, age_h) in candidates.into_iter() {
+            let mut reason = ReasonCode::Included;
             let mut include = true;
-            if score < self.thresholds.min_relevance_score {
+            if s.id == triggering_scroll.id {
                 include = false;
-                reason = "below_score_threshold".into();
+                reason = ReasonCode::SelfExclusion;
+            }
+            if include && score < self.thresholds.min_relevance_score {
+                include = false;
+                reason = ReasonCode::LowRelevance;
             }
             if include && scrolls.len() >= self.max_scrolls {
                 include = false;
-                reason = "max_items_limit".into();
+                reason = ReasonCode::MaxItems;
             }
             let item_tokens = token_estimate(&s);
             if include && running_tokens + item_tokens > self.thresholds.max_context_tokens {
                 include = false;
-                reason = "budget_exceeded".into();
+                reason = ReasonCode::TokenBudget;
             }
             if include {
                 running_tokens += item_tokens;
@@ -176,11 +175,7 @@ impl<'a> ContextFrameEngine<'a> {
                     frame_id,
                     candidate_path: s.yaml_metadata.file_path.clone(),
                     included: true,
-                    reason: if reason.is_empty() {
-                        "included".into()
-                    } else {
-                        reason
-                    },
+                    reason: reason.as_str().into(),
                     score: score as f32,
                     recency_hours: age_h,
                     running_tokens,
@@ -193,15 +188,7 @@ impl<'a> ContextFrameEngine<'a> {
                     frame_id,
                     candidate_path: s.yaml_metadata.file_path.clone(),
                     included: false,
-                    reason: if reason.is_empty() {
-                        if idx >= self.max_scrolls {
-                            "max_items_limit".into()
-                        } else {
-                            "excluded".into()
-                        }
-                    } else {
-                        reason
-                    },
+                    reason: reason.as_str().into(),
                     score: score as f32,
                     recency_hours: age_h,
                     running_tokens,
@@ -274,6 +261,7 @@ fn decay_score(score: f32, age_hours: f32, half_life_hours: f32) -> f32 {
 mod tests {
     use super::*;
     use crate::archive::archive_memory::InMemoryArchive;
+    use crate::invocation::context_reasons::ReasonCode;
     use crate::schema::{ScrollType, YamlMetadata};
 
     fn mk_scroll(title: &str, body_len: usize, age_hours: i64) -> Scroll {
@@ -330,5 +318,74 @@ mod tests {
         assert_eq!(ctx.scrolls.len(), 2);
         assert!(report.summary.included_count >= 1);
         assert!(report.summary.excluded_count >= 1);
+    }
+
+    #[test]
+    fn assigns_reason_codes() {
+        fn mk_body_scroll(title: &str, body: &str, age_hours: i64) -> Scroll {
+            let now = chrono::Utc::now() - chrono::Duration::hours(age_hours);
+            Scroll {
+                id: uuid::Uuid::new_v4(),
+                title: title.into(),
+                scroll_type: ScrollType::Canon,
+                yaml_metadata: YamlMetadata {
+                    title: title.into(),
+                    scroll_type: ScrollType::Canon,
+                    emotion_signature: crate::schema::EmotionSignature::neutral(),
+                    tags: vec!["t".into()],
+                    archetype: None,
+                    quorum_required: false,
+                    last_modified: Some(now),
+                    file_path: Some(format!("/tmp/{}.md", title)),
+                },
+                tags: vec!["t".into()],
+                archetype: None,
+                quorum_required: false,
+                markdown_body: body.into(),
+                invocation_phrase: String::new(),
+                sigil: String::new(),
+                status: crate::schema::ScrollStatus::Draft,
+                emotion_signature: crate::schema::EmotionSignature::neutral(),
+                linked_scrolls: vec![],
+                origin: crate::scroll::ScrollOrigin {
+                    created: now,
+                    authored_by: None,
+                    last_modified: now,
+                },
+            }
+        }
+
+        let s0 = mk_body_scroll("root", "alpha beta", 0);
+        let s1 = mk_body_scroll("a", "alpha beta", 2);
+        let s2 = mk_body_scroll("b", "alpha", 3);
+        let s3 = mk_body_scroll("c", "alpha", 4);
+        let s4 = mk_body_scroll("huge", &"alpha beta ".repeat(2000), 1);
+        let s5 = mk_body_scroll("irrelevant", "gamma", 5);
+        let mut archive = InMemoryArchive::new(vec![
+            s0.clone(),
+            s1.clone(),
+            s2.clone(),
+            s3.clone(),
+            s4.clone(),
+            s5.clone(),
+        ]);
+        let embedder = crate::archive::semantic_index::TokenEmbedder;
+        let _ = archive.build_semantic_index(&embedder);
+
+        let thresholds = ContextThresholds {
+            max_context_tokens: 100,
+            min_relevance_score: 0.5,
+            recency_half_life_hours: 48.0,
+            max_items: 3,
+        };
+        let engine = ContextFrameEngine::new(&archive, ContextMode::Broad)
+            .with_thresholds(thresholds)
+            .with_construct_label("Test");
+        let (_ctx, report) = engine.build_context(&s0);
+        let reasons: Vec<String> = report.decisions.iter().map(|d| d.reason.clone()).collect();
+        assert!(reasons.contains(&ReasonCode::SelfExclusion.as_str().into()));
+        assert!(reasons.contains(&ReasonCode::Included.as_str().into()));
+        assert!(reasons.contains(&ReasonCode::TokenBudget.as_str().into()));
+        assert!(reasons.contains(&ReasonCode::LowRelevance.as_str().into()));
     }
 }

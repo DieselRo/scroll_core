@@ -31,7 +31,7 @@
 - [ ] Contradiction detection stub
 
 ## Phase 5
-- [ ] Context thresholds configurable; decisions logged
+- [x] Context thresholds configurable; decisions logged
 
 ## Phase 6
 - [ ] Orchestrated construct demo; dispatcher receive loop
