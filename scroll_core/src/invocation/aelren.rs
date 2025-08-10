@@ -5,6 +5,7 @@
 
 use crate::construct_ai::{ConstructContext, ConstructResult};
 use crate::core::context_frame_engine::ContextFrameEngine;
+use crate::invocation::context_ledger::log_context_report;
 use crate::core::ConstructRegistry;
 // DB ledger is written downstream by InvocationManager
 use crate::invocation::types::{Invocation, InvocationMode, InvocationTier};
@@ -22,6 +23,7 @@ pub struct AelrenFrameResult {
 pub struct AelrenHerald<'a> {
     pub frame_engine: ContextFrameEngine<'a>,
     pub registry_snapshot: Vec<String>,
+    pub explain_context: bool,
 }
 
 impl<'a> AelrenHerald<'a> {
@@ -29,11 +31,12 @@ impl<'a> AelrenHerald<'a> {
         Self {
             frame_engine,
             registry_snapshot,
+            explain_context: false,
         }
     }
 
     pub fn frame_invocation(&self, triggering_scroll: &Scroll) -> AelrenFrameResult {
-        let context = self.frame_engine.build_context(triggering_scroll);
+        let (context, report) = self.frame_engine.build_context(triggering_scroll);
 
         let suggested = self.suggest_construct(&context);
         let echo = if suggested.is_none() {
@@ -41,6 +44,29 @@ impl<'a> AelrenHerald<'a> {
         } else {
             None
         };
+
+        // Persist decisions to ledger (best effort)
+        let verbose = self.explain_context;
+        let report_clone = report.clone();
+        let _ = tokio::runtime::Runtime::new().map(|rt| {
+            rt.block_on(async move {
+                let _ = log_context_report(&report_clone).await;
+            })
+        });
+
+        if verbose {
+            // Print simple table of decisions
+            println!("Context decisions ({}):", report.summary.construct);
+            println!("- frame: {}", report.summary.frame_id);
+            for d in &report.decisions {
+                let status = if d.included { "✔" } else { "✖" };
+                let path = d.candidate_path.clone().unwrap_or_else(|| "<unknown>".into());
+                println!(
+                    "{} {} | score {:.2} | age {:.1}h | tokens {}/{} | {}",
+                    status, path, d.score, d.recency_hours, d.running_tokens, d.max_tokens, d.reason
+                );
+            }
+        }
 
         let _invocation = Invocation {
             id: Uuid::new_v4(),

@@ -3,7 +3,7 @@ status: active
 audience: user, dev
 ---
 
-# Models & Cost Configuration
+# Models, Cost & Context Configuration
 
 Single source of truth for provider/model selection and optional cost thresholds, resolved with strict precedence: ENV > YAML > built-in defaults.
 
@@ -49,13 +49,33 @@ cost_profiles:          # optional caps/limits (enforced by CostManager)
     per_request_usd_limit: 0.10
   Mythscribe:
     per_request_usd_limit: 0.25
+
+context:               # optional context selection thresholds
+  defaults:
+    max_context_tokens: 3000
+    min_relevance_score: 0.35
+    recency_half_life_hours: 48
+    max_items: 12
+  constructs:
+    Mythscribe:
+      max_context_tokens: 5000
+      min_relevance_score: 0.40
+      recency_half_life_hours: 24
+      max_items: 16
 ```
 
 Behavior:
 - With no YAML, behavior matches today: provider/model come from env, or `openai/gpt-4o` by default.
 - `--print-model-config` prints the resolved config with secrets redacted.
 - Cost enforcement lives in `CostManager`; registry only supplies thresholds.
+- Context thresholds precedence: ENV > YAML > built-ins.
+
+Environment variables (context thresholds):
+- Global: `SC_CONTEXT_MAX_TOKENS`, `SC_CONTEXT_MIN_RELEVANCE`, `SC_CONTEXT_RECENCY_HALF_LIFE_HOURS`, `SC_CONTEXT_MAX_ITEMS`
+- Per-construct: `SC_CONTEXT_<Name>_MAX_TOKENS`, `SC_CONTEXT_<Name>_MIN_RELEVANCE`, `SC_CONTEXT_<Name>_RECENCY_HALF_LIFE_HOURS`, `SC_CONTEXT_<Name>_MAX_ITEMS`
+
+CLI explainability:
+- `--explain-context` (on `chat` subcommand) prints a table of included/excluded items with reasons, scores, age, and token budget.
 
 Secrets:
 - API keys are never printed. Provide `OPENAI_API_KEY` via env as usual.
-

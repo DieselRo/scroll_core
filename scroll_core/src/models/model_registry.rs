@@ -32,6 +32,32 @@ pub struct ThresholdCostProfile {
     pub per_request_usd_limit: Option<f32>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContextThresholds {
+    pub max_context_tokens: usize,
+    pub min_relevance_score: f32,
+    pub recency_half_life_hours: f32,
+    pub max_items: usize,
+}
+
+impl Default for ContextThresholds {
+    fn default() -> Self {
+        Self {
+            max_context_tokens: 3000,
+            min_relevance_score: 0.35,
+            recency_half_life_hours: 48.0,
+            max_items: 12,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ContextConfig {
+    pub defaults: ContextThresholds,
+    #[serde(default)]
+    pub constructs: HashMap<String, ContextThresholds>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ModelsConfig {
     pub version: u32,
@@ -40,6 +66,8 @@ pub struct ModelsConfig {
     pub constructs: HashMap<String, ModelSpec>,
     #[serde(default)]
     pub cost_profiles: HashMap<String, ThresholdCostProfile>,
+    #[serde(default)]
+    pub context: Option<ContextConfig>,
 }
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -48,6 +76,7 @@ pub struct RedactedConfig {
     pub default: ModelSpec,
     pub constructs: HashMap<String, ModelSpec>,
     pub cost_profiles: HashMap<String, ThresholdCostProfile>,
+    pub context: ContextConfig,
 }
 
 pub struct ModelRegistry {
@@ -55,6 +84,8 @@ pub struct ModelRegistry {
     constructs: HashMap<String, ModelSpec>,
     cost_profiles: HashMap<String, ThresholdCostProfile>,
     source_file: Option<PathBuf>,
+    context_defaults: ContextThresholds,
+    context_constructs: HashMap<String, ContextThresholds>,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -86,6 +117,8 @@ impl ModelRegistry {
         let mut constructs: HashMap<String, ModelSpec> = HashMap::new();
         let mut cost_profiles: HashMap<String, ThresholdCostProfile> = HashMap::new();
         let mut source_file: Option<PathBuf> = None;
+        let mut context_defaults: ContextThresholds = ContextThresholds::default();
+        let mut context_constructs: HashMap<String, ContextThresholds> = HashMap::new();
 
         // 2) load YAML if present
         let yaml_path = resolve_config_path(path);
@@ -99,6 +132,10 @@ impl ModelRegistry {
                         }
                         constructs = cfg.constructs;
                         cost_profiles = cfg.cost_profiles;
+                        if let Some(ctx) = cfg.context {
+                            context_defaults = ctx.defaults;
+                            context_constructs = ctx.constructs;
+                        }
                     }
                     Err(e) => return Err(RegistryError::Load(e.to_string())),
                 },
@@ -110,12 +147,15 @@ impl ModelRegistry {
         apply_global_env_overrides(&mut default_spec)?;
         apply_construct_env_overrides(&mut constructs)?;
         apply_cost_env_overrides(&mut cost_profiles)?;
+        apply_context_env_overrides(&mut context_defaults, &mut context_constructs)?;
 
         Ok(Self {
             default_spec,
             constructs,
             cost_profiles,
             source_file,
+            context_defaults,
+            context_constructs,
         })
     }
 
@@ -144,7 +184,18 @@ impl ModelRegistry {
             default: self.default_spec.clone(),
             constructs: self.constructs.clone(),
             cost_profiles: self.cost_profiles.clone(),
+            context: ContextConfig {
+                defaults: self.context_defaults.clone(),
+                constructs: self.context_constructs.clone(),
+            },
         }
+    }
+
+    pub fn context_for(&self, construct: &str) -> ContextThresholds {
+        self.context_constructs
+            .get(construct)
+            .cloned()
+            .unwrap_or_else(|| self.context_defaults.clone())
     }
 }
 
@@ -282,6 +333,74 @@ fn apply_cost_env_overrides(
     Ok(())
 }
 
+// Env overrides for context thresholds
+// Global vars: SC_CONTEXT_MAX_TOKENS, SC_CONTEXT_MIN_RELEVANCE, SC_CONTEXT_RECENCY_HALF_LIFE_HOURS, SC_CONTEXT_MAX_ITEMS
+// Per-construct: SC_CONTEXT_<NAME>_MAX_TOKENS, ... similarly suffixed
+fn apply_context_env_overrides(
+    defaults: &mut ContextThresholds,
+    constructs: &mut HashMap<String, ContextThresholds>,
+) -> Result<(), RegistryError> {
+    if let Ok(v) = std::env::var("SC_CONTEXT_MAX_TOKENS") {
+        if let Ok(n) = v.parse::<usize>() {
+            defaults.max_context_tokens = n;
+        }
+    }
+    if let Ok(v) = std::env::var("SC_CONTEXT_MIN_RELEVANCE") {
+        if let Ok(f) = v.parse::<f32>() {
+            defaults.min_relevance_score = f;
+        }
+    }
+    if let Ok(v) = std::env::var("SC_CONTEXT_RECENCY_HALF_LIFE_HOURS") {
+        if let Ok(f) = v.parse::<f32>() {
+            defaults.recency_half_life_hours = f;
+        }
+    }
+    if let Ok(v) = std::env::var("SC_CONTEXT_MAX_ITEMS") {
+        if let Ok(n) = v.parse::<usize>() {
+            defaults.max_items = n;
+        }
+    }
+    // Per-construct
+    for (k, v) in std::env::vars() {
+        if !k.starts_with("SC_CONTEXT_") {
+            continue;
+        }
+        // SC_CONTEXT_{NAME}_KEY
+        let rest = &k[11..];
+        let (name, key) = match rest.rsplit_once('_') {
+            Some((n, k)) => (n.to_string(), k.to_string()),
+            None => continue,
+        };
+        let entry = constructs
+            .entry(name.clone())
+            .or_insert_with(ContextThresholds::default);
+        match key.as_str() {
+            "MAX_TOKENS" => {
+                if let Ok(n) = v.parse::<usize>() {
+                    entry.max_context_tokens = n;
+                }
+            }
+            "MIN_RELEVANCE" => {
+                if let Ok(f) = v.parse::<f32>() {
+                    entry.min_relevance_score = f;
+                }
+            }
+            "RECENCY_HALF_LIFE_HOURS" => {
+                if let Ok(f) = v.parse::<f32>() {
+                    entry.recency_half_life_hours = f;
+                }
+            }
+            "MAX_ITEMS" => {
+                if let Ok(n) = v.parse::<usize>() {
+                    entry.max_items = n;
+                }
+            }
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
 // ──────────────────────────────────────────────
 // Tests
 // ──────────────────────────────────────────────
@@ -348,5 +467,45 @@ cost_profiles:
         assert_eq!(spec.model, "gpt-test");
         std::env::remove_var("SC_LLM_PROVIDER");
         std::env::remove_var("SC_LLM_MODEL");
+    }
+
+    #[test]
+    fn context_thresholds_precedence_env_over_yaml_over_default() {
+        let dir = tempdir().unwrap();
+        let yaml = dir.path().join("models.yaml");
+        fs::write(
+            &yaml,
+            r#"
+version: 1
+context:
+  defaults:
+    max_context_tokens: 3000
+    min_relevance_score: 0.4
+    recency_half_life_hours: 24
+    max_items: 10
+  constructs:
+    Mythscribe:
+      max_context_tokens: 5000
+      min_relevance_score: 0.5
+      recency_half_life_hours: 12
+      max_items: 16
+"#,
+        )
+        .unwrap();
+
+        std::env::set_var("SC_CONTEXT_MAX_TOKENS", "2000");
+        std::env::set_var("SC_CONTEXT_Mythscribe_MAX_ITEMS", "8");
+
+        let reg = ModelRegistry::from_env_and_file(Some(&yaml)).unwrap();
+        // Global default max tokens overridden by env
+        let def = reg.context_for("Unknown");
+        assert_eq!(def.max_context_tokens, 2000);
+        // Per-construct override merged with env
+        let ms = reg.context_for("Mythscribe");
+        assert_eq!(ms.max_items, 8);
+        assert!((ms.min_relevance_score - 0.5).abs() < 1e-6);
+
+        std::env::remove_var("SC_CONTEXT_MAX_TOKENS");
+        std::env::remove_var("SC_CONTEXT_Mythscribe_MAX_ITEMS");
     }
 }

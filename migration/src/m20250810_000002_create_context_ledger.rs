@@ -1,0 +1,105 @@
+use sea_orm_migration::prelude::*;
+
+#[derive(DeriveIden)]
+enum ContextFrameLedger {
+    Table,
+    FrameId,
+    Construct,
+    MaxTokens,
+    MaxItems,
+    MinRelevance,
+    HalfLifeHours,
+    TotalCandidates,
+    IncludedCount,
+    ExcludedCount,
+    BuildMs,
+    Timestamp,
+}
+
+#[derive(DeriveIden)]
+enum ContextCandidateLedger {
+    Table,
+    Id,
+    FrameId,
+    Construct,
+    CandidatePath,
+    Included,
+    Reason,
+    Score,
+    RecencyHours,
+    RunningTokens,
+    MaxTokens,
+    Timestamp,
+}
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .create_table(
+                Table::create()
+                    .table(ContextFrameLedger::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(ContextFrameLedger::FrameId)
+                            .uuid()
+                            .not_null()
+                            .primary_key(),
+                    )
+                    .col(ColumnDef::new(ContextFrameLedger::Construct).string().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::MaxTokens).integer().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::MaxItems).integer().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::MinRelevance).float().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::HalfLifeHours).float().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::TotalCandidates).integer().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::IncludedCount).integer().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::ExcludedCount).integer().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::BuildMs).big_integer().not_null())
+                    .col(ColumnDef::new(ContextFrameLedger::Timestamp).timestamp().not_null())
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(ContextCandidateLedger::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(ContextCandidateLedger::Id)
+                            .uuid()
+                            .not_null()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(ContextCandidateLedger::FrameId)
+                            .uuid()
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(ContextCandidateLedger::Construct).string().not_null())
+                    .col(ColumnDef::new(ContextCandidateLedger::CandidatePath).string())
+                    .col(ColumnDef::new(ContextCandidateLedger::Included).boolean().not_null())
+                    .col(ColumnDef::new(ContextCandidateLedger::Reason).string().not_null())
+                    .col(ColumnDef::new(ContextCandidateLedger::Score).float().not_null())
+                    .col(ColumnDef::new(ContextCandidateLedger::RecencyHours).float().not_null())
+                    .col(ColumnDef::new(ContextCandidateLedger::RunningTokens).integer().not_null())
+                    .col(ColumnDef::new(ContextCandidateLedger::MaxTokens).integer().not_null())
+                    .col(ColumnDef::new(ContextCandidateLedger::Timestamp).timestamp().not_null())
+                    .to_owned(),
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().table(ContextCandidateLedger::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(ContextFrameLedger::Table).to_owned())
+            .await
+    }
+}
+

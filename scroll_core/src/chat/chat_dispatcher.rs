@@ -197,13 +197,20 @@ impl ChatDispatcher {
             // Get latest scroll for context
             let scroll = memory.last().expect("No scrolls available");
 
-            let mut context = manager.registry.build_context(scroll);
+            // Use Aelren framing to build context and log decisions (respects explain flag)
+            let framed = aelren.frame_invocation(scroll);
+            let mut context = framed.framed_context;
             context.user_input = Some(user_input.to_string());
 
             let result = if target == "symbolic" {
                 manager.invoke_symbolically_with_aelren(scroll, aelren)
             } else {
-                manager.invoke_by_name(&target, &context, 0)
+                // Prefer Aelren's suggestion if present
+                let chosen = framed
+                    .suggested_construct
+                    .clone()
+                    .unwrap_or_else(|| target.clone());
+                manager.invoke_by_name(&chosen, &context, 0)
             };
 
             let reply = match result {

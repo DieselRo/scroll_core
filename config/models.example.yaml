@@ -18,3 +18,15 @@ cost_profiles:
   Mythscribe:
     per_request_usd_limit: 0.25
 
+context:
+  defaults:
+    max_context_tokens: 3000
+    min_relevance_score: 0.35
+    recency_half_life_hours: 48
+    max_items: 12
+  constructs:
+    Mythscribe:
+      max_context_tokens: 5000
+      min_relevance_score: 0.40
+      recency_half_life_hours: 24
+      max_items: 16

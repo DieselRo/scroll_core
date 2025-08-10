@@ -74,6 +74,18 @@ enum Commands {
         theme: ThemeKind,
         #[arg(long = "no-banner", action = clap::ArgAction::SetTrue, default_value_t = false)]
         no_banner: bool,
+        /// Explain context selection decisions
+        #[arg(long = "explain-context", action = clap::ArgAction::SetTrue, default_value_t = false)]
+        explain_context: bool,
+    },
+    /// Inspect context decision ledger
+    Context {
+        /// Number of recent frames to show
+        #[arg(long, default_value_t = 10)]
+        limit: usize,
+        /// Also print candidate detail rows
+        #[arg(long = "details", action = clap::ArgAction::SetTrue, default_value_t = false)]
+        details: bool,
     },
     /// Archive index operations
     Index {
@@ -132,6 +144,7 @@ fn main() -> Result<()> {
         no_stream,
         theme,
         no_banner,
+        explain_context
     }) = &cli.command
     {
         if cli.rebuild_index {
@@ -166,7 +179,10 @@ fn main() -> Result<()> {
             let embedder = TokenEmbedder;
             let _ = archive.build_semantic_index(&embedder);
         }
-        let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
+        let thresholds = model_registry.context_for(construct);
+        let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow)
+            .with_thresholds(thresholds)
+            .with_construct_label(construct);
 
         let mut registry = ConstructRegistry::new();
         if std::env::var("SCROLL_CORE_USE_MOCK").is_ok() {
@@ -194,7 +210,8 @@ fn main() -> Result<()> {
             scroll_core::invocation::ledger_service::start(64, 256);
 
         let manager = InvocationManager::new(registry).with_ledger(ledger_handle.clone());
-        let aelren = AelrenHerald::new(engine, vec![construct.clone()]);
+        let mut aelren = AelrenHerald::new(engine, vec![construct.clone()]);
+        aelren.explain_context = *explain_context;
         let stream_enabled = *stream && !*no_stream;
         let theme_struct = theme.styles();
         run_chat(
@@ -298,6 +315,74 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
+    if let Some(Commands::Context { limit, details }) = &cli.command {
+        // Ensure DB is ready
+        let db_url = std::env::var("DATABASE_URL")
+            .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+        let rt = tokio::runtime::Runtime::new()?;
+        rt.block_on(async {
+            let _ = scroll_core::sessions::database::init_sqlite_connection(&db_url).await;
+            let _ = migration::Migrator::up(
+                scroll_core::sessions::database::get_db_connection(),
+                None,
+            )
+            .await;
+        });
+        use scroll_core::invocation::context_ledger::{candidate, frame};
+        use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QuerySelect};
+        let conn = scroll_core::sessions::database::get_db_connection().clone();
+        let frames: Vec<frame::Model> = tokio::runtime::Runtime::new()?.block_on(async move {
+            frame::Entity::find()
+                .order_by_desc(frame::Column::Timestamp)
+                .limit(*limit as u64)
+                .all(&conn)
+                .await
+                .unwrap_or_default()
+        });
+        println!("Latest {} context frames:", frames.len());
+        for f in &frames {
+            println!(
+                "- frame={} construct={} max_tokens={} max_items={} min_rel={:.2} half_life_h={:.1} candidates={} included={} excluded={} build_ms={} at {}",
+                f.frame_id,
+                f.construct,
+                f.max_tokens,
+                f.max_items,
+                f.min_relevance,
+                f.half_life_hours,
+                f.total_candidates,
+                f.included_count,
+                f.excluded_count,
+                f.build_ms,
+                f.timestamp
+            );
+            if *details {
+                let conn2 = scroll_core::sessions::database::get_db_connection().clone();
+                let rows: Vec<candidate::Model> = tokio::runtime::Runtime::new()?.block_on(async move {
+                    candidate::Entity::find()
+                        .filter(candidate::Column::FrameId.eq(f.frame_id))
+                        .order_by_asc(candidate::Column::Timestamp)
+                        .all(&conn2)
+                        .await
+                        .unwrap_or_default()
+                });
+                for r in rows {
+                    let mark = if r.included { "✔" } else { "✖" };
+                    println!(
+                        "  {} {} score={:.2} age_h={:.1} tokens={}/{} reason={}",
+                        mark,
+                        r.candidate_path.unwrap_or_else(|| "<unknown>".into()),
+                        r.score,
+                        r.recency_hours,
+                        r.running_tokens,
+                        r.max_tokens,
+                        r.reason
+                    );
+                }
+            }
+        }
+        return Ok(());
+    }
+
     // ─── Demo path ──────────────────────────────────────────────────────────────
     if let Some(demo_path) = cli.demo {
         run_demo(&demo_path)?;
@@ -321,7 +406,10 @@ fn main() -> Result<()> {
                 let embedder = TokenEmbedder;
                 let _ = archive.build_semantic_index(&embedder);
             }
-            let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
+            let thresholds = model_registry.context_for("Mythscribe");
+            let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow)
+                .with_thresholds(thresholds)
+                .with_construct_label("mythscribe");
 
             // Seed construct registry
             let mut registry = ConstructRegistry::new();
@@ -364,7 +452,10 @@ fn main() -> Result<()> {
                 scroll_core::invocation::ledger_service::start(64, 256);
 
             let manager = InvocationManager::new(registry).with_ledger(ledger_handle.clone());
-            let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
+            let mut aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
+            if std::env::var("SC_EXPLAIN_CONTEXT").ok().as_deref() == Some("1") {
+                aelren.explain_context = true;
+            }
 
             scroll_core::system::cli_orchestrator::run_cli(&manager, &aelren, &scrolls);
 
@@ -398,7 +489,12 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
         let embedder = TokenEmbedder;
         let _ = archive.build_semantic_index(&embedder);
     }
-    let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow);
+    let thresholds = ModelRegistry::get_global()
+        .map(|r| r.context_for("Mythscribe"))
+        .unwrap_or_default();
+    let engine = ContextFrameEngine::new(&archive, ContextMode::Narrow)
+        .with_thresholds(thresholds)
+        .with_construct_label("mythscribe");
     let mut reg = ConstructRegistry::new();
     let spec = ModelRegistry::get_global()
         .unwrap()
@@ -416,7 +512,10 @@ fn run_demo<P: AsRef<std::path::Path>>(path: P) -> Result<()> {
     let mut session = ChatSession::new(None, None);
     let mut mood = EmotionalState::new(Vec::new(), 0.0, None);
     let _dispatcher = ChatDispatcher::new(&manager, &engine);
-    let aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
+            let mut aelren = AelrenHerald::new(engine, vec!["mythscribe".into()]);
+            if std::env::var("SC_EXPLAIN_CONTEXT").ok().as_deref() == Some("1") {
+                aelren.explain_context = true;
+            }
 
     let user_msg = "@validator Please inspect The Ballad";
     let reply: ChatMessage = ChatDispatcher::dispatch(
