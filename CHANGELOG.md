@@ -21,3 +21,6 @@
 - CLI flag `--print-model-config` to dump resolved config (secrets redacted)
 - Example config at `config/models.example.yaml`
 - Docs for model config at `docs/reference/models-config.md`
+ - Semantic index cache with persistence + incremental rebuild
+ - CLI flags `--rebuild-index`, `--reindex <path>` for cache control
+ - ENV: `SC_DISABLE_INDEX_CACHE`, `SC_INDEX_CACHE_DIR`, `SC_REBUILD_INDEX`, `SC_REINDEX_PATH`, `SC_EMBEDDER_MODEL`, `SC_EMBEDDING_DIM`

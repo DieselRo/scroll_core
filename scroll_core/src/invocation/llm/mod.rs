@@ -16,8 +16,8 @@ pub mod factory {
     use super::{
         mock::MockLLMClient, openai::OpenAIClient, retry::RetryingClient, LLMClient, LLMError,
     };
-    use std::sync::Arc;
     use crate::models::model_registry::{ModelSpec, Provider};
+    use std::sync::Arc;
 
     /// Creates an LLM client from environment configuration.
     ///
@@ -86,11 +86,18 @@ pub mod factory {
                 let timeout_ms = std::env::var("SC_LLM_GLOBAL_TIMEOUT_MS")
                     .ok()
                     .and_then(|s| s.parse::<u64>().ok());
-                Arc::new(OpenAIClient::new(api_key, spec.model.clone(), endpoint, timeout_ms)?)
+                Arc::new(OpenAIClient::new(
+                    api_key,
+                    spec.model.clone(),
+                    endpoint,
+                    timeout_ms,
+                )?)
             }
             Provider::Anthropic => {
                 // For now, route unsupported providers to a Config error
-                return Err(LLMError::Unsupported("Anthropic provider not implemented".into()));
+                return Err(LLMError::Unsupported(
+                    "Anthropic provider not implemented".into(),
+                ));
             }
         };
 

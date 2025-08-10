@@ -42,4 +42,26 @@ Model & Cost Configuration
 - See `docs/reference/models-config.md` for provider/model selection and cost thresholds.
 
 
+## Semantic Index Cache
+
+Environment variables controlling the semantic index cache:
+
+- `SC_DISABLE_INDEX_CACHE`
+  - If set to `1`, disables loading/saving the semantic index cache.
+- `SC_INDEX_CACHE_DIR`
+  - Override cache directory (default is OS-specific cache path).
+- `SC_REBUILD_INDEX`
+  - If set to `1`, forces a full rebuild of the semantic index (ignores any cache).
+- `SC_REINDEX_PATH`
+  - If set to a specific scroll file path, forces a re-embed of that single entry.
+- `SC_EMBEDDER_MODEL`
+  - Override embedder model string recorded in the cache meta (changes here invalidate cache).
+- `SC_EMBEDDING_DIM`
+  - Override embedding dimension recorded in the cache meta (changes here invalidate cache).
+
+CLI flags:
+- `--rebuild-index` – set `SC_REBUILD_INDEX=1` for this run.
+- `--reindex <path>` – set `SC_REINDEX_PATH` to target a single scroll for reindex.
+
+
 

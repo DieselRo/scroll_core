@@ -129,7 +129,11 @@ pub fn load_scrolls_from_directory<P: AsRef<Path>>(archive_path: P) -> Result<Ve
     for path in file_list {
         match fs::read_to_string(&path) {
             Ok(raw_content) => match parser::parse_scroll(&raw_content) {
-                Ok(scroll) => loaded_scrolls.push(scroll),
+                Ok(mut scroll) => {
+                    // Persist source path into metadata for downstream indexing/fingerprints
+                    scroll.yaml_metadata.file_path = Some(path.to_string_lossy().to_string());
+                    loaded_scrolls.push(scroll)
+                }
                 Err(e) => {
                     eprintln!("⚠️ Failed to parse scroll {}: {}", path.display(), e);
                     failed_count += 1;

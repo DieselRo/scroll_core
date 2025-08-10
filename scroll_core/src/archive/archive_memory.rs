@@ -80,7 +80,8 @@ impl InMemoryArchive {
     /// Build semantic vector index for all scrolls.
     pub fn build_semantic_index(&mut self, embedder: &dyn Embedder) -> Result<(), ArchiveError> {
         let scrolls: Vec<Scroll> = self.scrolls.values().cloned().collect();
-        let index = SemanticIndex::build(&scrolls, embedder)?;
+        // Attempt warm load with incremental rebuild
+        let index = SemanticIndex::load_or_build(&scrolls, embedder)?;
         self.semantic_index = Some(index);
         Ok(())
     }

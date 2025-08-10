@@ -70,7 +70,9 @@ pub enum RegistryError {
 static GLOBAL_REGISTRY: OnceCell<std::sync::Arc<ModelRegistry>> = OnceCell::new();
 
 impl ModelRegistry {
-    pub fn set_global(reg: std::sync::Arc<ModelRegistry>) -> Result<(), std::sync::Arc<ModelRegistry>> {
+    pub fn set_global(
+        reg: std::sync::Arc<ModelRegistry>,
+    ) -> Result<(), std::sync::Arc<ModelRegistry>> {
         GLOBAL_REGISTRY.set(reg)
     }
 
@@ -89,17 +91,17 @@ impl ModelRegistry {
         let yaml_path = resolve_config_path(path);
         if let Some(p) = yaml_path {
             match std::fs::read_to_string(&p) {
-                Ok(raw) => {
-                    match serde_yaml::from_str::<ModelsConfig>(&raw) {
-                        Ok(cfg) => {
-                            source_file = Some(p.clone());
-                            if let Some(def) = cfg.default { default_spec = def; }
-                            constructs = cfg.constructs;
-                            cost_profiles = cfg.cost_profiles;
+                Ok(raw) => match serde_yaml::from_str::<ModelsConfig>(&raw) {
+                    Ok(cfg) => {
+                        source_file = Some(p.clone());
+                        if let Some(def) = cfg.default {
+                            default_spec = def;
                         }
-                        Err(e) => return Err(RegistryError::Load(e.to_string())),
+                        constructs = cfg.constructs;
+                        cost_profiles = cfg.cost_profiles;
                     }
-                }
+                    Err(e) => return Err(RegistryError::Load(e.to_string())),
+                },
                 Err(e) => return Err(RegistryError::Load(e.to_string())),
             }
         }
@@ -109,7 +111,12 @@ impl ModelRegistry {
         apply_construct_env_overrides(&mut constructs)?;
         apply_cost_env_overrides(&mut cost_profiles)?;
 
-        Ok(Self { default_spec, constructs, cost_profiles, source_file })
+        Ok(Self {
+            default_spec,
+            constructs,
+            cost_profiles,
+            source_file,
+        })
     }
 
     pub fn by_construct(&self, name: &str) -> Result<ModelSpec, RegistryError> {
@@ -144,7 +151,11 @@ impl ModelRegistry {
 fn builtin_default_spec() -> ModelSpec {
     // Keep current env-only behavior by reading the same env used by factory today
     let provider_str = std::env::var("SC_LLM_PROVIDER").ok().unwrap_or_else(|| {
-        if cfg!(test) { "mock".into() } else { "openai".into() }
+        if cfg!(test) {
+            "mock".into()
+        } else {
+            "openai".into()
+        }
     });
     let provider = match provider_str.to_lowercase().as_str() {
         "mock" => Provider::Mock,
@@ -153,16 +164,34 @@ fn builtin_default_spec() -> ModelSpec {
         _ => Provider::OpenAI,
     };
     let model = std::env::var("SC_LLM_MODEL").unwrap_or_else(|_| "gpt-4o".to_string());
-    let max_output_tokens = std::env::var("SC_LLM_MAX_OUTPUT_TOKENS").ok().and_then(|s| s.parse::<u32>().ok());
-    let temperature = std::env::var("SC_LLM_TEMPERATURE").ok().and_then(|s| s.parse::<f32>().ok());
-    ModelSpec { provider, model, max_output_tokens, temperature, extra: serde_json::Value::Object(serde_json::Map::new()) }
+    let max_output_tokens = std::env::var("SC_LLM_MAX_OUTPUT_TOKENS")
+        .ok()
+        .and_then(|s| s.parse::<u32>().ok());
+    let temperature = std::env::var("SC_LLM_TEMPERATURE")
+        .ok()
+        .and_then(|s| s.parse::<f32>().ok());
+    ModelSpec {
+        provider,
+        model,
+        max_output_tokens,
+        temperature,
+        extra: serde_json::Value::Object(serde_json::Map::new()),
+    }
 }
 
 fn resolve_config_path(path: Option<&Path>) -> Option<PathBuf> {
-    if let Some(p) = path { return Some(p.to_path_buf()); }
-    if let Ok(env_path) = std::env::var("SC_MODELS_CONFIG") { return Some(PathBuf::from(env_path)); }
+    if let Some(p) = path {
+        return Some(p.to_path_buf());
+    }
+    if let Ok(env_path) = std::env::var("SC_MODELS_CONFIG") {
+        return Some(PathBuf::from(env_path));
+    }
     let default = PathBuf::from("config/models.yaml");
-    if default.exists() { Some(default) } else { None }
+    if default.exists() {
+        Some(default)
+    } else {
+        None
+    }
 }
 
 fn apply_global_env_overrides(default: &mut ModelSpec) -> Result<(), RegistryError> {
@@ -177,20 +206,33 @@ fn apply_global_env_overrides(default: &mut ModelSpec) -> Result<(), RegistryErr
     if let Ok(model) = std::env::var("SC_LLM_MODEL") {
         default.model = model;
     }
-    if let Ok(m) = std::env::var("SC_LLM_MAX_OUTPUT_TOKENS") { default.max_output_tokens = m.parse().ok(); }
-    if let Ok(t) = std::env::var("SC_LLM_TEMPERATURE") { default.temperature = t.parse().ok(); }
+    if let Ok(m) = std::env::var("SC_LLM_MAX_OUTPUT_TOKENS") {
+        default.max_output_tokens = m.parse().ok();
+    }
+    if let Ok(t) = std::env::var("SC_LLM_TEMPERATURE") {
+        default.temperature = t.parse().ok();
+    }
     Ok(())
 }
 
 // Per-construct env names: SC_MODEL_<NAME>_PROVIDER, SC_MODEL_<NAME>_MODEL, SC_MODEL_<NAME>_MAX_OUTPUT_TOKENS, SC_MODEL_<NAME>_TEMPERATURE
-fn apply_construct_env_overrides(constructs: &mut HashMap<String, ModelSpec>) -> Result<(), RegistryError> {
+fn apply_construct_env_overrides(
+    constructs: &mut HashMap<String, ModelSpec>,
+) -> Result<(), RegistryError> {
     // scan all env vars starting with SC_MODEL_
     for (k, v) in std::env::vars() {
-        if !k.starts_with("SC_MODEL_") { continue; }
+        if !k.starts_with("SC_MODEL_") {
+            continue;
+        }
         // format: SC_MODEL_{NAME}_KEY
         let rest = &k[9..];
-        let (name, key) = match rest.rsplit_once('_') { Some((n, k)) => (n.to_string(), k.to_string()), None => continue };
-        let entry = constructs.entry(name.clone()).or_insert_with(|| builtin_default_spec());
+        let (name, key) = match rest.rsplit_once('_') {
+            Some((n, k)) => (n.to_string(), k.to_string()),
+            None => continue,
+        };
+        let entry = constructs
+            .entry(name.clone())
+            .or_insert_with(builtin_default_spec);
         match key.as_str() {
             "PROVIDER" => {
                 entry.provider = match v.to_lowercase().as_str() {
@@ -210,15 +252,26 @@ fn apply_construct_env_overrides(constructs: &mut HashMap<String, ModelSpec>) ->
 }
 
 // Env overrides for cost thresholds: global SC_COST_DAILY_USD_CAP, SC_COST_PER_REQUEST_USD_LIMIT and per-construct SC_COST_<NAME>_DAILY_USD_CAP, SC_COST_<NAME>_PER_REQUEST_USD_LIMIT
-fn apply_cost_env_overrides(costs: &mut HashMap<String, ThresholdCostProfile>) -> Result<(), RegistryError> {
+fn apply_cost_env_overrides(
+    costs: &mut HashMap<String, ThresholdCostProfile>,
+) -> Result<(), RegistryError> {
     let default = costs.entry("default".into()).or_default();
-    if let Ok(cap) = std::env::var("SC_COST_DAILY_USD_CAP") { default.daily_usd_cap = cap.parse::<f32>().ok(); }
-    if let Ok(limit) = std::env::var("SC_COST_PER_REQUEST_USD_LIMIT") { default.per_request_usd_limit = limit.parse::<f32>().ok(); }
+    if let Ok(cap) = std::env::var("SC_COST_DAILY_USD_CAP") {
+        default.daily_usd_cap = cap.parse::<f32>().ok();
+    }
+    if let Ok(limit) = std::env::var("SC_COST_PER_REQUEST_USD_LIMIT") {
+        default.per_request_usd_limit = limit.parse::<f32>().ok();
+    }
     for (k, v) in std::env::vars() {
-        if !k.starts_with("SC_COST_") { continue; }
+        if !k.starts_with("SC_COST_") {
+            continue;
+        }
         // SC_COST_{NAME}_KEY
         let rest = &k[8..];
-        let (name, key) = match rest.rsplit_once('_') { Some((n, k)) => (n.to_string(), k.to_string()), None => continue };
+        let (name, key) = match rest.rsplit_once('_') {
+            Some((n, k)) => (n.to_string(), k.to_string()),
+            None => continue,
+        };
         let entry = costs.entry(name.clone()).or_default();
         match key.as_str() {
             "DAILY_USD_CAP" => entry.daily_usd_cap = v.parse::<f32>().ok(),
@@ -248,7 +301,9 @@ mod tests {
     fn precedence_env_over_yaml_over_default() {
         let dir = tempdir().unwrap();
         let yaml = dir.path().join("models.yaml");
-        fs::write(&yaml, r#"
+        fs::write(
+            &yaml,
+            r#"
 version: 1
 default:
   provider: openai
@@ -262,7 +317,9 @@ cost_profiles:
     daily_usd_cap: 5.0
   Mythscribe:
     per_request_usd_limit: 0.2
-"#).unwrap();
+"#,
+        )
+        .unwrap();
 
         std::env::set_var("SC_LLM_PROVIDER", "mock");
         std::env::set_var("SC_MODEL_Mythscribe_MODEL", "override-model");
