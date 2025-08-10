@@ -1,11 +1,11 @@
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
 use crate::entities::open_threads as ot;
+use crate::notifications::notify_overdue_thread;
 use crate::threads::dedupe_service::DedupeService;
 use crate::threads::thread_events_service::ThreadEventsService;
 use crate::threads::thread_state_service::ThreadStateService;
 use crate::threads::types::{Priority, ThreadEventType, ThreadStatus};
-use crate::notifications::notify_overdue_thread;
 
 fn validator_key(scroll_path: &str) -> String {
     format!("VALIDATOR|{}", scroll_path)
@@ -53,10 +53,42 @@ impl<'a> ThreadAutocapture<'a> {
         let svc = ThreadStateService::new(self.conn);
         for t in existing {
             let _ = svc
-                .update_status(&t.id, ThreadStatus::Closed, Some("validator pass"), "validator")
+                .update_status(
+                    &t.id,
+                    ThreadStatus::Closed,
+                    Some("validator pass"),
+                    "validator",
+                )
                 .await?;
         }
         Ok(())
+    }
+
+    pub async fn on_validator_contradiction(
+        &self,
+        scroll_path: &str,
+        code: Option<&str>,
+        title: &str,
+    ) -> Result<String, sea_orm::DbErr> {
+        let due = chrono::Utc::now() + chrono::Duration::hours(48);
+        let dedupe = if let Some(c) = code {
+            format!("CONTRADICTION|{}|{}", scroll_path, c)
+        } else {
+            validator_key(scroll_path)
+        };
+        let dd = DedupeService::new(self.conn);
+        dd.dedupe_or_open(
+            scroll_path,
+            &dedupe,
+            title,
+            None,
+            Priority::Medium,
+            None,
+            Some(due),
+            Some("VALIDATOR"),
+            "validator",
+        )
+        .await
     }
 
     /// Emits a nudge system note for blocked or overdue threads (no-op placeholder for future automation)
@@ -65,22 +97,29 @@ impl<'a> ThreadAutocapture<'a> {
         let mut count = 0usize;
         let events = ThreadEventsService::new(self.conn);
         let threads = ot::Entity::find()
-            .filter(
-                ot::Column::Status
-                    .is_in(vec![ThreadStatus::Blocked.to_string(), ThreadStatus::Open.to_string(), ThreadStatus::InProgress.to_string()]),
-            )
+            .filter(ot::Column::Status.is_in(vec![
+                ThreadStatus::Blocked.to_string(),
+                ThreadStatus::Open.to_string(),
+                ThreadStatus::InProgress.to_string(),
+            ]))
             .all(self.conn)
             .await?;
         for t in threads {
-            let overdue = t
-                .due_at
-                .map(|d| d < now)
-                .unwrap_or(false);
+            let overdue = t.due_at.map(|d| d < now).unwrap_or(false);
             let blocked = t.status == ThreadStatus::Blocked.to_string();
             if blocked || overdue {
-                let reason = if blocked { "nudge: blocked" } else { "nudge: overdue" };
+                let reason = if blocked {
+                    "nudge: blocked"
+                } else {
+                    "nudge: overdue"
+                };
                 let _ = events
-                    .record_event(&t.id, ThreadEventType::SystemNote, "autocapture", Some(reason))
+                    .record_event(
+                        &t.id,
+                        ThreadEventType::SystemNote,
+                        "autocapture",
+                        Some(reason),
+                    )
                     .await?;
                 if overdue {
                     let _ = notify_overdue_thread(&t.id, &t.title, &t.scroll_path, Some(reason));
@@ -91,4 +130,3 @@ impl<'a> ThreadAutocapture<'a> {
         Ok(count)
     }
 }
-

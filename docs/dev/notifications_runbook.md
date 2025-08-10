@@ -10,10 +10,10 @@ audience: dev, operator
 
 - ENV:
   - `SC_NOTIFICATIONS_ENABLED=true|false` (default: true)
-  - `SC_NOTIFICATIONS_SINKS=stdout,log,slack` (default: stdout)
+  - `SC_NOTIFICATIONS_SINKS=stdout,log,slack` (default: stdout,log)
   - `SC_NOTIFICATIONS_RATE_MIN=10` (default: 10)
   - `SC_SLACK_WEBHOOK_URL=<url>` (required when `slack` sink is used)
-- Build-time: enable feature `notifier_slack` to compile Slack sink.
+- Build-time: enable feature `notifier_slack` to compile Slack sink (disabled by default; tests use stdout/log only).
 
 ## Integration Points
 

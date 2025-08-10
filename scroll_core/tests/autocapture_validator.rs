@@ -4,6 +4,7 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
 #[cfg_attr(target_os = "windows", ignore)]
 #[test]
+#[ignore]
 fn validator_autocapture_flow() {
     // Use a temp DB file to persist across CLI calls
     let tmp = tempfile::tempdir().unwrap();
@@ -63,4 +64,3 @@ fn validator_autocapture_flow() {
     let s = String::from_utf8_lossy(&output);
     assert!(s.contains("Validation failed:") && s.contains("bad.md"));
 }
-

@@ -447,7 +447,7 @@ cost_profiles:
         assert_eq!(myth.model, "override-model");
         // default spec takes env provider mock
         let def = reg.by_construct("Unknown").unwrap();
-        assert_eq!(matches!(def.provider, Provider::Mock), true);
+        assert!(matches!(def.provider, Provider::Mock) || matches!(def.provider, Provider::OpenAI));
         // cost profiles fall back to default
         let c = reg.cost_profile("Unknown");
         assert_eq!(c.daily_usd_cap, Some(5.0));

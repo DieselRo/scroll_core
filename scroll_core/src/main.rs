@@ -5,12 +5,11 @@
 #![warn(unused_imports)]
 
 use anyhow::Result;
-use std::str::FromStr;
 use std::path::Path;
+use std::str::FromStr;
 
 use clap::{Parser, Subcommand};
 use dotenvy::dotenv;
-use migration::MigratorTrait;
 use scroll_core::chat::chat_dispatcher::ChatDispatcher;
 use scroll_core::cli::{chat::run_chat, theme::ThemeKind};
 use scroll_core::models::model_registry::ModelRegistry;
@@ -375,7 +374,14 @@ fn main() -> Result<()> {
             std::env::var("SCROLL_CORE_ARCHIVE_DIR").unwrap_or_else(|_| "scrolls".into());
         let path = Path::new(&archive_dir);
         ensure_archive_dir(path)?;
-        let action_eff = action_positional.as_ref().or(action.as_ref()).ok_or_else(|| anyhow::anyhow!("ritual action is required (validate | validate-all | write | seal)"))?;
+        let action_eff = action_positional
+            .as_ref()
+            .or(action.as_ref())
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "ritual action is required (validate | validate-all | write | seal)"
+                )
+            })?;
         match action_eff.as_str() {
             "validate" => {
                 let f = file
@@ -445,18 +451,16 @@ fn main() -> Result<()> {
     }) = &cli.command
     {
         // Ensure DB is ready
-        let db_url = std::env::var("DATABASE_URL")
-            .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+        let db_url =
+            std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
         let rt = tokio::runtime::Runtime::new()?;
-        rt.block_on(async {
-            let _ = scroll_core::sessions::database::init_sqlite_connection(&db_url).await;
-            let _ =
-                migration::Migrator::up(scroll_core::sessions::database::get_db_connection(), None)
-                    .await;
-        });
+        let conn = rt.block_on(async {
+            scroll_core::sessions::database::ensure_ready_with_url(&db_url)
+                .await
+                .map_err(|e| anyhow::anyhow!(e.to_string()))
+        })?;
         use scroll_core::threads::thread_state_service::ThreadStateService;
         use scroll_core::threads::types::{Priority, ThreadStatus};
-        let conn = scroll_core::sessions::database::get_db_connection().clone();
         match action.as_str() {
             "create" => {
                 let t = title
@@ -470,16 +474,17 @@ fn main() -> Result<()> {
                 } else {
                     Priority::Medium
                 };
-                let tags_vec: Option<Vec<String>> = tags
-                    .as_ref()
-                    .map(|s| s.split(',').map(|t| t.trim().to_string()).collect::<Vec<String>>());
+                let tags_vec: Option<Vec<String>> = tags.as_ref().map(|s| {
+                    s.split(',')
+                        .map(|t| t.trim().to_string())
+                        .collect::<Vec<String>>()
+                });
                 let due = if let Some(d) = due_at.as_ref() {
                     Some(
                         chrono::DateTime::parse_from_rfc3339(d)
-                            .map_err(|e| anyhow::anyhow!(format!(
-                                "invalid --due-at (RFC3339): {}",
-                                e
-                            )))?
+                            .map_err(|e| {
+                                anyhow::anyhow!(format!("invalid --due-at (RFC3339): {}", e))
+                            })?
                             .with_timezone(&chrono::Utc),
                     )
                 } else {
@@ -487,18 +492,9 @@ fn main() -> Result<()> {
                 };
                 let svc = ThreadStateService::new(&conn);
                 let rec = tokio::runtime::Runtime::new()?.block_on(async {
-                    svc.create(
-                        s,
-                        t,
-                        assignee.as_deref(),
-                        prio,
-                        tags_vec,
-                        due,
-                        None,
-                        "cli",
-                    )
-                    .await
-                    .map_err(|e| anyhow::anyhow!(e.to_string()))
+                    svc.create(s, t, assignee.as_deref(), prio, tags_vec, due, None, "cli")
+                        .await
+                        .map_err(|e| anyhow::anyhow!(e.to_string()))
                 })?;
                 println!(
                     "created: {} | {} | {} | {} | prio={} | tags={}",
@@ -519,21 +515,24 @@ fn main() -> Result<()> {
                     None
                 };
                 let who = if *mine {
-                    std::env::var("USER").ok().or_else(|| std::env::var("USERNAME").ok())
+                    std::env::var("USER")
+                        .ok()
+                        .or_else(|| std::env::var("USERNAME").ok())
                 } else {
                     None
                 };
                 let prio = if let Some(p) = list_priority.as_ref() {
                     Some(Priority::from_str(p).map_err(|e| anyhow::anyhow!(e))?)
-                } else { None };
-                let tags_vec: Option<Vec<String>> = list_tags
-                    .as_ref()
-                    .map(|s| s
-                        .split(',')
+                } else {
+                    None
+                };
+                let tags_vec: Option<Vec<String>> = list_tags.as_ref().map(|s| {
+                    s.split(',')
                         .map(|t| t.trim().to_ascii_lowercase())
                         .filter(|t| !t.is_empty())
                         .map(|t| t.to_string())
-                        .collect::<Vec<String>>());
+                        .collect::<Vec<String>>()
+                });
                 let rows = tokio::runtime::Runtime::new()?.block_on(async {
                     svc.list(
                         s_parsed,
@@ -558,7 +557,9 @@ fn main() -> Result<()> {
                         r.created_at,
                         r.priority,
                         r.assignee.unwrap_or_default(),
-                        r.due_at.map(|d| d.to_rfc3339()).unwrap_or_else(|| "".into())
+                        r.due_at
+                            .map(|d| d.to_rfc3339())
+                            .unwrap_or_else(|| "".into())
                     );
                 }
             }
@@ -612,23 +613,21 @@ fn main() -> Result<()> {
 
     if let Some(Commands::Context { limit, details }) = &cli.command {
         // Ensure DB is ready
-        let db_url = std::env::var("DATABASE_URL")
-            .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
+        let db_url =
+            std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
         let rt = tokio::runtime::Runtime::new()?;
-        rt.block_on(async {
-            let _ = scroll_core::sessions::database::init_sqlite_connection(&db_url).await;
-            let _ =
-                migration::Migrator::up(scroll_core::sessions::database::get_db_connection(), None)
-                    .await;
-        });
+        let conn = rt.block_on(async {
+            scroll_core::sessions::database::ensure_ready_with_url(&db_url)
+                .await
+                .map_err(|e| anyhow::anyhow!(e.to_string()))
+        })?;
         use scroll_core::invocation::context_ledger::{candidate, frame};
         use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QuerySelect};
-        let conn = scroll_core::sessions::database::get_db_connection().clone();
         let frames: Vec<frame::Model> = tokio::runtime::Runtime::new()?.block_on(async move {
             frame::Entity::find()
                 .order_by_desc(frame::Column::Timestamp)
                 .limit(*limit as u64)
-                .all(&conn)
+                .all(conn)
                 .await
                 .unwrap_or_default()
         });
@@ -725,7 +724,8 @@ fn main() -> Result<()> {
                     .unwrap_or_else(|_| "sqlite://scroll_core.db?mode=rwc".into());
                 if let Ok(rt) = tokio::runtime::Runtime::new() {
                     rt.block_on(async {
-                        let _ = scroll_core::sessions::database::ensure_ready_with_url(&db_url).await;
+                        let _ =
+                            scroll_core::sessions::database::ensure_ready_with_url(&db_url).await;
                     });
                 }
             }

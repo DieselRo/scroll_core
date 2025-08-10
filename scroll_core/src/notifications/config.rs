@@ -9,7 +9,7 @@ impl Default for NotificationsConfig {
     fn default() -> Self {
         Self {
             enabled: true,
-            sinks: vec!["stdout".into()],
+            sinks: vec!["stdout".into(), "log".into()],
             rate_limit_minutes: 10,
         }
     }
@@ -26,9 +26,16 @@ pub fn load_from_env() -> NotificationsConfig {
         .unwrap_or(10);
     let sinks = std::env::var("SC_NOTIFICATIONS_SINKS")
         .ok()
-        .map(|s| s.split(',').map(|t| t.trim().to_string()).filter(|t| !t.is_empty()).collect())
-        .unwrap_or_else(|| vec!["stdout".into()]);
-    NotificationsConfig { enabled, sinks, rate_limit_minutes }
+        .map(|s| {
+            s.split(',')
+                .map(|t| t.trim().to_string())
+                .filter(|t| !t.is_empty())
+                .collect()
+        })
+        .unwrap_or_else(|| vec!["stdout".into(), "log".into()]);
+    NotificationsConfig {
+        enabled,
+        sinks,
+        rate_limit_minutes,
+    }
 }
-
-
