@@ -85,7 +85,7 @@ Acceptance: chat stable, semantic queries live, single DB direction chosen. ✅
 - Ambient triggers using tags/emotion thresholds.
 
 ## Phase 4 — Dynamic Mirrors (Week 4)
-- `open_threads` API + CLI rituals; contradiction detection stub.
+- `open_threads` API + CLI rituals; contradiction scanner for duplicate titles/path collisions.
 - CLI shows summaries post-validate/write.
 
 ## Phase 5 — Context Engine Upgrades (Week 4–5)

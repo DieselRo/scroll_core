@@ -91,6 +91,29 @@ impl<'a> ThreadAutocapture<'a> {
         .await
     }
 
+    pub async fn on_doc_contradiction(
+        &self,
+        scroll_path: &str,
+        code: &str,
+        title: &str,
+    ) -> Result<String, sea_orm::DbErr> {
+        let due = chrono::Utc::now() + chrono::Duration::hours(48);
+        let dedupe = format!("CONTRADUPE|{}|{}", scroll_path, code);
+        let dd = DedupeService::new(self.conn);
+        dd.dedupe_or_open(
+            scroll_path,
+            &dedupe,
+            title,
+            None,
+            Priority::Medium,
+            None,
+            Some(due),
+            Some("VALIDATOR"),
+            "validator",
+        )
+        .await
+    }
+
     /// Emits a nudge system note for blocked or overdue threads (no-op placeholder for future automation)
     pub async fn nudge_blocked_or_overdue(&self) -> Result<usize, sea_orm::DbErr> {
         let now = chrono::Utc::now();
