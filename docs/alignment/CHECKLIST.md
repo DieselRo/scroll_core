@@ -27,8 +27,8 @@
 - [x] Ambient triggers (tags/emotion thresholds)
 
 ## Phase 4
-- [ ] Open Threads API + CLI
-- [ ] Contradiction detection stub
+- [x] Open Threads API + CLI
+- [x] Contradiction scanner (duplicate titles/path collisions)
 
 ## Phase 5
 - [x] Context thresholds configurable; decisions logged
