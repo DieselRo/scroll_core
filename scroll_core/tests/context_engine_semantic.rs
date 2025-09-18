@@ -29,7 +29,12 @@ fn test_context_engine_semantic_recall() {
         .invocation_phrase("Invoke")
         .sigil("🔮")
         .build();
-    let thresholds = ContextThresholds { max_context_tokens: 3000, min_relevance_score: 0.0, recency_half_life_hours: 48.0, max_items: 12 };
+    let thresholds = ContextThresholds {
+        max_context_tokens: 3000,
+        min_relevance_score: 0.0,
+        recency_half_life_hours: 48.0,
+        max_items: 12,
+    };
     let engine = ContextFrameEngine::new(&archive, ContextMode::Broad).with_thresholds(thresholds);
     let (ctx, _) = engine.build_context(&trigger);
     assert!(ctx.scrolls.iter().any(|s| s.title == "Rust Guide"));

@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-use chrono::{DateTime, Duration, Utc};
 use super::types::{NotificationEvent, NotificationKind};
+use chrono::{DateTime, Duration, Utc};
+use std::collections::HashMap;
 
 #[derive(Default)]
 pub struct RateLimiter {
@@ -9,7 +9,11 @@ pub struct RateLimiter {
 }
 
 impl RateLimiter {
-    pub fn new() -> Self { Self { last_sent: HashMap::new() } }
+    pub fn new() -> Self {
+        Self {
+            last_sent: HashMap::new(),
+        }
+    }
 
     pub fn allow(&mut self, event: &NotificationEvent, minutes: u64) -> bool {
         let key = (event.thread_id.clone(), event.kind);
@@ -32,12 +36,14 @@ pub struct FlapSuppressor {
 
 impl FlapSuppressor {
     pub fn record_status_change(&mut self, thread_id: &str) {
-        self.last_status_change.insert(thread_id.to_string(), Utc::now());
+        self.last_status_change
+            .insert(thread_id.to_string(), Utc::now());
     }
 
     pub fn suppress(&self, thread_id: &str, window_minutes: u64) -> bool {
         if let Some(ts) = self.last_status_change.get(thread_id) {
-            return Utc::now().signed_duration_since(*ts) < Duration::minutes(window_minutes as i64);
+            return Utc::now().signed_duration_since(*ts)
+                < Duration::minutes(window_minutes as i64);
         }
         false
     }
@@ -51,5 +57,3 @@ pub fn should_notify(event: &NotificationEvent) -> bool {
         NotificationKind::Overdue => true,
     }
 }
-
-

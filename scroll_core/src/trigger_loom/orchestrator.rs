@@ -25,6 +25,12 @@ pub struct AmbientOrchestrator {
     pub config: AmbientOrchestratorConfig,
 }
 
+impl Default for AmbientOrchestrator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AmbientOrchestrator {
     pub fn new() -> Self {
         Self {

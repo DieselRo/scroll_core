@@ -65,7 +65,10 @@ pub async fn ensure_ready_with_url(db_url: &str) -> Result<&'static DbConn, DbEr
 pub async fn ensure_ready_from_env() -> Result<&'static DbConn, DbErr> {
     let raw = std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://scroll_core.db".into());
     // Normalize: strip query
-    let url = match raw.find('?') { Some(i) => &raw[..i], None => &raw };
+    let url = match raw.find('?') {
+        Some(i) => &raw[..i],
+        None => &raw,
+    };
     ensure_ready_with_url(url).await
 }
 

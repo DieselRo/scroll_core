@@ -262,8 +262,7 @@ fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
 }
 
 fn write_json_atomic<T: serde::Serialize>(path: &Path, value: &T) -> std::io::Result<()> {
-    let data = serde_json::to_vec_pretty(value)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+    let data = serde_json::to_vec_pretty(value).map_err(|e| std::io::Error::other(e))?;
     write_atomic(path, &data)
 }
 

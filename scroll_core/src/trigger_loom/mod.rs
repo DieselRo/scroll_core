@@ -28,6 +28,6 @@ pub mod emotional_state;
 pub mod engine;
 pub mod glyph_matcher;
 pub mod loom;
+pub mod orchestrator;
 pub mod recursion_control;
 pub mod trigger_loop;
-pub mod orchestrator;

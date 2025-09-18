@@ -1,5 +1,5 @@
-use anyhow::Result;
 use super::types::NotificationEvent;
+use anyhow::Result;
 
 pub trait Notifier: Send + Sync {
     fn send(&self, event: &NotificationEvent) -> Result<()>;
@@ -47,7 +47,9 @@ pub struct SlackNotifier {
 #[cfg(feature = "notifier_slack")]
 impl SlackNotifier {
     pub fn from_env() -> Option<Self> {
-        std::env::var("SC_SLACK_WEBHOOK_URL").ok().map(|wh| Self { webhook: wh })
+        std::env::var("SC_SLACK_WEBHOOK_URL")
+            .ok()
+            .map(|wh| Self { webhook: wh })
     }
 }
 
@@ -68,5 +70,3 @@ impl Notifier for SlackNotifier {
         Ok(())
     }
 }
-
-

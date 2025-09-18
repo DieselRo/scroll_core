@@ -1,6 +1,6 @@
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
-use uuid::Uuid;
 use std::str::FromStr;
+use uuid::Uuid;
 
 use crate::entities::open_threads as ot;
 use crate::notifications::{notify_event, NotificationEvent, NotificationKind};
@@ -50,7 +50,12 @@ impl<'a> ThreadStateService<'a> {
         ot::Entity::insert(rec).exec(self.conn).await?;
         let events = ThreadEventsService::new(self.conn);
         let ev = events
-            .record_event(&id, ThreadEventType::SystemNote, actor, Some("thread created"))
+            .record_event(
+                &id,
+                ThreadEventType::SystemNote,
+                actor,
+                Some("thread created"),
+            )
             .await?;
         // Update last_event_id
         let mut loaded = ot::Entity::find_by_id(id.clone())
@@ -64,7 +69,12 @@ impl<'a> ThreadStateService<'a> {
         loaded.last_event_id = Some(ev_id);
 
         // Send notification: ThreadCreated
-        let mut note = NotificationEvent::new(NotificationKind::ThreadCreated, id.clone(), title.to_string(), scroll_path.to_string());
+        let mut note = NotificationEvent::new(
+            NotificationKind::ThreadCreated,
+            id.clone(),
+            title.to_string(),
+            scroll_path.to_string(),
+        );
         note.assignee = assignee.map(|s| s.to_string());
         note.priority = Some(priority.to_string());
         let _ = notify_event(note);
@@ -91,7 +101,10 @@ impl<'a> ThreadStateService<'a> {
         }
         let mut active: ot::ActiveModel = model.clone().into();
         active.status = Set(new_status.to_string());
-        if matches!((old_status, new_status), (ThreadStatus::Closed, ThreadStatus::Open)) {
+        if matches!(
+            (old_status, new_status),
+            (ThreadStatus::Closed, ThreadStatus::Open)
+        ) {
             active.reopened_count = Set(model.reopened_count + 1);
         }
         active.updated_at = Set(chrono::Utc::now());
@@ -178,7 +191,12 @@ impl<'a> ThreadStateService<'a> {
 
         let events = ThreadEventsService::new(self.conn);
         let ev = events
-            .record_event(id, ThreadEventType::SystemNote, actor, Some(&format!("priority={}", priority)))
+            .record_event(
+                id,
+                ThreadEventType::SystemNote,
+                actor,
+                Some(&format!("priority={}", priority)),
+            )
             .await?;
         active.last_event_id = Set(Some(ev.id));
         let updated = active.update(self.conn).await?;
@@ -210,7 +228,11 @@ impl<'a> ThreadStateService<'a> {
             .ok_or_else(|| sea_orm::DbErr::RecordNotFound(format!("thread {} not found", id)))?;
         let mut active: ot::ActiveModel = model.into();
         let normalized = tags_to_db(&normalize_tags(tags));
-        active.tags = Set(if normalized.is_empty() { None } else { Some(normalized.clone()) });
+        active.tags = Set(if normalized.is_empty() {
+            None
+        } else {
+            Some(normalized.clone())
+        });
         active.updated_at = Set(chrono::Utc::now());
 
         let events = ThreadEventsService::new(self.conn);
@@ -257,19 +279,27 @@ impl<'a> ThreadStateService<'a> {
             q = q.filter(ot::Column::DueAt.lte(chrono::Utc::now()));
             q = q.filter(ot::Column::Status.ne(ThreadStatus::Closed.to_string()));
         }
-        q = q.order_by_asc(ot::Column::CreatedAt).order_by_asc(ot::Column::Id);
+        q = q
+            .order_by_asc(ot::Column::CreatedAt)
+            .order_by_asc(ot::Column::Id);
         if let Some(key) = sort {
             match key {
                 "created" => {
-                    q = q.order_by_asc(ot::Column::CreatedAt).order_by_asc(ot::Column::Id);
+                    q = q
+                        .order_by_asc(ot::Column::CreatedAt)
+                        .order_by_asc(ot::Column::Id);
                 }
                 "updated" => {
-                    q = q.order_by_desc(ot::Column::UpdatedAt).order_by_asc(ot::Column::Id);
+                    q = q
+                        .order_by_desc(ot::Column::UpdatedAt)
+                        .order_by_asc(ot::Column::Id);
                 }
                 "priority" => {
                     // ORDER BY priority custom mapping: HIGH > MEDIUM > LOW
                     // Use simple desc alphabetical since our labels sort H > M > L by default
-                    q = q.order_by_desc(ot::Column::Priority).order_by_asc(ot::Column::CreatedAt);
+                    q = q
+                        .order_by_desc(ot::Column::Priority)
+                        .order_by_asc(ot::Column::CreatedAt);
                 }
                 _ => {}
             }

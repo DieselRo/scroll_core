@@ -114,13 +114,13 @@ impl<'a> ContextFrameEngine<'a> {
             .archive
             .query_semantic(&query, related.len().max(self.max_scrolls * 2))
             .into_iter()
-            .filter_map(|(s, score)| {
+            .map(|(s, score)| {
                 let age_hours = (now
                     .signed_duration_since(s.origin.last_modified)
                     .num_seconds()
                     .max(1) as f32)
                     / 3600.0;
-                Some((s, score, age_hours))
+                (s, score, age_hours)
             })
             .collect();
         // If semantic results empty (e.g., Narrow mode), synthesize candidates from related list with neutral score
@@ -176,7 +176,7 @@ impl<'a> ContextFrameEngine<'a> {
                     candidate_path: s.yaml_metadata.file_path.clone(),
                     included: true,
                     reason: reason.as_str().into(),
-                    score: score as f32,
+                    score: score,
                     recency_hours: age_h,
                     running_tokens,
                     max_tokens: self.thresholds.max_context_tokens,
@@ -189,7 +189,7 @@ impl<'a> ContextFrameEngine<'a> {
                     candidate_path: s.yaml_metadata.file_path.clone(),
                     included: false,
                     reason: reason.as_str().into(),
-                    score: score as f32,
+                    score: score,
                     recency_hours: age_h,
                     running_tokens,
                     max_tokens: self.thresholds.max_context_tokens,
@@ -200,10 +200,9 @@ impl<'a> ContextFrameEngine<'a> {
         let elapsed = start.elapsed().as_millis();
         #[cfg(feature = "metrics")]
         {
-            use metrics::{counter, histogram};
-            histogram!("context.build_ms", elapsed as f64);
-            counter!("context.included", included as u64);
-            counter!("context.excluded", excluded as u64);
+            metrics::histogram!("context.build_ms").record(elapsed as f64);
+            metrics::counter!("context.included").increment(included as u64);
+            metrics::counter!("context.excluded").increment(excluded as u64);
         }
 
         let summary = ContextFrameSummary {

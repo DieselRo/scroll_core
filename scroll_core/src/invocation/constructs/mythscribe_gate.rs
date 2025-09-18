@@ -71,10 +71,7 @@ impl OrchestratedConstruct for MythscribeGate {
                         let _ = ledger.try_log(event);
                     }
                 } else {
-                    println!(
-                        "[mythscribe_gate] demo invoke {:?}",
-                        msg.payload
-                    );
+                    println!("[mythscribe_gate] demo invoke {:?}", msg.payload);
                 }
             }
         });
