@@ -55,7 +55,7 @@ pub fn validate_scroll(metadata: &YamlMetadata) -> Result<(), String> {
                     }
                     Err(msg) => {
                         if let Some(rest) = msg.strip_prefix("CONTRADICTION:") {
-                            let mut parts = rest.trim().split_whitespace();
+                            let mut parts = rest.split_whitespace();
                             let code = parts.next();
                             let title = format!("Contradiction: {}", metadata.title);
                             let _ = ac.on_validator_contradiction(&canon, code, &title).await;
@@ -66,7 +66,7 @@ pub fn validate_scroll(metadata: &YamlMetadata) -> Result<(), String> {
                     }
                 }
             };
-            let _ = rt.block_on(fut);
+            rt.block_on(fut);
         }
     }
     result

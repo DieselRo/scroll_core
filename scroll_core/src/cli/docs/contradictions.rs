@@ -193,7 +193,7 @@ pub fn doc_scan_contradictions(fix: bool) -> Result<()> {
                         }
                     }
                 };
-                let _ = rt.block_on(fut);
+                rt.block_on(fut);
             }
         }
     }
