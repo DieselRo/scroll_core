@@ -1,4 +1,4 @@
-//! The ContextFrameEngine assembles relevant scrolls and history before an invocation runs.
+﻿//! The ContextFrameEngine assembles relevant scrolls and history before an invocation runs.
 //! It queries the archive and access logs to construct a rich ConstructContext.
 //! See [ContextFrameEngine](../../AGENTS.md#contextframeengine) in the construct directory.
 //=========================================
