@@ -1,6 +1,6 @@
 # Scroll Core – Implementation Notes
 
-This crate implements the runtime for The Archive. For the vision/spec, see the `scrolls/` directory. For ongoing alignment work, see `docs/alignment/` at the repo root.
+This crate implements the runtime for The Archive. For the vision/spec, see `scroll_core/docs/scrolls` for lore and specs. For ongoing alignment work, see `docs/alignment/` at the repo root.
 
 Key entry points:
 - `src/main.rs`: CLI entry
@@ -38,4 +38,5 @@ the database has not been initialised.
 ### Rollback Steps
 
 - Revert to the previous per‑call ledger write path by removing the `with_ledger(...)` injection on `InvocationManager` and restoring the former thread/runtime spawn blocks.
+
 

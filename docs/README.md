@@ -15,9 +15,9 @@ Start here. This is the portal to all Scroll Core docs.
 
 ## Concepts (The Archive)
 - Archive overview: [docs/concepts/archive.md](concepts/archive.md)
-- Glossary (mythic ↔ engineering): [docs/glossary/archive-glossary.md](glossary/archive-glossary.md)
+- Glossary (mythic ?+" engineering): [docs/glossary/archive-glossary.md](glossary/archive-glossary.md)
 
-## Architecture → Runtime
+## Architecture ?+' Runtime
 - System overview: [docs/architecture/system-overview.md](architecture/system-overview.md)
 - Invocation engine: [docs/architecture/runtime/invocation-engine.md](architecture/runtime/invocation-engine.md)
 - Constructs registry & bus: [docs/architecture/runtime/constructs.md](architecture/runtime/constructs.md)
@@ -39,6 +39,11 @@ Start here. This is the portal to all Scroll Core docs.
 - Progress log: [docs/alignment/PROGRESS.md](alignment/PROGRESS.md)
 - Checklist: [docs/alignment/CHECKLIST.md](alignment/CHECKLIST.md)
 
+## Agent enablement
+- Global protocol: [docs/AGENT_PROTOCOL.md](AGENT_PROTOCOL.md)
+- Sprint snapshot & next actions: [docs/alignment/HANDOFF.md](alignment/HANDOFF.md)
+- Session logs: `docs/dev_logs/` (create or append per the protocol)
+
 ## Reference
 - Configuration (env vars): [docs/reference/config.md](reference/config.md)
 - Document index: [docs/reference/doc-index.md](reference/doc-index.md)
@@ -52,4 +57,3 @@ This folder collects reference material for Scroll Core. The most relevant files
 - [Dev-Container Setup](dev_setup.md)
 - [CI Pipeline SOP](devops/ci_pipeline.md)
 - [Architecture Overview](module_map.md)
-

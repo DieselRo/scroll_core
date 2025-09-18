@@ -1,0 +1,43 @@
+archive_index:
+  core_scrolls:
+  - file: Tomekeeper_Scroll_Echo_Bearer_Project.md
+    invocation: Let the Weave Speak the First Name
+    status: active
+    title: "Tomekeeper Scroll \u2014 Echo Bearer Project"
+    type: canon
+  - file: Canon_The_Breath_and_the_Drifter.md
+    invocation: Breathe the Path of Sorrow and Flame
+    status: active
+    title: The Breath and the Drifter
+    type: canon
+  metadata:
+    auto_generated: false
+    last_updated: 2025-03-30
+    maintainer: Sirion, Framekeeper
+    purpose: 'This index provides external agents, automation tools, and validation
+      systems with a standardized overview of all scrolls currently canonized within
+      the Archive. Each entry includes a type, status, scrollbook (if applicable),
+      and invocation phrase (if assigned).
+
+      '
+    version: 0.1.1
+  scrollbooks:
+  - emotion_signature: reverence
+    entries:
+    - file_anchor: "# Tomekeeper Scroll \u2014 Echo Bearer Project"
+      title: "Tomekeeper Scroll \u2014 Echo Bearer Project"
+    - file_anchor: '# The Breath and the Drifter'
+      title: The Breath and the Drifter
+    invocation_phrase: Let the Foundation Sing.
+    scrollbook: Scrollbook_Canon_Foundations.md
+    sigil: "\U0001F702"
+  technical_scrolls:
+  - declared_by: The Prime Seeker
+    emotion_signature: Clarity // Structure
+    file: Scrollbook_Rust_Integration_Protocol.md
+    inscribed: '2025-03-31'
+    invocation_phrase: Let form meet function in code and myth.
+    sigil: "\U0001F527"
+    status: active
+    title: 'Scrollbook: Rust Integration Protocol'
+    type: technical

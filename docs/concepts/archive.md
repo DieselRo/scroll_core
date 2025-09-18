@@ -8,8 +8,10 @@ audience: user, dev
 
 The Archive is the canon of scrolls and artifacts that shape system behavior.
 
-- Location: defaults to `scrolls/` (configurable)
+- Location: defaults to `scroll_core/docs/scrolls` (configurable)
 - Structure: narrative scrolls, system prompts, shared references
 - Operations: validate, write, seal, and index via CLI rituals
+
+
 
 

@@ -58,4 +58,5 @@ emotion_signature: { tone: calm, resonance: soft }
 ---
 ```
 
-Place the scroll in your `scrolls/` directory to enable the pulse.
+Place the scroll alongside the canonical archive in `scroll_core/docs/scrolls` (or your custom archive directory) to enable the pulse.
+

@@ -11,7 +11,7 @@ Common recipes for working with open threads via the CLI.
 ## Create a thread
 
 ```
-cargo run -- open-threads --action create --title "Demo" --scroll scrolls/a.md --tags docs,bug --due-at 2025-12-24T00:00:00Z
+cargo run -- open-threads --action create --title "Demo" --scroll scroll_core/docs/scrolls/demo.md --tags docs,bug --due-at 2025-12-24T00:00:00Z
 ```
 
 ## List with filters
@@ -36,3 +36,4 @@ cargo run -- open-threads --action nudge
 ### Windows hints
 
 Use an absolute SQLite URL such as `sqlite:///C:/dev/scroll_core/scroll_core.db` and `--mine` falls back to the `USERNAME` environment variable when `USER` is not set.
+
