@@ -13,9 +13,9 @@ pub mod construct_ai;
 pub mod constructs;
 pub mod core;
 pub mod database;
+pub mod entities;
 pub mod errors;
 pub mod events;
-pub mod entities;
 pub mod invocation;
 // New provider-agnostic LLM interface
 pub mod invocation_llm_alias {
@@ -24,6 +24,7 @@ pub mod invocation_llm_alias {
 pub mod memory;
 pub mod metrics;
 pub mod models;
+pub mod notifications;
 pub mod orchestra;
 pub mod parser;
 pub mod runner;
@@ -35,12 +36,11 @@ pub mod state_manager;
 pub mod system;
 #[cfg(feature = "metrics")]
 pub mod telemetry;
+pub mod threads;
 pub mod tools;
 pub mod tracing;
 pub mod trigger_loom;
-pub mod notifications;
 pub mod validator;
-pub mod threads;
 
 pub use cache_manager::CacheManager;
 pub use errors::MetricError;

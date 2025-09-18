@@ -310,8 +310,8 @@ fn main() -> Result<()> {
             mythscribe_gate::MythscribeGate, pulse_echo::PulseEcho, pulse_logger::PulseLogger,
         };
         use scroll_core::orchestra::Bus;
-        use scroll_core::trigger_loom::config::TriggerLoopProfile;
         use scroll_core::orchestra::OrchestratedConstruct;
+        use scroll_core::trigger_loom::config::TriggerLoopProfile;
 
         // DB init + migrations (for decision ledger)
         let db_url = std::env::var("DATABASE_URL")
@@ -336,9 +336,7 @@ fn main() -> Result<()> {
             .any(|s| s.yaml_metadata.tags.iter().any(|t| t == "pulse"));
 
         // Determine profile
-        let profile = if cli.trigger_loop_ci
-            || cli.profile.as_deref() == Some("ci")
-        {
+        let profile = if cli.trigger_loop_ci || cli.profile.as_deref() == Some("ci") {
             TriggerLoopProfile::Ci
         } else {
             TriggerLoopProfile::Demo
@@ -371,12 +369,15 @@ fn main() -> Result<()> {
         gate.ci_mode = matches!(profile, TriggerLoopProfile::Ci);
         gate.attach_bus(bus.clone());
 
-        let mut constructs: Vec<
-            Box<dyn scroll_core::invocation::named_construct::NamedConstruct>,
-        > = vec![Box::new(echo), Box::new(gate)];
+        let mut constructs: Vec<Box<dyn scroll_core::invocation::named_construct::NamedConstruct>> =
+            vec![Box::new(echo), Box::new(gate)];
 
         println!("▶️ Starting Trigger Loom (press Ctrl-C to stop)...");
-        let tick_limit: Option<u64> = if let Some(v) = cli.ticks { Some(v) } else { profile.tick_limit() };
+        let tick_limit: Option<u64> = if let Some(v) = cli.ticks {
+            Some(v)
+        } else {
+            profile.tick_limit()
+        };
         if matches!(profile, TriggerLoopProfile::Ci) {
             engine.start_loop(&mut constructs, tick_limit);
         } else {
@@ -482,7 +483,9 @@ fn main() -> Result<()> {
             "recent" => scroll_core::cli::docs::doc_recent()?,
             "normalize" => scroll_core::cli::docs::doc_normalize_headers()?,
             "master-plan" => scroll_core::cli::docs::doc_generate_master_plan()?,
-            "scan-contradictions" => scroll_core::cli::docs::doc_scan_contradictions(*fix_contradictions)?,
+            "scan-contradictions" => {
+                scroll_core::cli::docs::doc_scan_contradictions(*fix_contradictions)?
+            }
             _ => unreachable!(),
         }
         if *fix_headers {

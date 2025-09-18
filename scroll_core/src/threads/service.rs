@@ -109,7 +109,9 @@ impl<'a> ThreadsService<'a> {
             q = q.filter(ot::Column::ScrollPath.eq(sp));
         }
         // Deterministic ordering
-        q = q.order_by_asc(ot::Column::CreatedAt).order_by_asc(ot::Column::Id);
+        q = q
+            .order_by_asc(ot::Column::CreatedAt)
+            .order_by_asc(ot::Column::Id);
         if let Some(l) = limit {
             q = q.limit(l);
         }

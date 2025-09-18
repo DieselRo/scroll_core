@@ -89,7 +89,10 @@ impl FromStr for Priority {
             "LOW" => Ok(Priority::Low),
             "MEDIUM" | "MED" => Ok(Priority::Medium),
             "HIGH" => Ok(Priority::High),
-            _ => Err(format!("invalid priority: {} (allowed: LOW, MEDIUM, HIGH)", s)),
+            _ => Err(format!(
+                "invalid priority: {} (allowed: LOW, MEDIUM, HIGH)",
+                s
+            )),
         }
     }
 }
@@ -162,4 +165,3 @@ pub fn tags_from_db(s: &str) -> Vec<String> {
         .filter(|t| !t.is_empty())
         .collect()
 }
-

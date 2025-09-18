@@ -51,7 +51,13 @@ async fn transitions_and_reopen_count() {
 #[test]
 fn tag_normalization() {
     let out = normalize_tags(["Bug", "bug", "URGENT", "needs-Review", "urgent"]);
-    assert_eq!(out, vec!["bug", "needs-review", "urgent"].into_iter().map(|s| s.to_string()).collect::<Vec<_>>());
+    assert_eq!(
+        out,
+        vec!["bug", "needs-review", "urgent"]
+            .into_iter()
+            .map(|s| s.to_string())
+            .collect::<Vec<_>>()
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -92,4 +98,3 @@ async fn dedupe_logic() {
         .unwrap();
     assert_eq!(id1, id2);
 }
-

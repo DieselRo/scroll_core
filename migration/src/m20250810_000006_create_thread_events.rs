@@ -32,7 +32,11 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(ThreadEvents::EventType).string().not_null())
                     .col(ColumnDef::new(ThreadEvents::Actor).string().not_null())
                     .col(ColumnDef::new(ThreadEvents::Reason).string())
-                    .col(ColumnDef::new(ThreadEvents::CreatedAt).timestamp().not_null())
+                    .col(
+                        ColumnDef::new(ThreadEvents::CreatedAt)
+                            .timestamp()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -55,4 +59,3 @@ impl MigrationTrait for Migration {
             .await
     }
 }
-

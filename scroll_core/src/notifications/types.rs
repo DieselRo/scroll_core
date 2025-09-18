@@ -22,7 +22,12 @@ pub struct NotificationEvent {
 }
 
 impl NotificationEvent {
-    pub fn new(kind: NotificationKind, thread_id: String, title: String, scroll_path: String) -> Self {
+    pub fn new(
+        kind: NotificationKind,
+        thread_id: String,
+        title: String,
+        scroll_path: String,
+    ) -> Self {
         Self {
             kind,
             thread_id,
@@ -36,5 +41,3 @@ impl NotificationEvent {
         }
     }
 }
-
-
