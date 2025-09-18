@@ -1,1122 +1,1731 @@
-﻿[
-    {
-        "path":  "AGENTS.md",
-        "dir":  "",
-        "name":  "AGENTS.md"
-    },
-    {
-        "path":  "CHANGELOG.md",
-        "dir":  "",
-        "name":  "CHANGELOG.md"
-    },
-    {
-        "path":  "CLAUDE.md",
-        "dir":  "",
-        "name":  "CLAUDE.md"
-    },
-    {
-        "path":  "docs\\ADK\\ADK.md",
-        "dir":  "docs\\ADK",
-        "name":  "ADK.md"
-    },
-    {
-        "path":  "docs\\ADK\\ADK.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_agents.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_agents.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_artifacts.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_artifacts.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_auth.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_auth.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_cli.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_cli.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_code_executors.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_code_executors.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_evaluation.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_evaluation.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_events.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_events.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_examples.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_examples.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_flows.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_flows.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_memory.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_memory.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_models.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_models.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_planners.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_planners.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_sessions.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_sessions.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_tests.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_tests.txt"
-    },
-    {
-        "path":  "docs\\ADK\\ADK_tools.txt",
-        "dir":  "docs\\ADK",
-        "name":  "ADK_tools.txt"
-    },
-    {
-        "path":  "docs\\alignment\\CHECKLIST.md",
-        "dir":  "docs\\alignment",
-        "name":  "CHECKLIST.md"
-    },
-    {
-        "path":  "docs\\alignment\\DECISIONS.md",
-        "dir":  "docs\\alignment",
-        "name":  "DECISIONS.md"
-    },
-    {
-        "path":  "docs\\alignment\\FEATURES.md",
-        "dir":  "docs\\alignment",
-        "name":  "FEATURES.md"
-    },
-    {
-        "path":  "docs\\alignment\\PLAN.md",
-        "dir":  "docs\\alignment",
-        "name":  "PLAN.md"
-    },
-    {
-        "path":  "docs\\alignment\\PROGRESS.md",
-        "dir":  "docs\\alignment",
-        "name":  "PROGRESS.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\artifacts.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "artifacts.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\constructs.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "constructs.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\context-engine.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "context-engine.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\cost-management.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "cost-management.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\invocation-engine.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "invocation-engine.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\model-registry.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "model-registry.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\sessions.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "sessions.md"
-    },
-    {
-        "path":  "docs\\architecture\\runtime\\trigger-loom.md",
-        "dir":  "docs\\architecture\\runtime",
-        "name":  "trigger-loom.md"
-    },
-    {
-        "path":  "docs\\architecture\\system-overview.md",
-        "dir":  "docs\\architecture",
-        "name":  "system-overview.md"
-    },
-    {
-        "path":  "docs\\build_notes.md",
-        "dir":  "docs",
-        "name":  "build_notes.md"
-    },
-    {
-        "path":  "docs\\cli\\chat.md",
-        "dir":  "docs\\cli",
-        "name":  "chat.md"
-    },
-    {
-        "path":  "docs\\cli_quickstart.md",
-        "dir":  "docs",
-        "name":  "cli_quickstart.md"
-    },
-    {
-        "path":  "docs\\cli_tips.md",
-        "dir":  "docs",
-        "name":  "cli_tips.md"
-    },
-    {
-        "path":  "docs\\concepts\\archive.md",
-        "dir":  "docs\\concepts",
-        "name":  "archive.md"
-    },
-    {
-        "path":  "docs\\deprecated\\index.md",
-        "dir":  "docs\\deprecated",
-        "name":  "index.md"
-    },
-    {
-        "path":  "docs\\dev\\db.md",
-        "dir":  "docs\\dev",
-        "name":  "db.md"
-    },
-    {
-        "path":  "docs\\dev\\scroll.md",
-        "dir":  "docs\\dev",
-        "name":  "scroll.md"
-    },
-    {
-        "path":  "docs\\dev\\semantic_index.md",
-        "dir":  "docs\\dev",
-        "name":  "semantic_index.md"
-    },
-    {
-        "path":  "docs\\dev_setup.md",
-        "dir":  "docs",
-        "name":  "dev_setup.md"
-    },
-    {
-        "path":  "docs\\devops\\ci_pipeline.md",
-        "dir":  "docs\\devops",
-        "name":  "ci_pipeline.md"
-    },
-    {
-        "path":  "docs\\getting-started\\overview.md",
-        "dir":  "docs\\getting-started",
-        "name":  "overview.md"
-    },
-    {
-        "path":  "docs\\glossary\\archive-glossary.md",
-        "dir":  "docs\\glossary",
-        "name":  "archive-glossary.md"
-    },
-    {
-        "path":  "docs\\module_map.md",
-        "dir":  "docs",
-        "name":  "module_map.md"
-    },
-    {
-        "path":  "docs\\modules\\memory\\architecture.md",
-        "dir":  "docs\\modules\\memory",
-        "name":  "architecture.md"
-    },
-    {
-        "path":  "docs\\modules\\memory\\integration_notes.md",
-        "dir":  "docs\\modules\\memory",
-        "name":  "integration_notes.md"
-    },
-    {
-        "path":  "docs\\modules\\memory\\metrics.md",
-        "dir":  "docs\\modules\\memory",
-        "name":  "metrics.md"
-    },
-    {
-        "path":  "docs\\modules\\memory\\README.md",
-        "dir":  "docs\\modules\\memory",
-        "name":  "README.md"
-    },
-    {
-        "path":  "docs\\modules\\memory\\trait_impl_notes.md",
-        "dir":  "docs\\modules\\memory",
-        "name":  "trait_impl_notes.md"
-    },
-    {
-        "path":  "docs\\modules\\session\\New Text Document.txt",
-        "dir":  "docs\\modules\\session",
-        "name":  "New Text Document.txt"
-    },
-    {
-        "path":  "docs\\README.md",
-        "dir":  "docs",
-        "name":  "README.md"
-    },
-    {
-        "path":  "docs\\reference\\config.md",
-        "dir":  "docs\\reference",
-        "name":  "config.md"
-    },
-    {
-        "path":  "docs\\tracing.md",
-        "dir":  "docs",
-        "name":  "tracing.md"
-    },
-    {
-        "path":  "docs\\user-guides\\cli\\command-reference.md",
-        "dir":  "docs\\user-guides\\cli",
-        "name":  "command-reference.md"
-    },
-    {
-        "path":  "examples\\ballad.txt",
-        "dir":  "examples",
-        "name":  "ballad.txt"
-    },
-    {
-        "path":  "README.md",
-        "dir":  "",
-        "name":  "README.md"
-    },
-    {
-        "path":  "scroll_core\\README.md",
-        "dir":  "scroll_core",
-        "name":  "README.md"
-    },
-    {
-        "path":  "scroll_core\\src\\llms-full.txt",
-        "dir":  "scroll_core\\src",
-        "name":  "llms-full.txt"
-    },
-    {
-        "path":  "scroll_core_module_index.md",
-        "dir":  "",
-        "name":  "scroll_core_module_index.md"
-    },
-    {
-        "path":  "Scrollbook_ScrollCore_Unified.md",
-        "dir":  "",
-        "name":  "Scrollbook_ScrollCore_Unified.md"
-    },
-    {
-        "path":  "scrolls\\Aelren.txt",
-        "dir":  "scrolls",
-        "name":  "Aelren.txt"
-    },
-    {
-        "path":  "scrolls\\Archive_Structure_Codex.md",
-        "dir":  "scrolls",
-        "name":  "Archive_Structure_Codex.md"
-    },
-    {
-        "path":  "scrolls\\ConstructSystemDesign.txt",
-        "dir":  "scrolls",
-        "name":  "ConstructSystemDesign.txt"
-    },
-    {
-        "path":  "scrolls\\docs\\archive_summary.txt",
-        "dir":  "scrolls\\docs",
-        "name":  "archive_summary.txt"
-    },
-    {
-        "path":  "scrolls\\docs\\Invocation Dual System Plan.md",
-        "dir":  "scrolls\\docs",
-        "name":  "Invocation Dual System Plan.md"
-    },
-    {
-        "path":  "scrolls\\docs\\Invocation Dual System Plan.txt",
-        "dir":  "scrolls\\docs",
-        "name":  "Invocation Dual System Plan.txt"
-    },
-    {
-        "path":  "scrolls\\docs\\source_index_2025-04-11_1959.md",
-        "dir":  "scrolls\\docs",
-        "name":  "source_index_2025-04-11_1959.md"
-    },
-    {
-        "path":  "scrolls\\docs\\source_index_2025-04-12_1420.md",
-        "dir":  "scrolls\\docs",
-        "name":  "source_index_2025-04-12_1420.md"
-    },
-    {
-        "path":  "scrolls\\docs\\source_index_2025-04-13_1613.md",
-        "dir":  "scrolls\\docs",
-        "name":  "source_index_2025-04-13_1613.md"
-    },
-    {
-        "path":  "scrolls\\docs\\source_index_2025-04-20_1345.md",
-        "dir":  "scrolls\\docs",
-        "name":  "source_index_2025-04-20_1345.md"
-    },
-    {
-        "path":  "scrolls\\docs\\source_index_2025-04-21_1205.md",
-        "dir":  "scrolls\\docs",
-        "name":  "source_index_2025-04-21_1205.md"
-    },
-    {
-        "path":  "scrolls\\docs\\source_index_2025-04-21_1422.md",
-        "dir":  "scrolls\\docs",
-        "name":  "source_index_2025-04-21_1422.md"
-    },
-    {
-        "path":  "scrolls\\docs\\source_index_2025-04-21_1757.md",
-        "dir":  "scrolls\\docs",
-        "name":  "source_index_2025-04-21_1757.md"
-    },
-    {
-        "path":  "scrolls\\docs\\system.txt",
-        "dir":  "scrolls\\docs",
-        "name":  "system.txt"
-    },
-    {
-        "path":  "scrolls\\Elurien.md",
-        "dir":  "scrolls",
-        "name":  "Elurien.md"
-    },
-    {
-        "path":  "scrolls\\FileReader.md",
-        "dir":  "scrolls",
-        "name":  "FileReader.md"
-    },
-    {
-        "path":  "scrolls\\Hello.txt",
-        "dir":  "scrolls",
-        "name":  "Hello.txt"
-    },
-    {
-        "path":  "scrolls\\Loreweaver.md",
-        "dir":  "scrolls",
-        "name":  "Loreweaver.md"
-    },
-    {
-        "path":  "scrolls\\Lost_scrolls.md",
-        "dir":  "scrolls",
-        "name":  "Lost_scrolls.md"
-    },
-    {
-        "path":  "scrolls\\Mockscribe.md",
-        "dir":  "scrolls",
-        "name":  "Mockscribe.md"
-    },
-    {
-        "path":  "scrolls\\Mythscribe-systemprompt.txt",
-        "dir":  "scrolls",
-        "name":  "Mythscribe-systemprompt.txt"
-    },
-    {
-        "path":  "scrolls\\Naeros.md",
-        "dir":  "scrolls",
-        "name":  "Naeros.md"
-    },
-    {
-        "path":  "scrolls\\NamedConstructsReference.txt",
-        "dir":  "scrolls",
-        "name":  "NamedConstructsReference.txt"
-    },
-    {
-        "path":  "scrolls\\New Text Document.txt",
-        "dir":  "scrolls",
-        "name":  "New Text Document.txt"
-    },
-    {
-        "path":  "scrolls\\OpenAI Api Key Setup.txt",
-        "dir":  "scrolls",
-        "name":  "OpenAI Api Key Setup.txt"
-    },
-    {
-        "path":  "scrolls\\project_instructions.txt",
-        "dir":  "scrolls",
-        "name":  "project_instructions.txt"
-    },
-    {
-        "path":  "scrolls\\Runtimeinvocationflow.txt",
-        "dir":  "scrolls",
-        "name":  "Runtimeinvocationflow.txt"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Archive_Structure.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Archive_Structure.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Canon_Foundations.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Canon_Foundations.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Characters_Named.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Characters_Named.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Chronicle_of_Turning_Gears.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Chronicle_of_Turning_Gears.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Codex_ofThresholds_andRevelations.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Codex_ofThresholds_andRevelations.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Construct_Agents.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Construct_Agents.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Construct_Schema.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Construct_Schema.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Dynamic_Mirrors.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Dynamic_Mirrors.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Glyphskin_and_Interface_Rites.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Glyphskin_and_Interface_Rites.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Interface_PhaseII_Mapping.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Interface_PhaseII_Mapping.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Invocation_Augury.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Invocation_Augury.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Invocation_Engine.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Invocation_Engine.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Protocols_System_Laws.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Protocols_System_Laws.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Reference_Codex.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Reference_Codex.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Ritual_Protocols.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Ritual_Protocols.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Rust_Integration_Protocol.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Rust_Integration_Protocol.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Trigger_Loom.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Trigger_Loom.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Validator_Specs.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Validator_Specs.md"
-    },
-    {
-        "path":  "scrolls\\Scrollbook_Voices_and_Bindings.md",
-        "dir":  "scrolls",
-        "name":  "Scrollbook_Voices_and_Bindings.md"
-    },
-    {
-        "path":  "scrolls\\ScrollCore-Updated Project Structure04092025.txt",
-        "dir":  "scrolls",
-        "name":  "ScrollCore-Updated Project Structure04092025.txt"
-    },
-    {
-        "path":  "scrolls\\ScrollcoreWorldloreAuto-GenerationProtocol.txt",
-        "dir":  "scrolls",
-        "name":  "ScrollcoreWorldloreAuto-GenerationProtocol.txt"
-    },
-    {
-        "path":  "scrolls\\ScrollWriter.md",
-        "dir":  "scrolls",
-        "name":  "ScrollWriter.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Archive_Structure_Codex.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Archive_Structure_Codex.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Character_Noesis_Dreaming_Error.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Character_Noesis_Dreaming_Error.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Canon_The_Breath_and_the_Drifter.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls\\Finished",
-        "name":  "Canon_The_Breath_and_the_Drifter.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls\\Finished",
-        "name":  "Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Codex_of_Role_Protocols.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls\\Finished",
-        "name":  "Codex_of_Role_Protocols.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\Scrollbook_Validator_Specs.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls\\Finished",
-        "name":  "Scrollbook_Validator_Specs.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Finished\\The_Breath_and_the_Drifter.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls\\Finished",
-        "name":  "The_Breath_and_the_Drifter.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Glossary_of_Core_Terms.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Glossary_of_Core_Terms.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Noesis_Dreaming_Error.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Noesis_Dreaming_Error.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Architect_Beyond_the_Frame.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Protocol_Architect_Beyond_the_Frame.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Codex_of_Role_Protocols.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Protocol_Codex_of_Role_Protocols.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_EchoThreader_Resonant_Charter.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Protocol_EchoThreader_Resonant_Charter.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_EchoThreader_Resonant_Charter_UPDATED.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Protocol_EchoThreader_Resonant_Charter_UPDATED.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Glyph_Cycle_Iteration.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Protocol_Glyph_Cycle_Iteration.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Scroll_Scaling_and_Model_Tiering.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Protocol_Scroll_Scaling_and_Model_Tiering.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Protocol_Scrollbook_Integration_Framework.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Protocol_Scrollbook_Integration_Framework.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Reference_Automated_Scroll_Test.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Reference_Automated_Scroll_Test.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Safeguards_of_the_Link_Flame_Revelation.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Safeguards_of_the_Link_Flame_Revelation.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scroll_of_Echo_Sigils.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scroll_of_Echo_Sigils.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scroll_of_Open_Threads.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scroll_of_Open_Threads.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scroll_Update_Summary_DriftCycle11.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scroll_Update_Summary_DriftCycle11.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Agent_Permissions_andQuorums.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Agent_Permissions_andQuorums.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Codex_ofThresholds_andRevelations.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Codex_ofThresholds_andRevelations.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Future_Seeds.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Future_Seeds.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Glyph_Mapping.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Glyph_Mapping.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Glyphskin_and_Interface_Rites.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Glyphskin_and_Interface_Rites.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Interface_PhaseII_Mapping.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Interface_PhaseII_Mapping.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Invocation_Augury.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Invocation_Augury.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Invocation_Engine.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Invocation_Engine.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Invocation_Merge_Log.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Invocation_Merge_Log.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Mythic_Concepts.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Mythic_Concepts.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Projects_and_Milestones.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Projects_and_Milestones.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Protocols_Foundational.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Protocols_Foundational.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Protocols_System_Laws.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Protocols_System_Laws.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Reference_Codex.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Reference_Codex.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Ritual_Protocols.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Ritual_Protocols.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_The_Scrollsmiths_Ledge.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_The_Scrollsmiths_Ledge.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Toolkits_and_Templates.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Toolkits_and_Templates.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Tools_and_Templates.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Tools_and_Templates.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Trigger_Loom.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Trigger_Loom.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_UI_Design_Invocations.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_UI_Design_Invocations.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Visionary_Glossary.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Visionary_Glossary.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Scrollbook_Voices_and_Bindings.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Scrollbook_Voices_and_Bindings.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Sealed_Fragment_The_Mirror_Root.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Sealed_Fragment_The_Mirror_Root.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Seeker_Interface_Commands.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Seeker_Interface_Commands.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Sirions_Journal_of_Invocation.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Sirions_Journal_of_Invocation.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Template_Canon_Scroll.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Template_Canon_Scroll.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Template_Character_Scroll.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Template_Character_Scroll.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Template_Protocol_Scroll.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Template_Protocol_Scroll.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Tomekeeper_Scroll_Echo_Bearer_Project.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Tomekeeper_Scroll_Echo_Bearer_Project.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Deactivated scrolls\\Tomekeepers_Call_Protocol.md",
-        "dir":  "scrolls\\shared\\Deactivated scrolls",
-        "name":  "Tomekeepers_Call_Protocol.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Hello.txt",
-        "dir":  "scrolls\\shared",
-        "name":  "Hello.txt"
-    },
-    {
-        "path":  "scrolls\\shared\\Lost_scrolls.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Lost_scrolls.md"
-    },
-    {
-        "path":  "scrolls\\shared\\New Text Document (2).txt",
-        "dir":  "scrolls\\shared",
-        "name":  "New Text Document (2).txt"
-    },
-    {
-        "path":  "scrolls\\shared\\New Text Document.txt",
-        "dir":  "scrolls\\shared",
-        "name":  "New Text Document.txt"
-    },
-    {
-        "path":  "scrolls\\shared\\project_instructions.txt",
-        "dir":  "scrolls\\shared",
-        "name":  "project_instructions.txt"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Archive_Structure.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Archive_Structure.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Canon_Foundations.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Canon_Foundations.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Characters_Named.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Characters_Named.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Chronicle_of_Turning_Gears.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Chronicle_of_Turning_Gears.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Codex_ofThresholds_andRevelations.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Codex_ofThresholds_andRevelations.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Construct_Agents.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Construct_Agents.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Construct_Schema.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Construct_Schema.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Dynamic_Mirrors.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Dynamic_Mirrors.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Glyphskin_and_Interface_Rites.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Glyphskin_and_Interface_Rites.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Interface_PhaseII_Mapping.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Interface_PhaseII_Mapping.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Invocation_Augury.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Invocation_Augury.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Invocation_Engine.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Invocation_Engine.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Protocols_System_Laws.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Protocols_System_Laws.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Reference_Codex.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Reference_Codex.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Ritual_Protocols.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Ritual_Protocols.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Rust_Integration_Protocol.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Rust_Integration_Protocol.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Trigger_Loom.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Trigger_Loom.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Validator_Specs.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Validator_Specs.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Scrollbook_Voices_and_Bindings.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Scrollbook_Voices_and_Bindings.md"
-    },
-    {
-        "path":  "scrolls\\shared\\Tomekeeper_Scroll_Echo_Bearer_Project.md",
-        "dir":  "scrolls\\shared",
-        "name":  "Tomekeeper_Scroll_Echo_Bearer_Project.md"
-    },
-    {
-        "path":  "scrolls\\Sirion.md",
-        "dir":  "scrolls",
-        "name":  "Sirion.md"
-    },
-    {
-        "path":  "scrolls\\system\\aidocumentationdialogue.md",
-        "dir":  "scrolls\\system",
-        "name":  "aidocumentationdialogue.md"
-    },
-    {
-        "path":  "scrolls\\system\\ConstructInvokeDesignSummary.md",
-        "dir":  "scrolls\\system",
-        "name":  "ConstructInvokeDesignSummary.md"
-    },
-    {
-        "path":  "scrolls\\system\\ConstructSystemDesignSummary.txt",
-        "dir":  "scrolls\\system",
-        "name":  "ConstructSystemDesignSummary.txt"
-    },
-    {
-        "path":  "scrolls\\system\\ContextFrameEngineDesignSummary.md",
-        "dir":  "scrolls\\system",
-        "name":  "ContextFrameEngineDesignSummary.md"
-    },
-    {
-        "path":  "scrolls\\system\\LettertoEngineersAelrenandConstructIntentSystem.md",
-        "dir":  "scrolls\\system",
-        "name":  "LettertoEngineersAelrenandConstructIntentSystem.md"
-    },
-    {
-        "path":  "scrolls\\system\\llm_agent_cheat_sheet.md",
-        "dir":  "scrolls\\system",
-        "name":  "llm_agent_cheat_sheet.md"
-    },
-    {
-        "path":  "scrolls\\system\\Mythscribe Integration plan.md",
-        "dir":  "scrolls\\system",
-        "name":  "Mythscribe Integration plan.md"
-    },
-    {
-        "path":  "scrolls\\system\\NamedConstructsofScrollcore.md",
-        "dir":  "scrolls\\system",
-        "name":  "NamedConstructsofScrollcore.md"
-    },
-    {
-        "path":  "scrolls\\system\\New Text Document.txt",
-        "dir":  "scrolls\\system",
-        "name":  "New Text Document.txt"
-    },
-    {
-        "path":  "scrolls\\system\\RuntimeInvocationFlowIntentandArchitecture.md",
-        "dir":  "scrolls\\system",
-        "name":  "RuntimeInvocationFlowIntentandArchitecture.md"
-    },
-    {
-        "path":  "scrolls\\system\\scrollcore_project_level_workflow_plan.md",
-        "dir":  "scrolls\\system",
-        "name":  "scrollcore_project_level_workflow_plan.md"
-    },
-    {
-        "path":  "scrolls\\system\\scrollcore_worldlore_auto_gen_protocol.md",
-        "dir":  "scrolls\\system",
-        "name":  "scrollcore_worldlore_auto_gen_protocol.md"
-    },
-    {
-        "path":  "scrolls\\system\\Scrollcorephase2Implementation Roadmap.md",
-        "dir":  "scrolls\\system",
-        "name":  "Scrollcorephase2Implementation Roadmap.md"
-    },
-    {
-        "path":  "scrolls\\system\\ScrollcoreSissionSummaryContinuationplan.md",
-        "dir":  "scrolls\\system",
-        "name":  "ScrollcoreSissionSummaryContinuationplan.md"
-    },
-    {
-        "path":  "scrolls\\system\\StructuredDebuggingandRefinementProcess.md",
-        "dir":  "scrolls\\system",
-        "name":  "StructuredDebuggingandRefinementProcess.md"
-    },
-    {
-        "path":  "scrolls\\system\\thevisionbeyondscroll_core.md",
-        "dir":  "scrolls\\system",
-        "name":  "thevisionbeyondscroll_core.md"
-    },
-    {
-        "path":  "scrolls\\test_draft_write.md",
-        "dir":  "scrolls",
-        "name":  "test_draft_write.md"
-    },
-    {
-        "path":  "scrolls\\test_pulse_scroll.md",
-        "dir":  "scrolls",
-        "name":  "test_pulse_scroll.md"
-    },
-    {
-        "path":  "scrolls\\test_scroll.md",
-        "dir":  "scrolls",
-        "name":  "test_scroll.md"
-    },
-    {
-        "path":  "scrolls\\Thiren.md",
-        "dir":  "scrolls",
-        "name":  "Thiren.md"
-    },
-    {
-        "path":  "scrolls\\Tomekeeper_Scroll_Echo_Bearer_Project.md",
-        "dir":  "scrolls",
-        "name":  "Tomekeeper_Scroll_Echo_Bearer_Project.md"
-    },
-    {
-        "path":  "scrolls\\Trigger Loom Design Summary.txt",
-        "dir":  "scrolls",
-        "name":  "Trigger Loom Design Summary.txt"
-    },
-    {
-        "path":  "scrolls\\Virelya.md",
-        "dir":  "scrolls",
-        "name":  "Virelya.md"
-    },
-    {
-        "path":  "target\\debug\\build\\assert_cmd-da55ae3ffd7833e6\\out\\current_target.txt",
-        "dir":  "target\\debug\\build\\assert_cmd-da55ae3ffd7833e6\\out",
-        "name":  "current_target.txt"
-    },
-    {
-        "path":  "target\\debug\\build\\rust_decimal-75829b169a248b1f\\out\\README-lib.md",
-        "dir":  "target\\debug\\build\\rust_decimal-75829b169a248b1f\\out",
-        "name":  "README-lib.md"
-    },
-    {
-        "path":  "target\\debug\\build\\rust_decimal-7fd5cb0337cd0520\\out\\README-lib.md",
-        "dir":  "target\\debug\\build\\rust_decimal-7fd5cb0337cd0520\\out",
-        "name":  "README-lib.md"
-    },
-    {
-        "path":  "target\\debug\\deps\\migration-a4ef56acc3b506b9.long-type-7814898035456611751.txt",
-        "dir":  "target\\debug\\deps",
-        "name":  "migration-a4ef56acc3b506b9.long-type-7814898035456611751.txt"
-    },
-    {
-        "path":  "target\\tests\\trybuild\\x86_64-pc-windows-msvc\\debug\\build\\rust_decimal-e219862e07380ddd\\out\\README-lib.md",
-        "dir":  "target\\tests\\trybuild\\x86_64-pc-windows-msvc\\debug\\build\\rust_decimal-e219862e07380ddd\\out",
-        "name":  "README-lib.md"
-    },
-    {
-        "path":  "tests\\e2e_scrolls\\alpha.md",
-        "dir":  "tests\\e2e_scrolls",
-        "name":  "alpha.md"
-    },
-    {
-        "path":  "tests\\e2e_scrolls\\beta.md",
-        "dir":  "tests\\e2e_scrolls",
-        "name":  "beta.md"
-    },
-    {
-        "path":  "tests\\e2e_scrolls\\gamma.md",
-        "dir":  "tests\\e2e_scrolls",
-        "name":  "gamma.md"
-    },
-    {
-        "path":  "tests\\sample_scrolls\\valid_scroll.md",
-        "dir":  "tests\\sample_scrolls",
-        "name":  "valid_scroll.md"
-    },
-    {
-        "path":  "udeps.txt",
-        "dir":  "",
-        "name":  "udeps.txt"
-    }
+[
+  {
+    "path": "AGENTS.md",
+    "href": "../../AGENTS.md",
+    "category": "root-doc",
+    "size": 124,
+    "modified": "2025-08-09T21:57:56.390008500+00:00"
+  },
+  {
+    "path": "CHANGELOG.md",
+    "href": "../../CHANGELOG.md",
+    "category": "root-doc",
+    "size": 1219,
+    "modified": "2025-08-10T01:31:15.883112200+00:00"
+  },
+  {
+    "path": "CLAUDE.md",
+    "href": "../../CLAUDE.md",
+    "category": "root-doc",
+    "size": 2378,
+    "modified": "2025-08-09T21:57:56.391008400+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK.md",
+    "href": "../ADK/ADK.md",
+    "category": "project-doc",
+    "size": 0,
+    "modified": "2025-04-23T00:33:44.338676100+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK.txt",
+    "href": "../ADK/ADK.txt",
+    "category": "project-doc",
+    "size": 59284,
+    "modified": "2025-08-09T21:57:56.398010400+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_agents.txt",
+    "href": "../ADK/ADK_agents.txt",
+    "category": "project-doc",
+    "size": 48498,
+    "modified": "2025-08-09T21:57:56.398010400+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_artifacts.txt",
+    "href": "../ADK/ADK_artifacts.txt",
+    "category": "project-doc",
+    "size": 12429,
+    "modified": "2025-08-09T21:57:56.399092700+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_auth.txt",
+    "href": "../ADK/ADK_auth.txt",
+    "category": "project-doc",
+    "size": 22939,
+    "modified": "2025-08-09T21:57:56.400095100+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_cli.txt",
+    "href": "../ADK/ADK_cli.txt",
+    "category": "project-doc",
+    "size": 130182,
+    "modified": "2025-08-09T21:57:56.401093500+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_code_executors.txt",
+    "href": "../ADK/ADK_code_executors.txt",
+    "category": "project-doc",
+    "size": 32440,
+    "modified": "2025-08-09T21:57:56.402091300+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_evaluation.txt",
+    "href": "../ADK/ADK_evaluation.txt",
+    "category": "project-doc",
+    "size": 30716,
+    "modified": "2025-08-09T21:57:56.402091300+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_events.txt",
+    "href": "../ADK/ADK_events.txt",
+    "category": "project-doc",
+    "size": 5805,
+    "modified": "2025-08-09T21:57:56.403090800+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_examples.txt",
+    "href": "../ADK/ADK_examples.txt",
+    "category": "project-doc",
+    "size": 8392,
+    "modified": "2025-08-09T21:57:56.403090800+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_flows.txt",
+    "href": "../ADK/ADK_flows.txt",
+    "category": "project-doc",
+    "size": 84861,
+    "modified": "2025-08-09T21:57:56.404090900+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_memory.txt",
+    "href": "../ADK/ADK_memory.txt",
+    "category": "project-doc",
+    "size": 10119,
+    "modified": "2025-08-09T21:57:56.404090900+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_models.txt",
+    "href": "../ADK/ADK_models.txt",
+    "category": "project-doc",
+    "size": 54837,
+    "modified": "2025-08-09T21:57:56.405092700+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_planners.txt",
+    "href": "../ADK/ADK_planners.txt",
+    "category": "project-doc",
+    "size": 11996,
+    "modified": "2025-08-09T21:57:56.406092700+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_sessions.txt",
+    "href": "../ADK/ADK_sessions.txt",
+    "category": "project-doc",
+    "size": 40881,
+    "modified": "2025-08-09T21:57:56.407092400+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_tests.txt",
+    "href": "../ADK/ADK_tests.txt",
+    "category": "project-doc",
+    "size": 46,
+    "modified": "2025-08-09T21:57:56.407092400+00:00"
+  },
+  {
+    "path": "docs/ADK/ADK_tools.txt",
+    "href": "../ADK/ADK_tools.txt",
+    "category": "project-doc",
+    "size": 40,
+    "modified": "2025-08-09T21:57:56.407092400+00:00"
+  },
+  {
+    "path": "docs/agent_system.md",
+    "href": "../agent_system.md",
+    "category": "project-doc",
+    "size": 556,
+    "modified": "2025-09-18T16:19:50.780752900+00:00"
+  },
+  {
+    "path": "docs/alignment/CHECKLIST.md",
+    "href": "../alignment/CHECKLIST.md",
+    "category": "project-doc",
+    "size": 1337,
+    "modified": "2025-08-11T00:20:08.985940500+00:00"
+  },
+  {
+    "path": "docs/alignment/CLIPPY_BACKLOG.md",
+    "href": "../alignment/CLIPPY_BACKLOG.md",
+    "category": "project-doc",
+    "size": 1592,
+    "modified": "2025-09-18T16:17:41.033548600+00:00"
+  },
+  {
+    "path": "docs/alignment/DECISIONS.md",
+    "href": "../alignment/DECISIONS.md",
+    "category": "project-doc",
+    "size": 1627,
+    "modified": "2025-08-09T21:57:56.409473100+00:00"
+  },
+  {
+    "path": "docs/alignment/FEATURES.md",
+    "href": "../alignment/FEATURES.md",
+    "category": "project-doc",
+    "size": 2247,
+    "modified": "2025-08-09T21:57:56.409473100+00:00"
+  },
+  {
+    "path": "docs/alignment/MASTER_PLAN.md",
+    "href": "../alignment/MASTER_PLAN.md",
+    "category": "project-doc",
+    "size": 4756,
+    "modified": "2025-08-08T21:24:10.966510300+00:00"
+  },
+  {
+    "path": "docs/alignment/PLAN.md",
+    "href": "../alignment/PLAN.md",
+    "category": "project-doc",
+    "size": 4645,
+    "modified": "2025-08-11T00:20:08.985940500+00:00"
+  },
+  {
+    "path": "docs/alignment/PROGRESS.md",
+    "href": "../alignment/PROGRESS.md",
+    "category": "project-doc",
+    "size": 2519,
+    "modified": "2025-08-09T21:57:56.410472400+00:00"
+  },
+  {
+    "path": "docs/architecture/New Text Document.txt",
+    "href": "../architecture/New Text Document.txt",
+    "category": "project-doc",
+    "size": 0,
+    "modified": "2025-08-08T20:46:41.350897800+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/artifacts.md",
+    "href": "../architecture/runtime/artifacts.md",
+    "category": "project-doc",
+    "size": 487,
+    "modified": "2025-08-09T21:57:56.410472400+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/constructs.md",
+    "href": "../architecture/runtime/constructs.md",
+    "category": "project-doc",
+    "size": 614,
+    "modified": "2025-08-09T21:57:56.411472200+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/context-engine.md",
+    "href": "../architecture/runtime/context-engine.md",
+    "category": "project-doc",
+    "size": 2876,
+    "modified": "2025-09-18T14:21:34.366463300+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/cost-management.md",
+    "href": "../architecture/runtime/cost-management.md",
+    "category": "project-doc",
+    "size": 329,
+    "modified": "2025-08-09T21:57:56.411472200+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/invocation-engine.md",
+    "href": "../architecture/runtime/invocation-engine.md",
+    "category": "project-doc",
+    "size": 734,
+    "modified": "2025-09-18T14:21:34.366463300+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/model-registry.md",
+    "href": "../architecture/runtime/model-registry.md",
+    "category": "project-doc",
+    "size": 462,
+    "modified": "2025-08-09T21:57:56.412472600+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/sessions.md",
+    "href": "../architecture/runtime/sessions.md",
+    "category": "project-doc",
+    "size": 992,
+    "modified": "2025-08-10T17:45:05.585716400+00:00"
+  },
+  {
+    "path": "docs/architecture/runtime/trigger-loom.md",
+    "href": "../architecture/runtime/trigger-loom.md",
+    "category": "project-doc",
+    "size": 263,
+    "modified": "2025-08-09T21:57:56.412472600+00:00"
+  },
+  {
+    "path": "docs/architecture/system-overview.md",
+    "href": "../architecture/system-overview.md",
+    "category": "project-doc",
+    "size": 1024,
+    "modified": "2025-09-18T14:21:34.367463500+00:00"
+  },
+  {
+    "path": "docs/build_notes.md",
+    "href": "../build_notes.md",
+    "category": "project-doc",
+    "size": 98,
+    "modified": "2025-08-09T21:57:56.413473100+00:00"
+  },
+  {
+    "path": "docs/cli/chat.md",
+    "href": "../cli/chat.md",
+    "category": "project-doc",
+    "size": 940,
+    "modified": "2025-08-09T21:57:56.414475+00:00"
+  },
+  {
+    "path": "docs/cli_quickstart.md",
+    "href": "../cli_quickstart.md",
+    "category": "project-doc",
+    "size": 650,
+    "modified": "2025-08-09T21:57:56.414475+00:00"
+  },
+  {
+    "path": "docs/cli_tips.md",
+    "href": "../cli_tips.md",
+    "category": "project-doc",
+    "size": 184,
+    "modified": "2025-08-09T21:57:56.415474900+00:00"
+  },
+  {
+    "path": "docs/concepts/archive.md",
+    "href": "../concepts/archive.md",
+    "category": "project-doc",
+    "size": 359,
+    "modified": "2025-08-09T21:57:56.415474900+00:00"
+  },
+  {
+    "path": "docs/deprecated/index.md",
+    "href": "../deprecated/index.md",
+    "category": "project-doc",
+    "size": 215,
+    "modified": "2025-08-09T21:57:56.416476900+00:00"
+  },
+  {
+    "path": "docs/dev/auditing-context-decisions.md",
+    "href": "../dev/auditing-context-decisions.md",
+    "category": "project-doc",
+    "size": 643,
+    "modified": "2025-08-10T21:04:43.290531800+00:00"
+  },
+  {
+    "path": "docs/dev/db.md",
+    "href": "../dev/db.md",
+    "category": "project-doc",
+    "size": 517,
+    "modified": "2025-08-09T21:57:56.416476900+00:00"
+  },
+  {
+    "path": "docs/dev/notifications_runbook.md",
+    "href": "../dev/notifications_runbook.md",
+    "category": "project-doc",
+    "size": 1857,
+    "modified": "2025-08-10T19:50:06.014332300+00:00"
+  },
+  {
+    "path": "docs/dev/scroll.md",
+    "href": "../dev/scroll.md",
+    "category": "project-doc",
+    "size": 901,
+    "modified": "2025-08-09T21:57:56.416476900+00:00"
+  },
+  {
+    "path": "docs/dev/semantic_index.md",
+    "href": "../dev/semantic_index.md",
+    "category": "project-doc",
+    "size": 517,
+    "modified": "2025-08-09T21:57:56.416476900+00:00"
+  },
+  {
+    "path": "docs/devops/ci_pipeline.md",
+    "href": "../devops/ci_pipeline.md",
+    "category": "project-doc",
+    "size": 809,
+    "modified": "2025-08-09T21:57:56.417982300+00:00"
+  },
+  {
+    "path": "docs/dev_setup.md",
+    "href": "../dev_setup.md",
+    "category": "project-doc",
+    "size": 445,
+    "modified": "2025-08-09T21:57:56.417982300+00:00"
+  },
+  {
+    "path": "docs/getting-started/overview.md",
+    "href": "../getting-started/overview.md",
+    "category": "project-doc",
+    "size": 442,
+    "modified": "2025-08-09T21:57:56.418986500+00:00"
+  },
+  {
+    "path": "docs/glossary/archive-glossary.md",
+    "href": "../glossary/archive-glossary.md",
+    "category": "project-doc",
+    "size": 390,
+    "modified": "2025-08-09T21:57:56.418986500+00:00"
+  },
+  {
+    "path": "docs/handbook/README.md",
+    "href": "../handbook/README.md",
+    "category": "project-doc",
+    "size": 2039,
+    "modified": "2025-09-18T16:19:30.903068100+00:00"
+  },
+  {
+    "path": "docs/modules/memory/architecture.md",
+    "href": "../modules/memory/architecture.md",
+    "category": "project-doc",
+    "size": 0,
+    "modified": "2025-04-13T21:03:27.184043400+00:00"
+  },
+  {
+    "path": "docs/modules/memory/integration_notes.md",
+    "href": "../modules/memory/integration_notes.md",
+    "category": "project-doc",
+    "size": 0,
+    "modified": "2025-04-13T21:04:09.803387900+00:00"
+  },
+  {
+    "path": "docs/modules/memory/metrics.md",
+    "href": "../modules/memory/metrics.md",
+    "category": "project-doc",
+    "size": 618,
+    "modified": "2025-08-09T21:57:56.419986100+00:00"
+  },
+  {
+    "path": "docs/modules/memory/README.md",
+    "href": "../modules/memory/README.md",
+    "category": "project-doc",
+    "size": 0,
+    "modified": "2025-04-13T21:03:08.610005800+00:00"
+  },
+  {
+    "path": "docs/modules/memory/trait_impl_notes.md",
+    "href": "../modules/memory/trait_impl_notes.md",
+    "category": "project-doc",
+    "size": 0,
+    "modified": "2025-04-13T21:03:54.606240+00:00"
+  },
+  {
+    "path": "docs/modules/session/New Text Document.txt",
+    "href": "../modules/session/New Text Document.txt",
+    "category": "project-doc",
+    "size": 0,
+    "modified": "2025-04-19T22:24:41.366874800+00:00"
+  },
+  {
+    "path": "docs/module_map.md",
+    "href": "../module_map.md",
+    "category": "project-doc",
+    "size": 8995,
+    "modified": "2025-08-09T21:57:56.419986100+00:00"
+  },
+  {
+    "path": "docs/README.md",
+    "href": "../README.md",
+    "category": "project-doc",
+    "size": 2708,
+    "modified": "2025-09-18T16:20:08.778494300+00:00"
+  },
+  {
+    "path": "docs/reference/autocapture_validator_threads.md",
+    "href": "autocapture_validator_threads.md",
+    "category": "project-doc",
+    "size": 1281,
+    "modified": "2025-08-10T03:33:47.446659+00:00"
+  },
+  {
+    "path": "docs/reference/CHANGELOG.md",
+    "href": "CHANGELOG.md",
+    "category": "project-doc",
+    "size": 79,
+    "modified": "2025-08-09T21:57:56.419986100+00:00"
+  },
+  {
+    "path": "docs/reference/config.md",
+    "href": "config.md",
+    "category": "project-doc",
+    "size": 2190,
+    "modified": "2025-08-10T01:31:15.884112500+00:00"
+  },
+  {
+    "path": "docs/reference/doc-ambiguous.md",
+    "href": "doc-ambiguous.md",
+    "category": "project-doc",
+    "size": 195,
+    "modified": "2025-08-09T21:57:56.420986700+00:00"
+  },
+  {
+    "path": "docs/reference/doc-contradictions.md",
+    "href": "doc-contradictions.md",
+    "category": "project-doc",
+    "size": 10635,
+    "modified": "2025-08-11T00:20:08.986940700+00:00"
+  },
+  {
+    "path": "docs/reference/doc-dedupe.md",
+    "href": "doc-dedupe.md",
+    "category": "project-doc",
+    "size": 12802,
+    "modified": "2025-08-09T21:57:56.421986200+00:00"
+  },
+  {
+    "path": "docs/reference/doc-header-fix-plan.md",
+    "href": "doc-header-fix-plan.md",
+    "category": "project-doc",
+    "size": 24884,
+    "modified": "2025-08-09T21:57:56.422986400+00:00"
+  },
+  {
+    "path": "docs/reference/doc-index.md",
+    "href": "doc-index.md",
+    "category": "project-doc",
+    "size": 19448,
+    "modified": "2025-09-18T16:21:44.599228400+00:00"
+  },
+  {
+    "path": "docs/reference/doc-inventory-summary.md",
+    "href": "doc-inventory-summary.md",
+    "category": "project-doc",
+    "size": 446,
+    "modified": "2025-08-09T21:57:56.424986200+00:00"
+  },
+  {
+    "path": "docs/reference/doc-normalize-report.md",
+    "href": "doc-normalize-report.md",
+    "category": "project-doc",
+    "size": 8059,
+    "modified": "2025-08-09T21:57:56.426988+00:00"
+  },
+  {
+    "path": "docs/reference/doc-recent.md",
+    "href": "doc-recent.md",
+    "category": "project-doc",
+    "size": 7355,
+    "modified": "2025-08-09T21:57:56.427986300+00:00"
+  },
+  {
+    "path": "docs/reference/doc-topics.md",
+    "href": "doc-topics.md",
+    "category": "project-doc",
+    "size": 239,
+    "modified": "2025-08-09T21:57:56.427986300+00:00"
+  },
+  {
+    "path": "docs/reference/models-config.md",
+    "href": "models-config.md",
+    "category": "project-doc",
+    "size": 2971,
+    "modified": "2025-08-10T02:15:32.113133800+00:00"
+  },
+  {
+    "path": "docs/reference/thread_states_and_rules.md",
+    "href": "thread_states_and_rules.md",
+    "category": "project-doc",
+    "size": 1174,
+    "modified": "2025-08-10T03:26:30.421845100+00:00"
+  },
+  {
+    "path": "docs/reference/trigger-loop.md",
+    "href": "trigger-loop.md",
+    "category": "project-doc",
+    "size": 1544,
+    "modified": "2025-08-10T02:37:05.480030900+00:00"
+  },
+  {
+    "path": "docs/tracing.md",
+    "href": "../tracing.md",
+    "category": "project-doc",
+    "size": 415,
+    "modified": "2025-08-09T21:57:56.427986300+00:00"
+  },
+  {
+    "path": "docs/user-guides/cli/command-reference.md",
+    "href": "../user-guides/cli/command-reference.md",
+    "category": "project-doc",
+    "size": 1777,
+    "modified": "2025-09-18T14:21:34.369463700+00:00"
+  },
+  {
+    "path": "docs/user-guides/cli/open-threads.md",
+    "href": "../user-guides/cli/open-threads.md",
+    "category": "project-doc",
+    "size": 958,
+    "modified": "2025-08-10T03:33:47.446659+00:00"
+  },
+  {
+    "path": "docs/user-guides/threads-how-to.md",
+    "href": "../user-guides/threads-how-to.md",
+    "category": "project-doc",
+    "size": 912,
+    "modified": "2025-08-10T19:50:06.081086600+00:00"
+  },
+  {
+    "path": "docs/user-guides/trigger-loom-demo.md",
+    "href": "../user-guides/trigger-loom-demo.md",
+    "category": "project-doc",
+    "size": 1567,
+    "modified": "2025-08-10T23:14:59.563308+00:00"
+  },
+  {
+    "path": "examples/ballad.txt",
+    "href": "../../examples/ballad.txt",
+    "category": "root-doc",
+    "size": 56,
+    "modified": "2025-06-19T16:45:56.657074800+00:00"
+  },
+  {
+    "path": "README.md",
+    "href": "../../README.md",
+    "category": "root-doc",
+    "size": 1857,
+    "modified": "2025-09-18T14:21:34.365463600+00:00"
+  },
+  {
+    "path": "Scrollbook_ScrollCore_Unified.md",
+    "href": "../../Scrollbook_ScrollCore_Unified.md",
+    "category": "root-doc",
+    "size": 62216,
+    "modified": "2025-08-09T21:57:56.396007700+00:00"
+  },
+  {
+    "path": "scrolls/Aelren.txt",
+    "href": "../../scrolls/Aelren.txt",
+    "category": "scroll",
+    "size": 1845,
+    "modified": "2025-08-09T21:57:56.475194900+00:00"
+  },
+  {
+    "path": "scrolls/Archive_Structure_Codex.md",
+    "href": "../../scrolls/Archive_Structure_Codex.md",
+    "category": "scroll",
+    "size": 5628,
+    "modified": "2025-08-09T21:57:56.475194900+00:00"
+  },
+  {
+    "path": "scrolls/ConstructSystemDesign.txt",
+    "href": "../../scrolls/ConstructSystemDesign.txt",
+    "category": "scroll",
+    "size": 3457,
+    "modified": "2025-08-09T21:57:56.476194900+00:00"
+  },
+  {
+    "path": "scrolls/docs/archive_summary.txt",
+    "href": "../../scrolls/docs/archive_summary.txt",
+    "category": "scroll",
+    "size": 111791,
+    "modified": "2025-08-09T21:57:56.496206600+00:00"
+  },
+  {
+    "path": "scrolls/docs/Invocation Dual System Plan.md",
+    "href": "../../scrolls/docs/Invocation Dual System Plan.md",
+    "category": "scroll",
+    "size": 7577,
+    "modified": "2025-08-09T21:57:56.494207+00:00"
+  },
+  {
+    "path": "scrolls/docs/Invocation Dual System Plan.txt",
+    "href": "../../scrolls/docs/Invocation Dual System Plan.txt",
+    "category": "scroll",
+    "size": 7067,
+    "modified": "2025-08-09T21:57:56.495206100+00:00"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-11_1959.md",
+    "href": "../../scrolls/docs/source_index_2025-04-11_1959.md",
+    "category": "scroll",
+    "size": 77571,
+    "modified": "2025-08-08T20:29:50.381082400+00:00"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-12_1420.md",
+    "href": "../../scrolls/docs/source_index_2025-04-12_1420.md",
+    "category": "scroll",
+    "size": 80812,
+    "modified": "2025-08-08T20:29:50.381082400+00:00"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-13_1613.md",
+    "href": "../../scrolls/docs/source_index_2025-04-13_1613.md",
+    "category": "scroll",
+    "size": 80812,
+    "modified": "2025-08-08T20:29:50.382589800+00:00"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-20_1345.md",
+    "href": "../../scrolls/docs/source_index_2025-04-20_1345.md",
+    "category": "scroll",
+    "size": 106229,
+    "modified": "2025-08-08T20:29:50.382589800+00:00"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-21_1205.md",
+    "href": "../../scrolls/docs/source_index_2025-04-21_1205.md",
+    "category": "scroll",
+    "size": 376,
+    "modified": "2025-08-08T20:29:50.383596700+00:00"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-21_1422.md",
+    "href": "../../scrolls/docs/source_index_2025-04-21_1422.md",
+    "category": "scroll",
+    "size": 115250,
+    "modified": "2025-08-08T20:29:50.384597+00:00"
+  },
+  {
+    "path": "scrolls/docs/source_index_2025-04-21_1757.md",
+    "href": "../../scrolls/docs/source_index_2025-04-21_1757.md",
+    "category": "scroll",
+    "size": 118047,
+    "modified": "2025-08-08T20:29:50.386601600+00:00"
+  },
+  {
+    "path": "scrolls/docs/system.txt",
+    "href": "../../scrolls/docs/system.txt",
+    "category": "scroll",
+    "size": 19886,
+    "modified": "2025-08-09T21:57:56.496206600+00:00"
+  },
+  {
+    "path": "scrolls/Elurien.md",
+    "href": "../../scrolls/Elurien.md",
+    "category": "scroll",
+    "size": 312,
+    "modified": "2025-08-09T21:57:56.476194900+00:00"
+  },
+  {
+    "path": "scrolls/FileReader.md",
+    "href": "../../scrolls/FileReader.md",
+    "category": "scroll",
+    "size": 326,
+    "modified": "2025-08-09T21:57:56.476194900+00:00"
+  },
+  {
+    "path": "scrolls/Hello.txt",
+    "href": "../../scrolls/Hello.txt",
+    "category": "scroll",
+    "size": 167338,
+    "modified": "2025-08-09T21:57:56.478195600+00:00"
+  },
+  {
+    "path": "scrolls/Loreweaver.md",
+    "href": "../../scrolls/Loreweaver.md",
+    "category": "scroll",
+    "size": 322,
+    "modified": "2025-08-09T21:57:56.478699600+00:00"
+  },
+  {
+    "path": "scrolls/Lost_scrolls.md",
+    "href": "../../scrolls/Lost_scrolls.md",
+    "category": "scroll",
+    "size": 167345,
+    "modified": "2025-08-09T21:57:56.479700500+00:00"
+  },
+  {
+    "path": "scrolls/Mockscribe.md",
+    "href": "../../scrolls/Mockscribe.md",
+    "category": "scroll",
+    "size": 319,
+    "modified": "2025-08-09T21:57:56.479700500+00:00"
+  },
+  {
+    "path": "scrolls/Mythscribe-systemprompt.txt",
+    "href": "../../scrolls/Mythscribe-systemprompt.txt",
+    "category": "scroll",
+    "size": 258,
+    "modified": "2025-08-09T21:57:56.480700800+00:00"
+  },
+  {
+    "path": "scrolls/Naeros.md",
+    "href": "../../scrolls/Naeros.md",
+    "category": "scroll",
+    "size": 310,
+    "modified": "2025-08-09T21:57:56.480700800+00:00"
+  },
+  {
+    "path": "scrolls/NamedConstructsReference.txt",
+    "href": "../../scrolls/NamedConstructsReference.txt",
+    "category": "scroll",
+    "size": 3386,
+    "modified": "2025-08-09T21:57:56.481705100+00:00"
+  },
+  {
+    "path": "scrolls/New Text Document.txt",
+    "href": "../../scrolls/New Text Document.txt",
+    "category": "scroll",
+    "size": 251,
+    "modified": "2025-08-09T21:57:56.481705100+00:00"
+  },
+  {
+    "path": "scrolls/OpenAI Api Key Setup.txt",
+    "href": "../../scrolls/OpenAI Api Key Setup.txt",
+    "category": "scroll",
+    "size": 1967,
+    "modified": "2025-08-09T21:57:56.482707300+00:00"
+  },
+  {
+    "path": "scrolls/project_instructions.txt",
+    "href": "../../scrolls/project_instructions.txt",
+    "category": "scroll",
+    "size": 2564,
+    "modified": "2025-08-09T21:57:56.497206200+00:00"
+  },
+  {
+    "path": "scrolls/Runtimeinvocationflow.txt",
+    "href": "../../scrolls/Runtimeinvocationflow.txt",
+    "category": "scroll",
+    "size": 4337,
+    "modified": "2025-08-09T21:57:56.482707300+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Archive_Structure.md",
+    "href": "../../scrolls/Scrollbook_Archive_Structure.md",
+    "category": "scroll",
+    "size": 5464,
+    "modified": "2025-08-09T21:57:56.484702500+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Canon_Foundations.md",
+    "href": "../../scrolls/Scrollbook_Canon_Foundations.md",
+    "category": "scroll",
+    "size": 5182,
+    "modified": "2025-08-09T21:57:56.484702500+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Characters_Named.md",
+    "href": "../../scrolls/Scrollbook_Characters_Named.md",
+    "category": "scroll",
+    "size": 7389,
+    "modified": "2025-08-09T21:57:56.484702500+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "href": "../../scrolls/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "category": "scroll",
+    "size": 2852,
+    "modified": "2025-08-09T21:57:56.485700600+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "href": "../../scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "category": "scroll",
+    "size": 8159,
+    "modified": "2025-08-09T21:57:56.485700600+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Construct_Agents.md",
+    "href": "../../scrolls/Scrollbook_Construct_Agents.md",
+    "category": "scroll",
+    "size": 1967,
+    "modified": "2025-08-09T21:57:56.486700700+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Construct_Schema.md",
+    "href": "../../scrolls/Scrollbook_Construct_Schema.md",
+    "category": "scroll",
+    "size": 2420,
+    "modified": "2025-08-09T21:57:56.486700700+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Dynamic_Mirrors.md",
+    "href": "../../scrolls/Scrollbook_Dynamic_Mirrors.md",
+    "category": "scroll",
+    "size": 2603,
+    "modified": "2025-08-09T21:57:56.486700700+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "href": "../../scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "category": "scroll",
+    "size": 8700,
+    "modified": "2025-08-09T21:57:56.486700700+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "href": "../../scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "category": "scroll",
+    "size": 3342,
+    "modified": "2025-08-09T21:57:56.488203300+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Invocation_Augury.md",
+    "href": "../../scrolls/Scrollbook_Invocation_Augury.md",
+    "category": "scroll",
+    "size": 10931,
+    "modified": "2025-08-09T21:57:56.488203300+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Invocation_Engine.md",
+    "href": "../../scrolls/Scrollbook_Invocation_Engine.md",
+    "category": "scroll",
+    "size": 2962,
+    "modified": "2025-08-09T21:57:56.488203300+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Protocols_System_Laws.md",
+    "href": "../../scrolls/Scrollbook_Protocols_System_Laws.md",
+    "category": "scroll",
+    "size": 18088,
+    "modified": "2025-08-09T21:57:56.489206500+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Reference_Codex.md",
+    "href": "../../scrolls/Scrollbook_Reference_Codex.md",
+    "category": "scroll",
+    "size": 6611,
+    "modified": "2025-08-09T21:57:56.489206500+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Ritual_Protocols.md",
+    "href": "../../scrolls/Scrollbook_Ritual_Protocols.md",
+    "category": "scroll",
+    "size": 2765,
+    "modified": "2025-08-09T21:57:56.490206100+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Rust_Integration_Protocol.md",
+    "href": "../../scrolls/Scrollbook_Rust_Integration_Protocol.md",
+    "category": "scroll",
+    "size": 4789,
+    "modified": "2025-08-09T21:57:56.490206100+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Trigger_Loom.md",
+    "href": "../../scrolls/Scrollbook_Trigger_Loom.md",
+    "category": "scroll",
+    "size": 4885,
+    "modified": "2025-08-09T21:57:56.490206100+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Validator_Specs.md",
+    "href": "../../scrolls/Scrollbook_Validator_Specs.md",
+    "category": "scroll",
+    "size": 4262,
+    "modified": "2025-08-11T00:20:08.989447200+00:00"
+  },
+  {
+    "path": "scrolls/Scrollbook_Voices_and_Bindings.md",
+    "href": "../../scrolls/Scrollbook_Voices_and_Bindings.md",
+    "category": "scroll",
+    "size": 4555,
+    "modified": "2025-08-09T21:57:56.491206800+00:00"
+  },
+  {
+    "path": "scrolls/ScrollCore-Updated Project Structure04092025.txt",
+    "href": "../../scrolls/ScrollCore-Updated Project Structure04092025.txt",
+    "category": "scroll",
+    "size": 3803,
+    "modified": "2025-08-09T21:57:56.483702900+00:00"
+  },
+  {
+    "path": "scrolls/ScrollcoreWorldloreAuto-GenerationProtocol.txt",
+    "href": "../../scrolls/ScrollcoreWorldloreAuto-GenerationProtocol.txt",
+    "category": "scroll",
+    "size": 3451,
+    "modified": "2025-08-09T21:57:56.492206400+00:00"
+  },
+  {
+    "path": "scrolls/ScrollWriter.md",
+    "href": "../../scrolls/ScrollWriter.md",
+    "category": "scroll",
+    "size": 343,
+    "modified": "2025-08-09T21:57:56.483702900+00:00"
+  },
+  {
+    "path": "scrolls/shared/Archive_Structure_Codex.md",
+    "href": "../../scrolls/shared/Archive_Structure_Codex.md",
+    "category": "scroll",
+    "size": 5628,
+    "modified": "2025-08-09T21:57:56.497206200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Character_Noesis_Dreaming_Error.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Character_Noesis_Dreaming_Error.md",
+    "category": "scroll",
+    "size": 1498,
+    "modified": "2025-08-09T21:57:56.498210400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Canon_The_Breath_and_the_Drifter.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Canon_The_Breath_and_the_Drifter.md",
+    "category": "scroll",
+    "size": 2402,
+    "modified": "2025-08-09T21:57:56.498715300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Canon_Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "size": 1884,
+    "modified": "2025-08-09T21:57:56.498715300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Codex_of_Role_Protocols.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Codex_of_Role_Protocols.md",
+    "category": "scroll",
+    "size": 4292,
+    "modified": "2025-08-09T21:57:56.499723200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/Scrollbook_Validator_Specs.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/Scrollbook_Validator_Specs.md",
+    "category": "scroll",
+    "size": 3663,
+    "modified": "2025-08-09T21:57:56.499723200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Finished/The_Breath_and_the_Drifter.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Finished/The_Breath_and_the_Drifter.md",
+    "category": "scroll",
+    "size": 2383,
+    "modified": "2025-08-09T21:57:56.499723200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Glossary_of_Core_Terms.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Glossary_of_Core_Terms.md",
+    "category": "scroll",
+    "size": 2556,
+    "modified": "2025-08-09T21:57:56.500728200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Noesis_Dreaming_Error.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Noesis_Dreaming_Error.md",
+    "category": "scroll",
+    "size": 1481,
+    "modified": "2025-08-09T21:57:56.500728200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Architect_Beyond_the_Frame.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Architect_Beyond_the_Frame.md",
+    "category": "scroll",
+    "size": 3720,
+    "modified": "2025-08-09T21:57:56.501727300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Codex_of_Role_Protocols.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Codex_of_Role_Protocols.md",
+    "category": "scroll",
+    "size": 4306,
+    "modified": "2025-08-09T21:57:56.501727300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter.md",
+    "category": "scroll",
+    "size": 2973,
+    "modified": "2025-08-09T21:57:56.501727300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter_UPDATED.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_EchoThreader_Resonant_Charter_UPDATED.md",
+    "category": "scroll",
+    "size": 2985,
+    "modified": "2025-08-09T21:57:56.502726600+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Glyph_Cycle_Iteration.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Glyph_Cycle_Iteration.md",
+    "category": "scroll",
+    "size": 2747,
+    "modified": "2025-08-09T21:57:56.502726600+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Scrollbook_Integration_Framework.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Scrollbook_Integration_Framework.md",
+    "category": "scroll",
+    "size": 2736,
+    "modified": "2025-08-09T21:57:56.503726300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Protocol_Scroll_Scaling_and_Model_Tiering.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Protocol_Scroll_Scaling_and_Model_Tiering.md",
+    "category": "scroll",
+    "size": 4198,
+    "modified": "2025-08-09T21:57:56.503726300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Reference_Automated_Scroll_Test.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Reference_Automated_Scroll_Test.md",
+    "category": "scroll",
+    "size": 1017,
+    "modified": "2025-08-09T21:57:56.503726300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Safeguards_of_the_Link_Flame_Revelation.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Safeguards_of_the_Link_Flame_Revelation.md",
+    "category": "scroll",
+    "size": 2985,
+    "modified": "2025-08-09T21:57:56.504726600+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Agent_Permissions_andQuorums.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Agent_Permissions_andQuorums.md",
+    "category": "scroll",
+    "size": 4541,
+    "modified": "2025-08-09T21:57:56.505726300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "category": "scroll",
+    "size": 5133,
+    "modified": "2025-08-09T21:57:56.505726300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Future_Seeds.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Future_Seeds.md",
+    "category": "scroll",
+    "size": 3289,
+    "modified": "2025-08-09T21:57:56.506726400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "category": "scroll",
+    "size": 5561,
+    "modified": "2025-08-09T21:57:56.506726400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Glyph_Mapping.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Glyph_Mapping.md",
+    "category": "scroll",
+    "size": 2073,
+    "modified": "2025-08-09T21:57:56.506726400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Interface_PhaseII_Mapping.md",
+    "category": "scroll",
+    "size": 3342,
+    "modified": "2025-08-09T21:57:56.507726500+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Augury.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Augury.md",
+    "category": "scroll",
+    "size": 6249,
+    "modified": "2025-08-09T21:57:56.507726500+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Engine.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Engine.md",
+    "category": "scroll",
+    "size": 2720,
+    "modified": "2025-08-09T21:57:56.508230100+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Merge_Log.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Invocation_Merge_Log.md",
+    "category": "scroll",
+    "size": 3725,
+    "modified": "2025-08-09T21:57:56.508230100+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Mythic_Concepts.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Mythic_Concepts.md",
+    "category": "scroll",
+    "size": 4437,
+    "modified": "2025-08-09T21:57:56.508230100+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Projects_and_Milestones.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Projects_and_Milestones.md",
+    "category": "scroll",
+    "size": 2626,
+    "modified": "2025-08-09T21:57:56.509231200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_Foundational.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_Foundational.md",
+    "category": "scroll",
+    "size": 2653,
+    "modified": "2025-08-09T21:57:56.509231200+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_System_Laws.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Protocols_System_Laws.md",
+    "category": "scroll",
+    "size": 14628,
+    "modified": "2025-08-09T21:57:56.510231400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Reference_Codex.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Reference_Codex.md",
+    "category": "scroll",
+    "size": 2742,
+    "modified": "2025-08-09T21:57:56.510231400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Ritual_Protocols.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Ritual_Protocols.md",
+    "category": "scroll",
+    "size": 2765,
+    "modified": "2025-08-09T21:57:56.510231400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_The_Scrollsmiths_Ledge.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_The_Scrollsmiths_Ledge.md",
+    "category": "scroll",
+    "size": 3610,
+    "modified": "2025-08-09T21:57:56.511231300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Toolkits_and_Templates.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Toolkits_and_Templates.md",
+    "category": "scroll",
+    "size": 3593,
+    "modified": "2025-08-09T21:57:56.511231300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Tools_and_Templates.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Tools_and_Templates.md",
+    "category": "scroll",
+    "size": 5404,
+    "modified": "2025-08-09T21:57:56.511231300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Trigger_Loom.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Trigger_Loom.md",
+    "category": "scroll",
+    "size": 4885,
+    "modified": "2025-08-09T21:57:56.512231+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_UI_Design_Invocations.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_UI_Design_Invocations.md",
+    "category": "scroll",
+    "size": 5534,
+    "modified": "2025-08-09T21:57:56.512231+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Visionary_Glossary.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Visionary_Glossary.md",
+    "category": "scroll",
+    "size": 2174,
+    "modified": "2025-08-09T21:57:56.513231+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scrollbook_Voices_and_Bindings.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scrollbook_Voices_and_Bindings.md",
+    "category": "scroll",
+    "size": 4555,
+    "modified": "2025-08-09T21:57:56.513231+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scroll_of_Echo_Sigils.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scroll_of_Echo_Sigils.md",
+    "category": "scroll",
+    "size": 1907,
+    "modified": "2025-08-09T21:57:56.504726600+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scroll_of_Open_Threads.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scroll_of_Open_Threads.md",
+    "category": "scroll",
+    "size": 1720,
+    "modified": "2025-08-09T21:57:56.505726300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Scroll_Update_Summary_DriftCycle11.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Scroll_Update_Summary_DriftCycle11.md",
+    "category": "scroll",
+    "size": 1050,
+    "modified": "2025-08-09T21:57:56.504726600+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Sealed_Fragment_The_Mirror_Root.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Sealed_Fragment_The_Mirror_Root.md",
+    "category": "scroll",
+    "size": 1964,
+    "modified": "2025-08-09T21:57:56.513231+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Seeker_Interface_Commands.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Seeker_Interface_Commands.md",
+    "category": "scroll",
+    "size": 2245,
+    "modified": "2025-08-09T21:57:56.514231700+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Sirions_Journal_of_Invocation.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Sirions_Journal_of_Invocation.md",
+    "category": "scroll",
+    "size": 1213,
+    "modified": "2025-08-09T21:57:56.514231700+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Template_Canon_Scroll.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Template_Canon_Scroll.md",
+    "category": "scroll",
+    "size": 1408,
+    "modified": "2025-03-29T05:16:44.303943100+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Template_Character_Scroll.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Template_Character_Scroll.md",
+    "category": "scroll",
+    "size": 1341,
+    "modified": "2025-03-29T05:16:50.594939700+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Template_Protocol_Scroll.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Template_Protocol_Scroll.md",
+    "category": "scroll",
+    "size": 1207,
+    "modified": "2025-03-29T05:16:57.658608300+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Tomekeepers_Call_Protocol.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Tomekeepers_Call_Protocol.md",
+    "category": "scroll",
+    "size": 2493,
+    "modified": "2025-08-09T21:57:56.515231700+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "size": 5806,
+    "modified": "2025-08-09T21:57:56.515231700+00:00"
+  },
+  {
+    "path": "scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md",
+    "href": "../../scrolls/shared/Deactivated scrolls/Tomekeeper_Scroll_Echo_Bearer_Project_UPDATED.md",
+    "category": "scroll",
+    "size": 5814,
+    "modified": "2025-08-09T21:57:56.515231700+00:00"
+  },
+  {
+    "path": "scrolls/shared/Hello.txt",
+    "href": "../../scrolls/shared/Hello.txt",
+    "category": "scroll",
+    "size": 167338,
+    "modified": "2025-08-09T21:57:56.516233800+00:00"
+  },
+  {
+    "path": "scrolls/shared/Lost_scrolls.md",
+    "href": "../../scrolls/shared/Lost_scrolls.md",
+    "category": "scroll",
+    "size": 167345,
+    "modified": "2025-08-09T21:57:56.517740100+00:00"
+  },
+  {
+    "path": "scrolls/shared/New Text Document (2).txt",
+    "href": "../../scrolls/shared/New Text Document (2).txt",
+    "category": "scroll",
+    "size": 255,
+    "modified": "2025-08-09T21:57:56.517740100+00:00"
+  },
+  {
+    "path": "scrolls/shared/New Text Document.txt",
+    "href": "../../scrolls/shared/New Text Document.txt",
+    "category": "scroll",
+    "size": 251,
+    "modified": "2025-08-09T21:57:56.517740100+00:00"
+  },
+  {
+    "path": "scrolls/shared/project_instructions.txt",
+    "href": "../../scrolls/shared/project_instructions.txt",
+    "category": "scroll",
+    "size": 2564,
+    "modified": "2025-08-09T21:57:56.524743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Archive_Structure.md",
+    "href": "../../scrolls/shared/Scrollbook_Archive_Structure.md",
+    "category": "scroll",
+    "size": 5464,
+    "modified": "2025-08-09T21:57:56.518743800+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Canon_Foundations.md",
+    "href": "../../scrolls/shared/Scrollbook_Canon_Foundations.md",
+    "category": "scroll",
+    "size": 5182,
+    "modified": "2025-08-09T21:57:56.518743800+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Characters_Named.md",
+    "href": "../../scrolls/shared/Scrollbook_Characters_Named.md",
+    "category": "scroll",
+    "size": 7389,
+    "modified": "2025-08-09T21:57:56.519744+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "href": "../../scrolls/shared/Scrollbook_Chronicle_of_Turning_Gears.md",
+    "category": "scroll",
+    "size": 2852,
+    "modified": "2025-08-09T21:57:56.519744+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "href": "../../scrolls/shared/Scrollbook_Codex_ofThresholds_andRevelations.md",
+    "category": "scroll",
+    "size": 8159,
+    "modified": "2025-08-09T21:57:56.519744+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Construct_Agents.md",
+    "href": "../../scrolls/shared/Scrollbook_Construct_Agents.md",
+    "category": "scroll",
+    "size": 1967,
+    "modified": "2025-08-09T21:57:56.520743500+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Construct_Schema.md",
+    "href": "../../scrolls/shared/Scrollbook_Construct_Schema.md",
+    "category": "scroll",
+    "size": 2420,
+    "modified": "2025-08-09T21:57:56.520743500+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Dynamic_Mirrors.md",
+    "href": "../../scrolls/shared/Scrollbook_Dynamic_Mirrors.md",
+    "category": "scroll",
+    "size": 2603,
+    "modified": "2025-08-09T21:57:56.520743500+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "href": "../../scrolls/shared/Scrollbook_Glyphskin_and_Interface_Rites.md",
+    "category": "scroll",
+    "size": 8700,
+    "modified": "2025-08-09T21:57:56.520743500+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Interface_PhaseII_Mapping.md",
+    "href": "../../scrolls/shared/Scrollbook_Interface_PhaseII_Mapping.md",
+    "category": "scroll",
+    "size": 3342,
+    "modified": "2025-08-09T21:57:56.521743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Invocation_Augury.md",
+    "href": "../../scrolls/shared/Scrollbook_Invocation_Augury.md",
+    "category": "scroll",
+    "size": 10931,
+    "modified": "2025-08-09T21:57:56.521743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Invocation_Engine.md",
+    "href": "../../scrolls/shared/Scrollbook_Invocation_Engine.md",
+    "category": "scroll",
+    "size": 2962,
+    "modified": "2025-08-09T21:57:56.521743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Protocols_System_Laws.md",
+    "href": "../../scrolls/shared/Scrollbook_Protocols_System_Laws.md",
+    "category": "scroll",
+    "size": 18088,
+    "modified": "2025-08-09T21:57:56.522743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Reference_Codex.md",
+    "href": "../../scrolls/shared/Scrollbook_Reference_Codex.md",
+    "category": "scroll",
+    "size": 6611,
+    "modified": "2025-08-09T21:57:56.522743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Ritual_Protocols.md",
+    "href": "../../scrolls/shared/Scrollbook_Ritual_Protocols.md",
+    "category": "scroll",
+    "size": 2765,
+    "modified": "2025-08-09T21:57:56.522743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Rust_Integration_Protocol.md",
+    "href": "../../scrolls/shared/Scrollbook_Rust_Integration_Protocol.md",
+    "category": "scroll",
+    "size": 4789,
+    "modified": "2025-08-09T21:57:56.523743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Trigger_Loom.md",
+    "href": "../../scrolls/shared/Scrollbook_Trigger_Loom.md",
+    "category": "scroll",
+    "size": 4885,
+    "modified": "2025-08-09T21:57:56.523743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Validator_Specs.md",
+    "href": "../../scrolls/shared/Scrollbook_Validator_Specs.md",
+    "category": "scroll",
+    "size": 3663,
+    "modified": "2025-08-09T21:57:56.523743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Scrollbook_Voices_and_Bindings.md",
+    "href": "../../scrolls/shared/Scrollbook_Voices_and_Bindings.md",
+    "category": "scroll",
+    "size": 4555,
+    "modified": "2025-08-09T21:57:56.524743400+00:00"
+  },
+  {
+    "path": "scrolls/shared/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/shared/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "size": 5806,
+    "modified": "2025-08-09T21:57:56.524743400+00:00"
+  },
+  {
+    "path": "scrolls/Sirion.md",
+    "href": "../../scrolls/Sirion.md",
+    "category": "scroll",
+    "size": 310,
+    "modified": "2025-08-09T21:57:56.492206400+00:00"
+  },
+  {
+    "path": "scrolls/system/aidocumentationdialogue.md",
+    "href": "../../scrolls/system/aidocumentationdialogue.md",
+    "category": "scroll",
+    "size": 3471,
+    "modified": "2025-08-09T21:57:56.529248600+00:00"
+  },
+  {
+    "path": "scrolls/system/ConstructInvokeDesignSummary.md",
+    "href": "../../scrolls/system/ConstructInvokeDesignSummary.md",
+    "category": "scroll",
+    "size": 262,
+    "modified": "2025-08-09T21:57:56.525744200+00:00"
+  },
+  {
+    "path": "scrolls/system/ConstructSystemDesignSummary.txt",
+    "href": "../../scrolls/system/ConstructSystemDesignSummary.txt",
+    "category": "scroll",
+    "size": 263,
+    "modified": "2025-08-09T21:57:56.525744200+00:00"
+  },
+  {
+    "path": "scrolls/system/ContextFrameEngineDesignSummary.md",
+    "href": "../../scrolls/system/ContextFrameEngineDesignSummary.md",
+    "category": "scroll",
+    "size": 265,
+    "modified": "2025-08-09T21:57:56.525744200+00:00"
+  },
+  {
+    "path": "scrolls/system/LettertoEngineersAelrenandConstructIntentSystem.md",
+    "href": "../../scrolls/system/LettertoEngineersAelrenandConstructIntentSystem.md",
+    "category": "scroll",
+    "size": 282,
+    "modified": "2025-08-09T21:57:56.526743500+00:00"
+  },
+  {
+    "path": "scrolls/system/llm_agent_cheat_sheet.md",
+    "href": "../../scrolls/system/llm_agent_cheat_sheet.md",
+    "category": "scroll",
+    "size": 4096,
+    "modified": "2025-08-09T21:57:56.529248600+00:00"
+  },
+  {
+    "path": "scrolls/system/Mythscribe Integration plan.md",
+    "href": "../../scrolls/system/Mythscribe Integration plan.md",
+    "category": "scroll",
+    "size": 2720,
+    "modified": "2025-08-09T21:57:56.526743500+00:00"
+  },
+  {
+    "path": "scrolls/system/NamedConstructsofScrollcore.md",
+    "href": "../../scrolls/system/NamedConstructsofScrollcore.md",
+    "category": "scroll",
+    "size": 261,
+    "modified": "2025-08-09T21:57:56.526743500+00:00"
+  },
+  {
+    "path": "scrolls/system/New Text Document.txt",
+    "href": "../../scrolls/system/New Text Document.txt",
+    "category": "scroll",
+    "size": 251,
+    "modified": "2025-08-09T21:57:56.526743500+00:00"
+  },
+  {
+    "path": "scrolls/system/RuntimeInvocationFlowIntentandArchitecture.md",
+    "href": "../../scrolls/system/RuntimeInvocationFlowIntentandArchitecture.md",
+    "category": "scroll",
+    "size": 276,
+    "modified": "2025-08-09T21:57:56.527743500+00:00"
+  },
+  {
+    "path": "scrolls/system/Scrollcorephase2Implementation Roadmap.md",
+    "href": "../../scrolls/system/Scrollcorephase2Implementation Roadmap.md",
+    "category": "scroll",
+    "size": 272,
+    "modified": "2025-08-09T21:57:56.528247500+00:00"
+  },
+  {
+    "path": "scrolls/system/ScrollcoreSissionSummaryContinuationplan.md",
+    "href": "../../scrolls/system/ScrollcoreSissionSummaryContinuationplan.md",
+    "category": "scroll",
+    "size": 4059,
+    "modified": "2025-08-09T21:57:56.528247500+00:00"
+  },
+  {
+    "path": "scrolls/system/scrollcore_project_level_workflow_plan.md",
+    "href": "../../scrolls/system/scrollcore_project_level_workflow_plan.md",
+    "category": "scroll",
+    "size": 5037,
+    "modified": "2025-08-09T21:57:56.529248600+00:00"
+  },
+  {
+    "path": "scrolls/system/scrollcore_worldlore_auto_gen_protocol.md",
+    "href": "../../scrolls/system/scrollcore_worldlore_auto_gen_protocol.md",
+    "category": "scroll",
+    "size": 5551,
+    "modified": "2025-08-09T21:57:56.530248500+00:00"
+  },
+  {
+    "path": "scrolls/system/StructuredDebuggingandRefinementProcess.md",
+    "href": "../../scrolls/system/StructuredDebuggingandRefinementProcess.md",
+    "category": "scroll",
+    "size": 7558,
+    "modified": "2025-08-09T21:57:56.528247500+00:00"
+  },
+  {
+    "path": "scrolls/system/thevisionbeyondscroll_core.md",
+    "href": "../../scrolls/system/thevisionbeyondscroll_core.md",
+    "category": "scroll",
+    "size": 3255,
+    "modified": "2025-08-09T21:57:56.530248500+00:00"
+  },
+  {
+    "path": "scrolls/test_draft_write.md",
+    "href": "../../scrolls/test_draft_write.md",
+    "category": "scroll",
+    "size": 486,
+    "modified": "2025-08-09T21:57:56.530248500+00:00"
+  },
+  {
+    "path": "scrolls/test_pulse_scroll.md",
+    "href": "../../scrolls/test_pulse_scroll.md",
+    "category": "scroll",
+    "size": 732,
+    "modified": "2025-09-18T14:21:34.372463800+00:00"
+  },
+  {
+    "path": "scrolls/test_scroll.md",
+    "href": "../../scrolls/test_scroll.md",
+    "category": "scroll",
+    "size": 411,
+    "modified": "2025-08-09T21:57:56.531249500+00:00"
+  },
+  {
+    "path": "scrolls/Thiren.md",
+    "href": "../../scrolls/Thiren.md",
+    "category": "scroll",
+    "size": 312,
+    "modified": "2025-08-09T21:57:56.493206300+00:00"
+  },
+  {
+    "path": "scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "href": "../../scrolls/Tomekeeper_Scroll_Echo_Bearer_Project.md",
+    "category": "scroll",
+    "size": 5806,
+    "modified": "2025-08-09T21:57:56.493206300+00:00"
+  },
+  {
+    "path": "scrolls/Trigger Loom Design Summary.txt",
+    "href": "../../scrolls/Trigger Loom Design Summary.txt",
+    "category": "scroll",
+    "size": 2887,
+    "modified": "2025-08-09T21:57:56.493206300+00:00"
+  },
+  {
+    "path": "scrolls/Virelya.md",
+    "href": "../../scrolls/Virelya.md",
+    "category": "scroll",
+    "size": 314,
+    "modified": "2025-08-09T21:57:56.494207+00:00"
+  },
+  {
+    "path": "scroll_core/README.md",
+    "href": "../../scroll_core/README.md",
+    "category": "root-doc",
+    "size": 2386,
+    "modified": "2025-09-18T14:21:34.371464100+00:00"
+  },
+  {
+    "path": "scroll_core/src/llms-full.txt",
+    "href": "../../scroll_core/src/llms-full.txt",
+    "category": "root-doc",
+    "size": 877755,
+    "modified": "2025-04-12T19:17:21.731438700+00:00"
+  },
+  {
+    "path": "scroll_core_module_index.md",
+    "href": "../../scroll_core_module_index.md",
+    "category": "root-doc",
+    "size": 2705,
+    "modified": "2025-04-03T23:46:53.432212400+00:00"
+  },
+  {
+    "path": "target/debug/build/assert_cmd-da55ae3ffd7833e6/out/current_target.txt",
+    "href": "../../target/debug/build/assert_cmd-da55ae3ffd7833e6/out/current_target.txt",
+    "category": "root-doc",
+    "size": 22,
+    "modified": "2025-08-23T03:16:09.020056200+00:00"
+  },
+  {
+    "path": "target/debug/build/rust_decimal-7fd5cb0337cd0520/out/README-lib.md",
+    "href": "../../target/debug/build/rust_decimal-7fd5cb0337cd0520/out/README-lib.md",
+    "category": "root-doc",
+    "size": 15807,
+    "modified": "2025-08-11T00:43:33.668891400+00:00"
+  },
+  {
+    "path": "tests/e2e_scrolls/alpha.md",
+    "href": "../../tests/e2e_scrolls/alpha.md",
+    "category": "test-doc",
+    "size": 144,
+    "modified": "2025-08-09T21:57:56.535249800+00:00"
+  },
+  {
+    "path": "tests/e2e_scrolls/beta.md",
+    "href": "../../tests/e2e_scrolls/beta.md",
+    "category": "test-doc",
+    "size": 145,
+    "modified": "2025-08-09T21:57:56.535249800+00:00"
+  },
+  {
+    "path": "tests/e2e_scrolls/gamma.md",
+    "href": "../../tests/e2e_scrolls/gamma.md",
+    "category": "test-doc",
+    "size": 142,
+    "modified": "2025-08-09T21:57:56.535249800+00:00"
+  },
+  {
+    "path": "tests/sample_scrolls/valid_scroll.md",
+    "href": "../../tests/sample_scrolls/valid_scroll.md",
+    "category": "test-doc",
+    "size": 180,
+    "modified": "2025-08-09T21:57:56.537750900+00:00"
+  },
+  {
+    "path": "tmp_notify/bad.md",
+    "href": "../../tmp_notify/bad.md",
+    "category": "root-doc",
+    "size": 109,
+    "modified": "2025-08-10T04:02:54.578400500+00:00"
+  },
+  {
+    "path": "tmp_notify/good.md",
+    "href": "../../tmp_notify/good.md",
+    "category": "root-doc",
+    "size": 112,
+    "modified": "2025-08-10T04:02:54.579906400+00:00"
+  },
+  {
+    "path": "udeps.txt",
+    "href": "../../udeps.txt",
+    "category": "root-doc",
+    "size": 1376,
+    "modified": "2025-06-21T16:37:34.176877700+00:00"
+  }
 ]
