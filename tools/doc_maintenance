@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -u
+set -o pipefail
+
+ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
+cd "$ROOT_DIR" || {
+  echo "Failed to change directory to repository root." >&2
+  exit 1
+}
+
+ACTIONS=(index normalize classify)
+RESULTS=()
+STATUS=0
+
+echo "Scroll Core documentation maintenance"
+echo "Repo: $ROOT_DIR"
+echo
+
+for action in "${ACTIONS[@]}"; do
+  echo "Running: cargo run -- doc --action $action"
+  if cargo run -- doc --action "$action"; then
+    printf "Result: %s - OK\n\n" "$action"
+    RESULTS+=("0")
+  else
+    printf "Result: %s - FAILED\n\n" "$action"
+    RESULTS+=("1")
+    STATUS=1
+  fi
+done
+
+echo "Summary:"
+for idx in "${!ACTIONS[@]}"; do
+  action="${ACTIONS[$idx]}"
+  result="${RESULTS[$idx]}"
+  if [ "$result" -eq 0 ]; then
+    printf "  [OK]   %s\n" "$action"
+  else
+    printf "  [FAIL] %s\n" "$action"
+  fi
+done
+
+echo
+if [ "$STATUS" -ne 0 ]; then
+  echo "One or more documentation maintenance steps failed." >&2
+  exit "$STATUS"
+else
+  echo "All documentation maintenance steps completed successfully."
+fi
