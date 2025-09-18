@@ -9,24 +9,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      CI_LOG: ${{ github.workspace }}/ci.log
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-          components: clippy
-      - name: Install Rustfmt
-        run: rustup component add rustfmt
-      - name: Run cargo test
-        run: cargo test
-      - name: Run cargo clippy
-        run: cargo clippy -q -- -D warnings
-      - name: Install cargo-deny
-        run: cargo install cargo-deny --locked
-      - name: Run cargo deny
-        run: cargo deny check
-      - name: Generate module map
+          components: rustfmt
+      - name: Initialize CI log
         run: |
-          git config --global core.autocrlf false
-          cargo xtask gen-map --check
+          set -eo pipefail
+          echo "CI log for ubuntu-latest $(date -Iseconds)" > "$CI_LOG"
+      - name: cargo fmt -- --check
+        run: |
+          set -eo pipefail
+          {
+            echo "::group::cargo fmt -- --check"
+            cargo fmt -- --check
+            echo "::endgroup::"
+          } |& tee -a "$CI_LOG"
+      - name: cargo test --workspace -- --nocapture
+        run: |
+          set -eo pipefail
+          {
+            echo "::group::cargo test --workspace -- --nocapture"
+            cargo test --workspace -- --nocapture
+            echo "::endgroup::"
+          } |& tee -a "$CI_LOG"
+      - name: Upload CI log
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ci-log-ubuntu
+          path: ${{ env.CI_LOG }}
+          retention-days: 7

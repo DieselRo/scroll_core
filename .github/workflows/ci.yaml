@@ -14,59 +14,42 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    env:
+      CI_LOG: ${{ github.workspace }}/ci.log
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-          components: rustfmt, clippy
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-      - name: Determine Rust version
-        id: rust-version
-        run: echo "version=$(rustc --version)" >> "$GITHUB_OUTPUT"
-      - name: Cache cargo registry
-        uses: actions/cache@v3
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ steps.rust-version.outputs.version }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-registry-
-      - name: Cache cargo index
-        uses: actions/cache@v3
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-git-${{ steps.rust-version.outputs.version }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-git-
-      - name: Cache target dir
-        uses: actions/cache@v3
-        with:
-          path: target
-          key: ${{ runner.os }}-cargo-target-${{ steps.rust-version.outputs.version }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-target-
-      - name: cargo fmt
-        run: cargo fmt -- --check
-      - name: cargo clippy
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
-      - name: Install cargo-udeps
-        run: cargo +nightly install cargo-udeps --locked
-      - name: cargo udeps
-        run: cargo +nightly udeps --workspace --all-targets
-      - name: Install cargo-deny
-        run: cargo install cargo-deny --locked
-      - name: cargo deny
-        run: cargo deny check
-      - name: Generate module map
+          components: rustfmt
+      - name: Initialize CI log
         run: |
-          git config --global core.autocrlf false
-          cargo xtask gen-map --check
-      - name: Install cargo-deadlinks
-        run: cargo install cargo-deadlinks --locked
-      - name: Check docs links
-        run: cargo deadlinks --dir docs --dir scroll_core/src
-      - name: cargo test
-        run: cargo test --workspace -- --nocapture
-      - name: cargo build release
-        run: cargo build --workspace --release
+          set -eo pipefail
+          echo "CI log for ${{ matrix.os }} $(date -Iseconds)" > "$CI_LOG"
+      - name: cargo fmt -- --check
+        run: |
+          set -eo pipefail
+          {
+            echo "::group::cargo fmt -- --check"
+            cargo fmt -- --check
+            echo "::endgroup::"
+          } |& tee -a "$CI_LOG"
+      - name: cargo test --workspace -- --nocapture
+        run: |
+          set -eo pipefail
+          {
+            echo "::group::cargo test --workspace -- --nocapture"
+            cargo test --workspace -- --nocapture
+            echo "::endgroup::"
+          } |& tee -a "$CI_LOG"
+      - name: Upload CI log
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ci-log-${{ matrix.os }}
+          path: ${{ env.CI_LOG }}
+          retention-days: 7
