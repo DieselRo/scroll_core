@@ -200,10 +200,9 @@ impl<'a> ContextFrameEngine<'a> {
         let elapsed = start.elapsed().as_millis();
         #[cfg(feature = "metrics")]
         {
-            use metrics::{counter, histogram};
-            histogram!("context.build_ms", elapsed as f64);
-            counter!("context.included", included as u64);
-            counter!("context.excluded", excluded as u64);
+            metrics::histogram!("context.build_ms", elapsed as f64);
+            metrics::counter!("context.included").increment(included as u64);
+            metrics::counter!("context.excluded").increment(excluded as u64);
         }
 
         let summary = ContextFrameSummary {
