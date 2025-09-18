@@ -200,7 +200,7 @@ impl<'a> ContextFrameEngine<'a> {
         let elapsed = start.elapsed().as_millis();
         #[cfg(feature = "metrics")]
         {
-            metrics::histogram!("context.build_ms", elapsed as f64);
+            metrics::histogram!("context.build_ms").record(elapsed as f64);
             metrics::counter!("context.included").increment(included as u64);
             metrics::counter!("context.excluded").increment(excluded as u64);
         }
